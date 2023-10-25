@@ -1,0 +1,122 @@
+.authImg {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+}
+
+.loginForm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.options {
+    display: flex;
+}
+
+.signup {
+    margin-right: 20px;
+}
+
+.link {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 700;
+    width: 100%;
+    height: 100%;
+
+    &:active {
+        color: var(--primary-color);
+    }
+    &:hover {
+        cursor: pointer;
+        color: var(--primary-color);
+    }
+}
+
+.linkActive {
+    color: var(--primary-color);
+}
+
+.ggBtn {
+    margin: 0;
+    border: 2px solid #dad1d1;
+    border-radius: 20px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.ggBtnImg {
+    width: 22px;
+    height: 22px;
+}
+
+.text {
+    font-weight: 700;
+    color: var(--text-color);
+    margin-left: 10px;
+}
+
+.line {
+    width: 100%;
+    height: 2px;
+    background-color: #dad1d1;
+    margin: 10px 0;
+}
+
+.inputField {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.wrapperForgotPassword {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.forgotPassword {
+    color: var(--primary-color);
+    font-weight: 700;
+    cursor: pointer;
+    font-style: italic;
+    margin-left: 10px;
+}
+
+.btnLogin {
+    width: 100%;
+    height: 50px;
+    border-radius: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+        background-color: rgb(235, 47, 125);
+    }
+}
+
+.switchOption {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.wrapperInput {
+    margin-bottom: 20px;
+}
+
+.error {
+    margin-top: 10px;
+    color: red;
+}
+
+.ggBtnLogin {
+    background-color: yellow;
+    width:max-content;
+}
