@@ -16,6 +16,8 @@ import { URL } from "../../utils/get-client-id";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
+import { getUserProfile } from "../../api/auth.api";
+import { loginSuccess } from "../../store/authSlice";
 
 const LoginPage = (): React.JSX.Element => {
 	const [errorLogin, setErrorLogin] = useState<string>("");
@@ -35,8 +37,14 @@ const LoginPage = (): React.JSX.Element => {
 					accessToken
 				});
 				localStorage.setItem("accessToken", apiResponse.data.token);
+				getUserProfile()
+					.then(response => {
+						dispatch(loginSuccess(response.data));
+					})
+					.catch(error => {
+						console.log(error);
+					});
 				localStorage.setItem("user", JSON.stringify(apiResponse.data.userResult));
-				// console.log(JSON.parse(localStorage.getItem("user")));
 				navigate("/home");
 				console.log("API Response:", apiResponse.data);
 			} catch (error) {
@@ -67,11 +75,11 @@ const LoginPage = (): React.JSX.Element => {
 	};
 
 	return (
-		<Grid container>
-			<Grid item xs={6}>
+		<Grid container className={classes.wrapperLogin}>
+			<Grid item xs={0} md={6} sm={6}>
 				<img src={AuthImg} alt="Auth" className={classes.authImg} />
 			</Grid>
-			<Grid container item xs={6} className={classes.loginForm}>
+			<Grid container item xs={12} md={6} sm={6} className={classes.loginForm}>
 				<Grid item xs={10} className={classes.options}>
 					<Grid item xs={3}>
 						<h3
@@ -138,7 +146,6 @@ const LoginPage = (): React.JSX.Element => {
 											<IconButton
 												aria-label="toggle password visibility"
 												onClick={handleClickShowPassword}
-												// onMouseDown={handleMouseDownPassword}
 												edge="end"
 											>
 												{showPassword ? <Visibility /> : <VisibilityOff />}

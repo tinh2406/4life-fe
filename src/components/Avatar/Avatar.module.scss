@@ -1,0 +1,49 @@
+.wrapperFileAvatar {
+    position: relative;
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    // overflow: hidden;
+    padding: 4px;
+    border: 2px solid #FF385C;
+    cursor: pointer;
+}
+
+.avatar {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.file {
+    display: none;
+}
+
+// input[type="file"] {
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     width: 50px;
+//     height: 50px;
+//     opacity: 0;
+//     cursor: pointer;
+//   }
+
+.iconAdd {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    bottom: 0px;
+    left: 76px;
+    color: var(--primary-color);
+}
+
+.loading {
+    position: absolute;
+    left: 34px;
+    /* right: auto; */
+    bottom: 30px;
+}

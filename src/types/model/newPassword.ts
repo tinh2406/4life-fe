@@ -4,3 +4,9 @@ export interface NewPassword {
     newPassword: string;
     confirmNewPassword: string;
 }
+
+export interface NewPasswordNonOTP {
+    currentPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+}

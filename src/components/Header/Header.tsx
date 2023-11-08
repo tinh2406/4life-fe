@@ -12,14 +12,16 @@ import { RootState } from "../../store";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
-import PeopleIcon from "@mui/icons-material/People";
-import DescriptionIcon from "@mui/icons-material/Description";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
+import EditNoteIcon from "@mui/icons-material/EditNote";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Logout from "@mui/icons-material/Logout";
 import { logoutUser } from "../../store/acthAction";
+import { UserUpdate } from "../../types/model/userUpdate";
+// import { CurrentUser } from "../../types/model/currentUser";
 
 const UserProfileDropdown = () => {
-	const user = useSelector((state: RootState) => state.authen.login.currentUser);
+	const user: UserUpdate = useSelector((state: RootState) => state.auth.login.currentUser);
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 	const navigate = useNavigate();
@@ -37,15 +39,12 @@ const UserProfileDropdown = () => {
 		localStorage.removeItem("user");
 	};
 	// console.log(localStorage.getItem("user").name);
+	// JSON.parse(localStorage.getItem("user") ?? "")?.name
 	return (
 		<>
 			<div className={classes.wrapperUser} onClick={handleClick}>
-				<Avatar alt="User Avatar" src={defaultAvatar} />
-				<div className={classes.username}>
-					{user?.userResult.name
-						? user?.userResult.name
-						: JSON.parse(localStorage.getItem("user") ?? "")?.name}
-				</div>
+				<Avatar alt="User Avatar" src={user?.avatar ? user.avatar : defaultAvatar} />
+				<div className={classes.username}>{user?.name ? user?.name : ""}</div>
 			</div>
 			<Menu
 				anchorEl={anchorEl}
@@ -82,20 +81,50 @@ const UserProfileDropdown = () => {
 				transformOrigin={{ horizontal: "right", vertical: "top" }}
 				anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
 			>
-				<MenuItem onClick={handleClose}>
-					<PeopleIcon className={classes.menuIcon} />
-					<div className={classes.menuItem}>My Profile</div>
+				<MenuItem
+					sx={{
+						"&:hover": {
+							backgroundColor: "#f7e1e6"
+						}
+					}}
+					onClick={handleClose}
+				>
+					<PeopleOutlineIcon className={classes.menuIcon} />
+					<div className={classes.menuItem} onClick={() => navigate("/profile")}>
+						My Profile
+					</div>
 				</MenuItem>
-				<MenuItem onClick={handleClose}>
-					<DescriptionIcon className={classes.menuIcon} />
+				<MenuItem
+					sx={{
+						"&:hover": {
+							backgroundColor: "#f7e1e6"
+						}
+					}}
+					onClick={handleClose}
+				>
+					<EditNoteIcon className={classes.menuIcon} />
 					<div className={classes.menuItem}>Manage Post</div>
 				</MenuItem>
-				<MenuItem onClick={handleClose}>
-					<FavoriteIcon className={classes.menuIcon} />
+				<MenuItem
+					sx={{
+						"&:hover": {
+							backgroundColor: "#f7e1e6"
+						}
+					}}
+					onClick={handleClose}
+				>
+					<FavoriteBorderIcon className={classes.menuIcon} />
 					<div className={classes.menuItem}>My Favorite</div>
 				</MenuItem>
 				<Divider />
-				<MenuItem onClick={handleLogout}>
+				<MenuItem
+					sx={{
+						"&:hover": {
+							backgroundColor: "#f7e1e6"
+						}
+					}}
+					onClick={handleLogout}
+				>
 					<Logout className={classes.menuIcon} />
 					<div className={classes.menuItem}>Logout</div>
 				</MenuItem>
@@ -110,7 +139,7 @@ const Header = (): React.JSX.Element => {
 	const isRoomsActive = location.pathname.startsWith("/rooms");
 	const isAboutActive = location.pathname.startsWith("/about");
 	const navigate = useNavigate();
-	const user = useSelector((state: RootState) => state.authen.login.currentUser);
+	const user = useSelector((state: RootState) => state.auth.login.currentUser);
 
 	return (
 		<>

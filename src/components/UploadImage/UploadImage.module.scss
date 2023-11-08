@@ -1,0 +1,41 @@
+.wrapperFileAvatar {
+    position: relative;
+    display: block;
+    width: 400px;
+    height: 200px;
+    border-radius: 20px;
+    padding: 4px;
+    border: 2px dashed #FF385C;
+    cursor: pointer;
+}
+
+.avatar {
+    display: block;
+    width: 400px;
+    height: 200px;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.file {
+    display: none;
+}
+
+
+.iconAdd {
+    position: absolute;
+    left: 50%; 
+    top: 50%; 
+    transform: translate(-50%, -50%);
+    color: var(--primary-color);
+    font-size: 40px;
+}
+
+.loading {
+    position: absolute;
+    left: 50%; 
+    top: 50%; 
+    transform: translate(-50%, -50%);
+    color: var(--primary-color);
+    font-size: 40px;
+}

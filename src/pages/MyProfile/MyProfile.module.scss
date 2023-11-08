@@ -1,0 +1,11 @@
+.icon {
+    padding-left: 14px;
+    padding-top: 10px;
+}
+
+.backIcon {
+    color: var(--text-color);
+    &:hover {
+        cursor: pointer;
+    }
+}

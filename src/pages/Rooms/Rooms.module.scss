@@ -1,0 +1,77 @@
+.wrapperFilter {
+    display: flex;
+    justify-content: center;
+}
+
+.filter {
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    border-radius: 16px;
+}
+
+.datePicker {
+    width: 14%;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.wrapperImg {
+    width: 100%;
+    height: 100%;
+    position: relative; 
+    display: flex;
+}
+
+.roomsImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.text {
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.title {
+    font-size: 50px;
+    font-weight: 800;
+}
+
+.content {
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.wrapperRoooms {
+    display: flex;
+    flex-wrap: wrap;
+    // gap: 20px;
+    padding: 20px;
+    // justify-content: space-between;
+}
+
+.wrapperBtn {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.buttonSeeMore {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+        background-color: rgb(235, 47, 125);
+    }
+    text-transform: none;
+    border-radius: 10px;
+}

@@ -11,7 +11,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-	authen: authSlice.reducer
+	auth: authSlice.reducer
 	//   user: userSlice.reducer,
 });
 

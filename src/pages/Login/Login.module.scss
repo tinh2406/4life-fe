@@ -120,3 +120,36 @@
     background-color: yellow;
     width:max-content;
 }
+
+@media (max-width: 599px) {
+    .authImg {
+        display: none;
+    }
+    .wrapperLogin {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+}
+
+/* Tùy chỉnh cho màn hình Small (sm) */
+@media (min-width: 600px) and (max-width: 959px) {
+    // .authImg {
+    //   display: none;
+    // }
+  }
+  
+  /* Tùy chỉnh cho màn hình Medium (md) */
+  @media (min-width: 960px) and (max-width: 1279px) {
+    // .card {
+    //   display: none;
+    // }
+  }
+  
+//   /* Tùy chỉnh cho màn hình Large (lg) */
+//   @media (min-width: 1280px) and (max-width: 1919px) {
+//     .card {
+//       width: 20%; /* Tùy chỉnh cho màn hình từ 1280px đến 1919px (lg) */
+//     }
+//   }

@@ -1,0 +1,82 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'K2D', sans-serif;
+}
+
+.title {
+    font-size: 40px;
+    font-weight: 600;
+}
+
+.wrapperContent {
+    display: flex;
+    margin-top: 20px;
+    padding: 20px;
+    gap: 10px;
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 20px;
+    // font-weight: 500;
+}
+
+.wapperImg {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.img {
+    width: 60%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.titleRegisterMod {
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.wrapperRowInput {
+    width: 40%;
+    padding: 6px;
+}
+
+.inputField {
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.text {
+    font-weight: 500;
+    color: var(--text-color);
+    margin-left: 10px;
+}
+
+.wrapperButton {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.buttonSave {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin-top: 20px;
+    &:hover {
+        background-color: rgb(235, 47, 125);
+    }
+    text-transform: none;
+}

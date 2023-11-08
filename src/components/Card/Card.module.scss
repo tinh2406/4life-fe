@@ -1,0 +1,47 @@
+.imgAccommodations {
+    box-sizing: border-box;
+    padding: 10px;
+    height: 200px;
+    border-radius: 16px;
+}
+
+.address {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin-top: 10px;
+
+}
+
+.wraperRating {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.text {
+    font-family: 'K2D', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.name {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.footer {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.wrapperRating {
+    display: flex;
+    align-items: center;
+}
+
+.startIcon {
+    color: #FFD233;
+}

@@ -5,8 +5,20 @@ import HomePage from "./pages/Home/Home";
 import SignUpPage from "./pages/SignUp/SignUp";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPassword";
 import MyProfilePage from "./pages/MyProfile/MyProfile";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { ProtectedAuthen, ProtectedRoute } from "./components/Auth/ProtectedRoute";
+import RoomsPage from "./pages/Rooms/Rooms";
 
 const router = createBrowserRouter([
+	{
+		path: "/login",
+		element: (
+			<ProtectedAuthen>
+				<LoginPage />
+			</ProtectedAuthen>
+		)
+	},
 	{
 		path: "/",
 		element: <RootLayout />,
@@ -17,27 +29,43 @@ const router = createBrowserRouter([
 				element: <HomePage />
 			},
 			{
-				path: "my-profile",
-				element: <MyProfilePage />
+				path: "rooms",
+				element: <RoomsPage />
+			},
+			{
+				path: "profile",
+				element: (
+					<ProtectedRoute>
+						<MyProfilePage />
+					</ProtectedRoute>
+				)
 			}
 		]
 	},
 	{
-		path: "/login",
-		element: <LoginPage />
-	},
-	{
 		path: "/signup",
-		element: <SignUpPage />
+		element: (
+			<ProtectedAuthen>
+				<SignUpPage />
+			</ProtectedAuthen>
+		)
 	},
 	{
 		path: "/forgot-password",
-		element: <ForgotPasswordPage />
+		element: (
+			<ProtectedAuthen>
+				<ForgotPasswordPage />
+			</ProtectedAuthen>
+		)
 	}
 ]);
 
 function App() {
-	return <RouterProvider router={router} />;
+	return (
+		<LocalizationProvider dateAdapter={AdapterDayjs}>
+			<RouterProvider router={router} />
+		</LocalizationProvider>
+	);
 }
 
 export default App;
