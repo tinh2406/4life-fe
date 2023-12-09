@@ -1,0 +1,115 @@
+.wrapper {
+    padding:20px;
+}
+
+.icon {
+    margin-bottom: 10px;
+}
+
+.backIcon {
+    color: var(--text-color);
+    font-size: 24px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.wrapperInformation {
+    padding: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.wrapperTextNotification {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.textNotification {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.successIcon {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 24px 0;
+}
+
+.dateTime {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.wrapperInformationDate {
+    display: flex;
+    margin-top: 20px;
+    flex-direction: column;
+}
+
+.iconCheckDate {
+    color: #00c58d;
+    font-size: 24px;
+    margin-right: 30px;
+}
+
+.dateTimeItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.totalPrice {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.text {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.btnPayment {
+    height: 30px;
+    border-radius: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    text-transform: none;
+    cursor: pointer;
+    font-family: 'K2D', sans-serif;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+        background-color: rgb(235, 47, 125);
+    }
+}
+
+.payment {
+    width: 60px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.paid {
+    color: rgb(0, 197, 99);
+    background-color: rgba(60, 238, 170,0.5);
+}
+
+.unpay {
+    color: rgb(209, 137, 3);
+    background-color: rgb(209, 137, 3,0.2);
+}

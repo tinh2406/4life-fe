@@ -1,21 +1,23 @@
 import React from "react";
 import Home from "../../assets/images/home.png";
 import classes from "./Home.module.scss";
-import { Grid, Paper } from "@mui/material";
-import FilterSelect from "../../components/FilterSelect/FilterSelect";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
-import PeopleIcon from "@mui/icons-material/People";
+import { Button, Grid } from "@mui/material";
+// import FilterSelect from "../../components/FilterSelect/FilterSelect";
+// import LocationOnIcon from "@mui/icons-material/LocationOn";
+// import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
+// import PeopleIcon from "@mui/icons-material/People";
 import IntroduceImg from "../../assets/images/introduce.png";
+import { useNavigate } from "react-router-dom";
+import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 
-import dayjs, { Dayjs } from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import dayjs, { Dayjs } from "dayjs";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 // import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const HomePage = (): React.JSX.Element => {
-	const [value, setValue] = React.useState<Dayjs | null>(dayjs("2022-04-17"));
+	// const [value, setValue] = React.useState<Dayjs | null>(dayjs("2022-04-17"));
+	const navigate = useNavigate();
 
 	return (
 		<>
@@ -28,8 +30,16 @@ const HomePage = (): React.JSX.Element => {
 							Many fantastic rooms are waiting for you! Let discover the best hotels and resorts to stay.
 							Don't worry about the quality of the service!
 						</div>
+						<Button
+							variant="contained"
+							endIcon={<ArrowRightAltOutlinedIcon />}
+							className={classes.btn}
+							onClick={() => navigate("/rooms")}
+						>
+							Explore
+						</Button>
 					</div>
-					<Paper elevation={6} className={classes.filter}>
+					{/* <Paper elevation={6} className={classes.filter}>
 						<FilterSelect
 							label="Location"
 							icon={<LocationOnIcon />}
@@ -64,7 +74,7 @@ const HomePage = (): React.JSX.Element => {
 							value="Da Nang"
 							onChange={(value: string) => console.log(value)}
 						/>
-					</Paper>
+					</Paper> */}
 				</Grid>
 				{/* <Grid item xs={10} className={classes.wrapperIntroduce}> */}
 				<div className={classes.introduce}>

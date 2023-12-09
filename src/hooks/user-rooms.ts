@@ -7,7 +7,7 @@ import { PagingResponse } from "../types/axios/paging";
 
 const LIMIT_ROW_PER_PAGE = 12;
 
-const initialRequestParams:GetRoomsParams = {
+const initialRequestParams: GetRoomsParams = {
 	Keyword: null,
 	PageIndex: 1,
 	PageSize: LIMIT_ROW_PER_PAGE,
@@ -17,11 +17,13 @@ const initialRequestParams:GetRoomsParams = {
 
 type ReturnType = {
 	isLoading: boolean;
-    isFetching:boolean;
+	isFetching: boolean;
 	isError: boolean;
 	data: PagingResponse<RoomResponse>[] | undefined;
+	handleTypeChange: (value: string) => void;
 	handleLocationChange: (value: number) => void;
-    fetchNextPage:() => Promise<InfiniteQueryObserverResult<PagingResponse<RoomResponse>, unknown>>
+	handleCheckInChange: (value: string) => void;
+	fetchNextPage: () => Promise<InfiniteQueryObserverResult<PagingResponse<RoomResponse>, unknown>>;
 };
 
 const useRooms = (): ReturnType => {
@@ -32,17 +34,25 @@ const useRooms = (): ReturnType => {
 		unknown,
 		PagingResponse<RoomResponse>
 	>(
-        ['all-rooms'],
-        async ({ pageParam = params.PageIndex }) => {
-            return await getRooms({...params, PageIndex:pageParam})
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage.meta.pageIndex + 1,
-        },
-      )
+		["all-rooms", ...Object.values(params)],
+		async ({ pageParam = params.PageIndex }) => {
+			return await getRooms({ ...params, PageIndex: pageParam });
+		},
+		{
+			getNextPageParam: lastPage => lastPage.meta.pageIndex + 1
+		}
+	);
 
-    const handleLocationChange = useCallback((value: number): void => {
+	const handleLocationChange = useCallback((value: number): void => {
 		setParams((state: GetRoomsParams) => ({ ...state, locationId: value, PageIndex: 1 }));
+	}, []);
+
+	const handleTypeChange = useCallback((value: string): void => {
+		setParams((state: GetRoomsParams) => ({ ...state, type: value, PageIndex: 1 }));
+	}, []);
+
+	const handleCheckInChange = useCallback((value: string): void => {
+		setParams((state: GetRoomsParams) => ({ ...state, checkIn: value, PageIndex: 1 }));
 	}, []);
 
 	// const handleSearchChange = useCallback((searchTerm: string) => {
@@ -52,11 +62,13 @@ const useRooms = (): ReturnType => {
 	return {
 		isLoading,
 		isError,
-        isFetching,
+		isFetching,
 		data: data?.pages,
 		// handleSearchChange,
-        handleLocationChange,
-        fetchNextPage
+		handleTypeChange,
+		handleLocationChange,
+		handleCheckInChange,
+		fetchNextPage
 	};
 };
 

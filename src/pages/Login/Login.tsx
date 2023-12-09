@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Grid from "@mui/material/Grid";
-import AuthImg from "../../assets/images/auth.png";
-import classes from "./Login.module.scss";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Button, IconButton, InputAdornment, TextField } from "@mui/material";
@@ -18,11 +16,14 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import { getUserProfile } from "../../api/auth.api";
 import { loginSuccess } from "../../store/authSlice";
+import AuthImg from "../../assets/images/auth.png";
+import classes from "./Login.module.scss";
+import React from "react";
 
 const LoginPage = (): React.JSX.Element => {
 	const [errorLogin, setErrorLogin] = useState<string>("");
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-	const [showPassword, setShowPassword] = React.useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -46,7 +47,6 @@ const LoginPage = (): React.JSX.Element => {
 					});
 				localStorage.setItem("user", JSON.stringify(apiResponse.data.userResult));
 				navigate("/home");
-				console.log("API Response:", apiResponse.data);
 			} catch (error) {
 				console.error("Error sending token to server:", error);
 			}
@@ -64,7 +64,6 @@ const LoginPage = (): React.JSX.Element => {
 		const userLoginData = data as UserLogin;
 		try {
 			const statuss = await loginUser(userLoginData, dispatch, navigate);
-			console.log(statuss);
 			if (statuss === 404 || statuss === 400)
 				setErrorLogin("The login details you provided are incorrect. Please try again!");
 		} catch (error) {
@@ -119,7 +118,7 @@ const LoginPage = (): React.JSX.Element => {
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<Grid item xs={12} className={classes.wrapperInput}>
 							<TextField
-								id="standard-basic"
+								id="email"
 								label="Enter your email"
 								variant="standard"
 								className={classes.inputField}
@@ -132,7 +131,7 @@ const LoginPage = (): React.JSX.Element => {
 						</Grid>
 						<Grid item xs={12}>
 							<TextField
-								id="standard-basic"
+								id="password"
 								label="Enter your password"
 								variant="standard"
 								error={!!errors.password}
@@ -166,7 +165,12 @@ const LoginPage = (): React.JSX.Element => {
 							</div>
 						</Grid>
 						<Grid item xs={12}>
-							<Button type="submit" variant="contained" className={classes.btnLogin}>
+							<Button
+								type="submit"
+								variant="contained"
+								data-testid="login-button"
+								className={classes.btnLogin}
+							>
 								{isSubmitting ? (
 									<Box sx={{ display: "flex" }}>
 										<CircularProgress color="inherit" />

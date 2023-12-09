@@ -3,5 +3,5 @@ export interface GetRoomsParams {
 	PageIndex: number;
 	PageSize: number;
 	IsDescending?: boolean;
-	SortBy?: string;
+	SortBy?: string | null;
 }

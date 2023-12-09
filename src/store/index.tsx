@@ -10,7 +10,7 @@ const persistConfig = {
 	storage
 };
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
 	auth: authSlice.reducer
 	//   user: userSlice.reducer,
 });

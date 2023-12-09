@@ -1,0 +1,144 @@
+.dialog_title_wrapper {
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.loading_container {
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+// 
+
+.step {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 14px 0;
+}
+
+.wrapperInput {
+    margin: 20px 0;
+}
+
+.text {
+    font-size: 16px;
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.inputField {
+    width: 100%;
+}
+
+.error {
+    color: #d32f2f;
+    font-size: 13px;
+    font-weight: 500;
+    margin-left: 14px;
+    margin-top: 3px;
+}
+
+.wrapperTime {
+    display: flex;
+    align-items: center;
+}
+
+.inputFieldTime {
+    width: 150px;
+    max-width: 150px;
+    min-width: 50px;
+    margin-right: 30px;
+}
+
+
+.buttonSave {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        background-color: rgb(235, 47, 125);
+    }
+
+    text-transform: none;
+}
+
+.buttonCancel {
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border: 1px solid var(--primary-color);
+
+    &:hover {
+        background-color: rgba(235, 47, 125, 0.1);
+        border-color: rgb(235, 47, 125);
+    }
+
+    text-transform: none;
+
+}
+
+.pagination_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.wrapperImage {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.imgContainer {
+    position: relative;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    // display: "inline-block",
+}
+
+.deleteIcon {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+.imgAccomodation {
+    width: 180px;
+    height: 100px;
+    min-width: 150px;
+    border-radius: 10px;
+}
+
+@media (max-width: 992px) {
+    .title_text {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-height: 720px) {
+    .title_text {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .title_text {
+        font-size: 1.5rem;
+    }
+}

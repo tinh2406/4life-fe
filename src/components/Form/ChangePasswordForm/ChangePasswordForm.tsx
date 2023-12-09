@@ -12,12 +12,12 @@ import {
 import { ChangeEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
-import { changePassword, forgotPassword, newPassword, verifyOTP } from "../../../api/auth.api";
+import { changePassword, forgotPassword, newPassword, verifyOTP } from "../../../api/auth.api"; //forgotPassword nhớ bỏ dô lại
 import { NewPasswordNonOTP } from "../../../types/model/newPassword";
 import { toast } from "react-toastify";
-import { UserProfile } from "../../../types/axios/user-profile-api";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import SendIcon from "@mui/icons-material/Send";
+import { ObjectSchema } from "yup";
 
 const ChangePasswordForm = (): React.JSX.Element => {
 	const [showPassword, setShowPassword] = useState(false);
@@ -29,22 +29,22 @@ const ChangePasswordForm = (): React.JSX.Element => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSentOTP, setIsSentOTP] = useState(false);
 	const [isVerifyOTP, setIsVerifyOtp] = useState(false);
-	const user: UserProfile = useSelector((state: RootState) => state.auth.login.currentUser);
-	const [schema, setSchema] = useState<unknown>(schemaChangePasswordForm);
+	const user = useSelector((state: RootState) => state.auth.login.currentUser);
+	const [schema, setSchema] = useState<ObjectSchema<FieldValues>>(schemaChangePasswordForm);
 
 	useEffect(() => {
 		if (isForgotPassword) {
 			setSchema(schemaChangePasswordFormWithNewPassword);
 		}
 	}, [isForgotPassword]);
-	console.log(schema);
 	const {
 		register,
 		formState: { errors },
 		handleSubmit
 	} = useForm({
-		resolver: yupResolver(schema)
+		resolver: yupResolver(schema as ObjectSchema<FieldValues>)
 	});
+	// schema as ObjectSchema<FieldValues>
 
 	const handleForgotPassword = () => {
 		setIsForgotPassword(isForgot => !isForgot);
@@ -94,8 +94,6 @@ const ChangePasswordForm = (): React.JSX.Element => {
 		}
 	};
 
-	console.log(isVerifyOTP);
-
 	const onSubmit: SubmitHandler<FieldValues> = async data => {
 		console.log("data", data);
 		setIsSaving(true);
@@ -104,18 +102,17 @@ const ChangePasswordForm = (): React.JSX.Element => {
 				.then(res => {
 					console.log(res);
 					setIsSaving(false);
-					toast.success("Change password successfully");
+					toast.success("Change password successfully!");
 				})
 				.catch(err => {
-					console.log(err.response.status);
 					if (err.response.status === 400) {
-						toast.error("Invalid current password. Please try again");
+						toast.error("Invalid current password. Please try again!");
 					}
 					setIsSaving(false);
 				});
 		} else {
 			const newPasssword = {
-				email: user?.email,
+				email: user?.email ?? "",
 				otp: OTP,
 				newPassword: data.newPassword,
 				confirmNewPassword: data.confirmNewPassword
@@ -148,7 +145,7 @@ const ChangePasswordForm = (): React.JSX.Element => {
 						<Grid item xs={12} className={classes.wrapperRowInput}>
 							<div className={classes.text}>Current Password</div>
 							<TextField
-								id="standard-basic"
+								id="current-password"
 								variant="standard"
 								placeholder="Enter your current password"
 								type={showPassword ? "text" : "password"}
@@ -238,7 +235,7 @@ const ChangePasswordForm = (): React.JSX.Element => {
 							<Grid item xs={12} className={classes.wrapperRowInput}>
 								<div className={classes.text}>New Password</div>
 								<TextField
-									id="standard-basic2"
+									id="new-passowrd"
 									variant="standard"
 									error={!!errors.newPassword}
 									helperText={errors.newPassword?.message}
@@ -270,7 +267,7 @@ const ChangePasswordForm = (): React.JSX.Element => {
 							<Grid item xs={12} className={classes.wrapperRowInput}>
 								<div className={classes.text}>Confirm New Password</div>
 								<TextField
-									id="standard-basic3"
+									id="confirm-new-passowrd"
 									variant="standard"
 									error={!!errors.confirmNewPassword}
 									helperText={errors.confirmNewPassword?.message}
@@ -317,7 +314,6 @@ const ChangePasswordForm = (): React.JSX.Element => {
 									type="submit"
 									size="small"
 									className={classes.buttonSave}
-									// onClick={handleSave}
 									loading={isSaving}
 									loadingPosition="start"
 									startIcon={<SaveIcon />}

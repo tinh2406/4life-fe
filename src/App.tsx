@@ -9,6 +9,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { ProtectedAuthen, ProtectedRoute } from "./components/Auth/ProtectedRoute";
 import RoomsPage from "./pages/Rooms/Rooms";
+import ManagePostsPage from "./pages/ManagePosts/ManagePosts";
+import AccommodationDetailPage from "./pages/AccommodationDetail/AccommodationDetail";
+import MyBookingsPages from "./pages/MyBookings/MyBookings";
+import BookingDetailPage from "./pages/BookingDetail/BookingDetail";
+import MyFavoritePage from "./pages/MyFavorite/MyFavorite";
 
 const router = createBrowserRouter([
 	{
@@ -30,7 +35,16 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "rooms",
-				element: <RoomsPage />
+				children: [
+					{
+						index: true,
+						element: <RoomsPage />
+					},
+					{
+						path: ":id",
+						element: <AccommodationDetailPage />
+					}
+				]
 			},
 			{
 				path: "profile",
@@ -39,6 +53,48 @@ const router = createBrowserRouter([
 						<MyProfilePage />
 					</ProtectedRoute>
 				)
+			},
+			{
+				path: "manage-posts",
+				element: (
+					<ProtectedRoute>
+						<ManagePostsPage />
+					</ProtectedRoute>
+				)
+			},
+			{
+				path: "my-bookings",
+				children: [
+					{
+						index: true,
+						element: (
+							<ProtectedRoute>
+								<MyBookingsPages />
+							</ProtectedRoute>
+						)
+					},
+					{
+						path: ":id",
+						element: <BookingDetailPage />
+					}
+				]
+			},
+			{
+				path: "my-favorites",
+				children: [
+					{
+						index: true,
+						element: (
+							<ProtectedRoute>
+								<MyFavoritePage />
+							</ProtectedRoute>
+						)
+					},
+					{
+						path: ":id",
+						element: <AccommodationDetailPage />
+					}
+				]
 			}
 		]
 	},

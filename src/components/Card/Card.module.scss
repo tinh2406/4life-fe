@@ -3,6 +3,82 @@
     padding: 10px;
     height: 200px;
     border-radius: 16px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.wrapperSwiper {
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.navigateBtnLeft {
+    position: absolute;
+    display: none;
+    bottom: 82px;
+    left: 16px;
+    background-color: #ffffffc9;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    z-index: 1;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.navigateBtnRight {
+    position: absolute;
+    display: none;
+    bottom: 82px;
+    right: 15px;
+    background-color: #ffffffc9;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    z-index: 1;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.wrapperSwiper:hover .navigateBtnLeft,
+.wrapperSwiper:hover .navigateBtnRight {
+    display: flex;
+}
+
+.wrapperFavorite {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.favoriteIcon {
+    font-size: 22px;
+    color: #ffffff;
+}
+
+.favoritedIcon {
+    font-size: 22px;
+    color: #FFD233;
+}
+
+.arrowIcon {
+    font-size: 26px;
+    color: var(--text-color);
+}
+
+.wrapperTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .address {
@@ -44,4 +120,10 @@
 
 .startIcon {
     color: #FFD233;
+}
+
+button {
+    border: none;
+    background-color: transparent;
+    outline: none;
 }

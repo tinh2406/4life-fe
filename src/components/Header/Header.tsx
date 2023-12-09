@@ -17,11 +17,9 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Logout from "@mui/icons-material/Logout";
 import { logoutUser } from "../../store/acthAction";
-import { UserUpdate } from "../../types/model/userUpdate";
-// import { CurrentUser } from "../../types/model/currentUser";
 
 const UserProfileDropdown = () => {
-	const user: UserUpdate = useSelector((state: RootState) => state.auth.login.currentUser);
+	const user = useSelector((state: RootState) => state.auth.login.currentUser);
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 	const navigate = useNavigate();
@@ -38,8 +36,7 @@ const UserProfileDropdown = () => {
 		logoutUser(dispatch, navigate);
 		localStorage.removeItem("user");
 	};
-	// console.log(localStorage.getItem("user").name);
-	// JSON.parse(localStorage.getItem("user") ?? "")?.name
+
 	return (
 		<>
 			<div className={classes.wrapperUser} onClick={handleClick}>
@@ -103,7 +100,22 @@ const UserProfileDropdown = () => {
 					onClick={handleClose}
 				>
 					<EditNoteIcon className={classes.menuIcon} />
-					<div className={classes.menuItem}>Manage Post</div>
+					<div className={classes.menuItem} onClick={() => navigate("/manage-posts")}>
+						Manage Posts
+					</div>
+				</MenuItem>
+				<MenuItem
+					sx={{
+						"&:hover": {
+							backgroundColor: "#f7e1e6"
+						}
+					}}
+					onClick={handleClose}
+				>
+					<EditNoteIcon className={classes.menuIcon} />
+					<div className={classes.menuItem} onClick={() => navigate("/my-bookings")}>
+						My Bookings
+					</div>
 				</MenuItem>
 				<MenuItem
 					sx={{
@@ -114,7 +126,9 @@ const UserProfileDropdown = () => {
 					onClick={handleClose}
 				>
 					<FavoriteBorderIcon className={classes.menuIcon} />
-					<div className={classes.menuItem}>My Favorite</div>
+					<div className={classes.menuItem} onClick={() => navigate("/my-favorites")}>
+						My Favorite
+					</div>
 				</MenuItem>
 				<Divider />
 				<MenuItem
@@ -153,7 +167,7 @@ const Header = (): React.JSX.Element => {
 							Home
 						</NavLink>
 						<NavLink to="rooms" className={`${classes.tabItem} ${isRoomsActive ? classes.active : ""}`}>
-							Rooms
+							Accommodations
 						</NavLink>
 						<NavLink to="about" className={`${classes.tabItem} ${isAboutActive ? classes.active : ""}`}>
 							About
