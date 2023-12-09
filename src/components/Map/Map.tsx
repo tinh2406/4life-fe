@@ -11,8 +11,8 @@ import { useState } from "react";
 type SelectedPlaceType = {
 	geometry: {
 		location: {
-			lat: number;
-			lng: number;
+			lat: number | undefined;
+			lng: number | undefined;
 		};
 	};
 	name: string;
@@ -74,46 +74,30 @@ const MapContainer = ({ selectedPlace, setSelectedPlace }: MapProps): React.JSX.
 	// 	</div>
 	// );
 
-	const [searchBox, setSearchBox] = useState(null);
+	const [searchBox, setSearchBox] = useState<google.maps.places.SearchBox | null>(null);
 	const [mapCenter, setMapCenter] = useState({ lat: 16.07, lng: 108.15 });
 
-	//Này tách nè
-	const onLoad = ref => {
+	const onLoad = (ref: google.maps.places.SearchBox) => {
 		setSearchBox(ref);
 	};
 
-	// const onPlacesChanged = () => {
-	// 	const places = searchBox.getPlaces();
-	// 	if (places.length === 0) return;
-	// 	const selected = {
-	// 		geometry: {
-	// 			location: {
-	// 				lat: () => places[0].geometry.location.lat(),
-	// 				lng: () => places[0].geometry.location.lng()
-	// 			}
-	// 		},
-	// 		name: places[0].name
-	// 	};
-	// 	setMapCenter({ lat: selected.geometry.location.lat(), lng: selected.geometry.location.lng() });
-	// 	setSelectedPlace(selected);
-	// };
 	const onPlaceChanged = () => {
 		if (searchBox !== null) {
 			const places = searchBox.getPlaces();
-			if (places.length !== 0) {
+			if (places && places?.length !== 0) {
 				const selectedPlace = {
 					geometry: {
 						location: {
-							lat: places[0].geometry.location.lat(),
-							lng: places[0].geometry.location.lng()
+							lat: places[0]?.geometry?.location?.lat(),
+							lng: places[0]?.geometry?.location?.lng()
 						}
 					},
-					name: places.name
+					name: places[0]?.name || ""
 				};
 
 				setMapCenter({
-					lat: selectedPlace.geometry.location.lat,
-					lng: selectedPlace.geometry.location.lng
+					lat: selectedPlace.geometry.location.lat || 16.07,
+					lng: selectedPlace.geometry.location.lng || 108.15
 				});
 
 				setSelectedPlace(selectedPlace);
@@ -143,7 +127,7 @@ const MapContainer = ({ selectedPlace, setSelectedPlace }: MapProps): React.JSX.
 						}}
 					/>
 				</StandaloneSearchBox>
-				{selectedPlace && (
+				{selectedPlace && selectedPlace.geometry.location.lat && selectedPlace.geometry.location.lng && (
 					<Marker
 						position={{
 							lat: selectedPlace.geometry.location.lat,

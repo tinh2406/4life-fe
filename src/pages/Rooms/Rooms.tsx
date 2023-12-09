@@ -28,7 +28,8 @@ import { Favorite } from "../../types/model/favorite";
 import useCreateFavoriteAccommodation from "../../hooks/use-create-favorite-accommodation";
 
 const RoomsPage = (): React.JSX.Element => {
-	const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
+	const [selectedCheckInDate, setSelectedCheckInDate] = useState(format(new Date(), "yyyy-MM-dd"));
+	const [selectedCheckoutDate, setSelectedCheckoutDate] = useState(format(new Date(), "yyyy-MM-dd"));
 	const {
 		isLoading,
 		isError,
@@ -37,6 +38,7 @@ const RoomsPage = (): React.JSX.Element => {
 		handleLocationChange,
 		handleTypeChange,
 		handleCheckInChange,
+		handleCheckOutChange,
 		fetchNextPage
 	} = useRooms();
 	const { data: locationData } = useLocations();
@@ -67,13 +69,18 @@ const RoomsPage = (): React.JSX.Element => {
 		handleLocationChange(value?.id ?? 0);
 	};
 
-	const onTypeChange = (event: React.ChangeEvent<unknown>, value: string | null): void => {
+	const onTypeChange = (_event: React.ChangeEvent<unknown>, value: string | null): void => {
 		handleTypeChange(value ?? "");
 	};
 
 	const onCheckInChange = (date: Dayjs | null): void => {
 		handleCheckInChange(date?.format("YYYY-MM-DD") ?? "");
-		setSelectedDate(date?.format("YYYY-MM-DD") ?? "");
+		setSelectedCheckInDate(date?.format("YYYY-MM-DD") ?? "");
+	};
+
+	const onCheckOutChange = (date: Dayjs | null): void => {
+		handleCheckOutChange(date?.format("YYYY-MM-DD") ?? "");
+		setSelectedCheckoutDate(date?.format("YYYY-MM-DD") ?? "");
 	};
 
 	const handleFavorite = async (id: number) => {
@@ -130,7 +137,7 @@ const RoomsPage = (): React.JSX.Element => {
 							}
 						}}
 						format="YYYY-MM-DD"
-						value={dayjs(selectedDate)}
+						value={dayjs(selectedCheckInDate)}
 						onChange={onCheckInChange}
 						className={classes.datePicker}
 					/>
@@ -149,8 +156,8 @@ const RoomsPage = (): React.JSX.Element => {
 							}
 						}}
 						format="YYYY-MM-DD"
-						value={dayjs(selectedDate)}
-						onChange={onCheckInChange}
+						value={dayjs(selectedCheckoutDate)}
+						onChange={onCheckOutChange}
 						className={classes.datePicker}
 					/>
 				</div>
@@ -166,7 +173,7 @@ const RoomsPage = (): React.JSX.Element => {
 			</Grid>
 			<Grid container item xs={12} className={classes.wrapperRoooms}>
 				{isFetching &&
-					[1, 2, 3, 4].map((item, index) => (
+					[1, 2, 3, 4].map((_item, index) => (
 						<Grid key={index} xs={6} sm={4} md={3} className={classes.roomItem}>
 							<Skeleton variant="rectangular" width={300} height={150} />
 							<Skeleton width="60%" />

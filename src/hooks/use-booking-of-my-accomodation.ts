@@ -25,7 +25,7 @@ type ReturnType = {
 };
 
 const useBookingOfMyAccomodations = (): ReturnType => {
-	const [params, setParams] = useState<GetRoomsParams>(initialRequestParams);
+	const [params, _setParams] = useState<GetRoomsParams>(initialRequestParams);
 
 	const { data, isLoading, isFetching, isError, fetchNextPage } = useInfiniteQuery<
 		PagingResponse<BookingOfMy>,

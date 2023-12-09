@@ -31,7 +31,7 @@ const MyFavoritePage = (): React.JSX.Element => {
 		<Grid container spacing={3} className={classes.wrapper}>
 			<Grid container item xs={12} className={classes.wrapperRoooms}>
 				{isFetching &&
-					[1, 2, 3, 4].map((item, index) => (
+					[1, 2, 3, 4].map((_item, index) => (
 						<Grid key={index} xs={6} sm={4} md={3} className={classes.roomItem}>
 							<Skeleton variant="rectangular" width={300} height={158} />
 							<Skeleton width="60%" />

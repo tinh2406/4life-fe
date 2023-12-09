@@ -7,7 +7,7 @@ import { PagingResponse } from "../types/axios/paging";
 
 const LIMIT_ROW_PER_PAGE = 12;
 
-const initialRequestParams:GetRoomsParams = {
+const initialRequestParams: GetRoomsParams = {
 	Keyword: null,
 	PageIndex: 1,
 	PageSize: LIMIT_ROW_PER_PAGE,
@@ -17,36 +17,35 @@ const initialRequestParams:GetRoomsParams = {
 
 type ReturnType = {
 	isLoading: boolean;
-    isFetching:boolean;
+	isFetching: boolean;
 	isError: boolean;
 	data: PagingResponse<AmenityResponse>[] | undefined;
-    fetchNextPage:() => Promise<InfiniteQueryObserverResult<PagingResponse<AmenityResponse>, unknown>>
+	fetchNextPage: () => Promise<InfiniteQueryObserverResult<PagingResponse<AmenityResponse>, unknown>>;
 };
 
 const useAmenities = (): ReturnType => {
-	const [params, setParams] = useState<GetRoomsParams>(initialRequestParams);
+	const [params, _setParams] = useState<GetRoomsParams>(initialRequestParams);
 
 	const { data, isLoading, isFetching, isError, fetchNextPage } = useInfiniteQuery<
 		PagingResponse<AmenityResponse>,
 		unknown,
 		PagingResponse<AmenityResponse>
 	>(
-        ['all-amenities'],
-        async ({ pageParam = params.PageIndex }) => {
-            return await getAmenities({...params, PageIndex:pageParam})
-        },
-        {
-          getNextPageParam: (lastPage) => lastPage.meta.pageIndex + 1,
-        },
-      )
-
+		["all-amenities"],
+		async ({ pageParam = params.PageIndex }) => {
+			return await getAmenities({ ...params, PageIndex: pageParam });
+		},
+		{
+			getNextPageParam: lastPage => lastPage.meta.pageIndex + 1
+		}
+	);
 
 	return {
 		isLoading,
 		isError,
-        isFetching,
+		isFetching,
 		data: data?.pages,
-        fetchNextPage
+		fetchNextPage
 	};
 };
 

@@ -153,7 +153,7 @@ const ActionAreaCard = ({
 								color="text.secondary"
 								className={`${classes.text} ${classes.footer}`}
 							>
-								{rating}
+								{rating.slice(0, 3)}
 							</Typography>
 						</div>
 					</div>

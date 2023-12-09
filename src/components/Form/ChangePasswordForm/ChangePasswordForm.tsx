@@ -95,7 +95,6 @@ const ChangePasswordForm = (): React.JSX.Element => {
 	};
 
 	const onSubmit: SubmitHandler<FieldValues> = async data => {
-		console.log("data", data);
 		setIsSaving(true);
 		if (!isForgotPassword) {
 			changePassword(data as NewPasswordNonOTP)
@@ -169,7 +168,11 @@ const ChangePasswordForm = (): React.JSX.Element => {
 									)
 								}}
 								error={!!errors.currentPassword}
-								helperText={errors.currentPassword?.message}
+								helperText={
+									errors.currentPassword && typeof errors.currentPassword.message === "string"
+										? errors.currentPassword.message
+										: ""
+								}
 								{...register("currentPassword")}
 								className={classes.inputField}
 							/>
@@ -238,7 +241,11 @@ const ChangePasswordForm = (): React.JSX.Element => {
 									id="new-passowrd"
 									variant="standard"
 									error={!!errors.newPassword}
-									helperText={errors.newPassword?.message}
+									helperText={
+										errors.newPassword && typeof errors.newPassword.message === "string"
+											? errors.newPassword.message
+											: ""
+									}
 									{...register("newPassword")}
 									placeholder="Enter your new password"
 									type={showPassword ? "text" : "password"}
@@ -270,7 +277,12 @@ const ChangePasswordForm = (): React.JSX.Element => {
 									id="confirm-new-passowrd"
 									variant="standard"
 									error={!!errors.confirmNewPassword}
-									helperText={errors.confirmNewPassword?.message}
+									helperText={
+										errors.confirmNewPassword &&
+										typeof errors.confirmNewPassword.message === "string"
+											? errors.confirmNewPassword.message
+											: ""
+									}
 									{...register("confirmNewPassword")}
 									placeholder="Confirm your new password"
 									type={showPassword ? "text" : "password"}

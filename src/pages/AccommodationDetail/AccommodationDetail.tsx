@@ -1,4 +1,4 @@
-import { Box, Button, Grid, IconButton, Rating, Skeleton, TextField, Typography } from "@mui/material";
+import { Button, Grid, IconButton, Rating, Skeleton, TextField, Typography } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import classes from "./AccomodationDetail.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,7 +10,7 @@ import LinearProgress, { linearProgressClasses } from "@mui/material/LinearProgr
 import { useEffect, useState } from "react";
 import BookingDialog from "../../components/Dialog/BookingDialog";
 import Comment from "../../components/Comment/Comment";
-import GoogleMapReact from "google-map-react";
+// import GoogleMapReact from "google-map-react";
 import { Review } from "../../types/axios/accommodation-detail";
 import SendIcon from "@mui/icons-material/Send";
 import useReviews from "../../hooks/use-reviews";
@@ -46,7 +46,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const { data, isLoading } = useAccommodationDetail(Number(id));
-	const [defaultLocation, setDefaultLocation] = useState<{ lat: number; lng: number }>({ lat: 16.07, lng: 108.15 });
+	// const [defaultLocation, setDefaultLocation] = useState<{ lat: number; lng: number }>({ lat: 16.07, lng: 108.15 });
 	const [isBooked, setIsBooked] = useState<boolean>(true);
 	const [isReviewed, setIsReviewed] = useState<boolean>(false);
 	const [commentContent, setCommentContent] = useState("");
@@ -84,10 +84,10 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	const [isOpenAddPostDialog, setIsOpenAddPostDialog] = useState<boolean>(false);
 
 	useEffect(() => {
-		setDefaultLocation({
-			lat: data?.latitue ?? 16.07,
-			lng: data?.longtitue ?? 108.15
-		});
+		// setDefaultLocation({
+		// 	lat: data?.latitue ?? 16.07,
+		// 	lng: data?.longtitue ?? 108.15
+		// });
 		setReviews(dataReview ? dataReview[0]?.data : []);
 		canReview(Number(id))
 			.then(res => {
@@ -133,15 +133,6 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 
 	const handleCloseAddPostDialog = (): void => {
 		setIsOpenAddPostDialog(false);
-	};
-
-	const renderMarkers = (map, maps) => {
-		const marker = new maps.Marker({
-			position: { lat: defaultLocation.lat, lng: defaultLocation.lng },
-			map,
-			title: "Hello World!"
-		});
-		return marker;
 	};
 
 	return (
@@ -222,7 +213,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 				</Grid>
 				<Grid xs={6} className={classes.wrapperRating}>
 					<StarIcon className={classes.startIcon} />
-					{data?.avgRating}
+					{data?.avgRating.toFixed(1)}
 				</Grid>
 			</Grid>
 			<Grid xs={12} className={classes.wrapperSubInformation}>
@@ -255,10 +246,10 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 				</Grid>
 				<Grid xs={12} className={classes.wrapperAmenitiesDetail}>
 					{dataAmentities?.map(item =>
-						item.data.map((amenity, i) => (
+						item.data.map((amenities, i) => (
 							<Grid key={i} xs={6} sm={4} md={6} className={classes.amenityItem}>
-								<img src={amenity.amenity.icon} alt="Amenity Icon" className={classes.iconAmenity} />
-								{amenity.amenity.name}
+								<img src={amenities.amenity.icon} alt="Amenity Icon" className={classes.iconAmenity} />
+								{amenities.amenity.name}
 							</Grid>
 						))
 					)}
@@ -287,31 +278,31 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 				</Grid>
 				<Grid xs={12} className={classes.wrapperRatingDetail}>
 					<StarIcon className={classes.startIcon} />
-					{data?.avgRating}
+					{data?.avgRating.toFixed(1)}
 					<span className={classes.totalReview}>{data?.totalReview} reviews</span>
 				</Grid>
 				<Grid xs={12} className={classes.wrapperPoint}>
 					<Grid xs={6} className={classes.point}>
 						<span>Cleanliness</span>
 						<BorderLinearProgress variant="determinate" value={(4 / 5) * 100} />
-						<span>{`${data?.avgCleanlinessRating}/5`}</span>
+						<span>{`${data?.avgCleanlinessRating.toFixed(2)}/5`}</span>
 					</Grid>
 					<Grid xs={6} className={classes.point}>
 						<span>Location</span>
 						<BorderLinearProgress variant="determinate" value={(4 / 5) * 100} />
-						<span>{`${data?.avgLocationRating}/5`}</span>
+						<span>{`${data?.avgLocationRating.toFixed(1)}/5`}</span>
 					</Grid>
 				</Grid>
 				<Grid xs={12} className={classes.wrapperPoint}>
 					<Grid xs={6} className={classes.point}>
 						<span>Amenities</span>
 						<BorderLinearProgress variant="determinate" value={(4 / 5) * 100} />
-						<span>{`${data?.avgAmenitiesRating}/5`}</span>
+						<span>{`${data?.avgAmenitiesRating.toFixed(1)}/5`}</span>
 					</Grid>
 					<Grid xs={6} className={classes.point}>
 						<span>Comfort</span>
 						<BorderLinearProgress variant="determinate" value={(4 / 5) * 100} />
-						<span>{`${data?.avgComfortRating}/5`}</span>
+						<span>{`${data?.avgComfortRating.toFixed(1)}/5`}</span>
 					</Grid>
 				</Grid>
 			</Grid>
@@ -355,28 +346,28 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 							<Rating
 								name="cleanliness-rating"
 								value={ratings.cleanliness}
-								onChange={(event, newValue) => handleRatingChange("cleanliness", newValue)}
+								onChange={(_event, newValue) => handleRatingChange("cleanliness", newValue)}
 							/>
 
 							<Typography component="legend">Location</Typography>
 							<Rating
 								name="location-rating"
 								value={ratings.location}
-								onChange={(event, newValue) => handleRatingChange("location", newValue)}
+								onChange={(_event, newValue) => handleRatingChange("location", newValue)}
 							/>
 
 							<Typography component="legend">Amenities</Typography>
 							<Rating
 								name="amenities-rating"
 								value={ratings.amenities}
-								onChange={(event, newValue) => handleRatingChange("amenities", newValue)}
+								onChange={(_event, newValue) => handleRatingChange("amenities", newValue)}
 							/>
 
 							<Typography component="legend">Comfort</Typography>
 							<Rating
 								name="comfort-rating"
 								value={ratings.comfort}
-								onChange={(event, newValue) => handleRatingChange("comfort", newValue)}
+								onChange={(_event, newValue) => handleRatingChange("comfort", newValue)}
 							/>
 						</Grid>
 						<TextField

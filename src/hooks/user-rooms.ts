@@ -23,6 +23,7 @@ type ReturnType = {
 	handleTypeChange: (value: string) => void;
 	handleLocationChange: (value: number) => void;
 	handleCheckInChange: (value: string) => void;
+	handleCheckOutChange: (value: string) => void;
 	fetchNextPage: () => Promise<InfiniteQueryObserverResult<PagingResponse<RoomResponse>, unknown>>;
 };
 
@@ -55,6 +56,10 @@ const useRooms = (): ReturnType => {
 		setParams((state: GetRoomsParams) => ({ ...state, checkIn: value, PageIndex: 1 }));
 	}, []);
 
+	const handleCheckOutChange = useCallback((value: string): void => {
+		setParams((state: GetRoomsParams) => ({ ...state, checkOut: value, PageIndex: 1 }));
+	}, []);
+
 	// const handleSearchChange = useCallback((searchTerm: string) => {
 	// 	setParams(state => ({ ...state, keyword: searchTerm, pageIndex: 1 }));
 	// }, []);
@@ -68,6 +73,7 @@ const useRooms = (): ReturnType => {
 		handleTypeChange,
 		handleLocationChange,
 		handleCheckInChange,
+		handleCheckOutChange,
 		fetchNextPage
 	};
 };

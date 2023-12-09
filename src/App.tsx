@@ -14,6 +14,7 @@ import AccommodationDetailPage from "./pages/AccommodationDetail/AccommodationDe
 import MyBookingsPages from "./pages/MyBookings/MyBookings";
 import BookingDetailPage from "./pages/BookingDetail/BookingDetail";
 import MyFavoritePage from "./pages/MyFavorite/MyFavorite";
+import AboutPage from "./pages/About/About";
 
 const router = createBrowserRouter([
 	{
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
 			{
 				path: "home",
 				element: <HomePage />
+			},
+			{
+				path: "about",
+				element: <AboutPage />
 			},
 			{
 				path: "rooms",

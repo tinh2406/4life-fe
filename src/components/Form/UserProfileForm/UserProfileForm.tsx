@@ -17,7 +17,6 @@ import { RootState } from "../../../store";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { UserResponse } from "../../../types/axios/user-response";
 
 type SelectSmallProps = {
 	handleChangeGender: (event: SelectChangeEvent) => void;
@@ -48,7 +47,7 @@ const UserProfileForm = (): React.JSX.Element => {
 	const [isSaving, setIsSaving] = useState(false);
 	const [isChanging, setIsChanging] = useState(false);
 	const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(null);
-	const user: UserResponse = useSelector((state: RootState) => state.auth.login.currentUser);
+	const user = useSelector((state: RootState) => state.auth.login.currentUser);
 	const dispatch = useDispatch();
 
 	const [gender, setGender] = React.useState<boolean | null>(null);
@@ -83,7 +82,7 @@ const UserProfileForm = (): React.JSX.Element => {
 
 	useEffect(() => {
 		setDateOfBirth(user?.dateOfBirth ? dayjs(user?.dateOfBirth) : null);
-		setGender(user?.gender);
+		setGender(user?.gender ?? null);
 		setUserUpdate({
 			name: user?.name ?? "",
 			phoneNumber: user?.phoneNumber ?? "",

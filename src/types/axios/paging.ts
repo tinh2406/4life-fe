@@ -53,16 +53,15 @@ export interface BookingOfMy {
 		checkOutBefore: string;
 	};
 }
+export interface AmenitiesAccommodationResponse {
+	accommodationId: number;
+	amenity: AmenityResponse[];
+}
 
 export interface AmenityResponse {
 	id: number;
 	name: string;
 	icon: string;
-}
-
-export interface AmenitiesAccommodationResponse {
-	accommodationId: number;
-	amenities: AmenityResponse[];
 }
 
 export interface LocationResponse {

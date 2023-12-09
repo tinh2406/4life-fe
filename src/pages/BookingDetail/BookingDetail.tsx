@@ -14,7 +14,7 @@ import PaymentDialog from "../../components/Dialog/PaymentDialog";
 const BookingDetailPage = (): React.JSX.Element => {
 	const { id } = useParams();
 	const navigate = useNavigate();
-	const { data, isLoading } = useBookingDetail(Number(id));
+	const { data } = useBookingDetail(Number(id));
 	const [days, setDays] = useState<number>(0);
 	const [formatDateForm, setFormatDateForm] = useState({
 		checkIn: "",

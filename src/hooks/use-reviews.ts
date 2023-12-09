@@ -24,7 +24,7 @@ type ReturnType = {
 };
 
 const useReviews = (id: number): ReturnType => {
-	const [params, setParams] = useState<GetRoomsParams>(initialRequestParams);
+	const [params, _setParams] = useState<GetRoomsParams>(initialRequestParams);
 	console.log(1);
 
 	const { data, isLoading, isFetching, isError, fetchNextPage } = useInfiniteQuery<

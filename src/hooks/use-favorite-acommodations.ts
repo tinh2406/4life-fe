@@ -24,7 +24,7 @@ type ReturnType = {
 };
 
 const useFavoriteAccommodations = (): ReturnType => {
-	const [params, setParams] = useState<GetRoomsParams>(initialRequestParams);
+	const [params, _setParams] = useState<GetRoomsParams>(initialRequestParams);
 
 	const { data, isLoading, isFetching, isError, fetchNextPage } = useInfiniteQuery<
 		PagingResponse<RoomResponse>,
