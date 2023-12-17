@@ -51,6 +51,8 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	const [isReviewed, setIsReviewed] = useState<boolean>(false);
 	const [commentContent, setCommentContent] = useState("");
 	const [reviews, setReviews] = useState<Review[]>([]);
+	const [hasNextPage, setHasNextPage] = useState<boolean>(true);
+	const [countPage, setCountPage] = useState<number>(0);
 
 	const [ratings, setRatings] = useState<Ratings>({
 		cleanliness: 0,
@@ -79,9 +81,26 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	};
 
 	const { data: dataAmentities } = useAmenitiesOfAccommodation(Number(id));
-	const { data: dataReview, isLoading: isLoadingReviews, fetchNextPage } = useReviews(Number(id));
+	const {
+		data: dataReview,
+		isLoading: isLoadingReviews,
+		isFetching: isFetchingReviews,
+		fetchNextPage
+	} = useReviews(Number(id));
 	const postReview = usePostReview(Number(id));
 	const [isOpenAddPostDialog, setIsOpenAddPostDialog] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (
+			dataReview !== undefined &&
+			dataReview[countPage] !== undefined &&
+			dataReview[countPage].data !== undefined
+		) {
+			if (dataReview[countPage].data.length % 3 !== 0) setHasNextPage(false);
+			else setHasNextPage(true);
+		}
+	}, [setHasNextPage, countPage, dataReview]);
+	console.log(hasNextPage);
 
 	useEffect(() => {
 		// setDefaultLocation({
@@ -108,7 +127,6 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 		};
 		setSelectedPlace(selectedPlaceTemp);
 	}, [data?.latitude, data?.longitude, dataReview, id, data?.address, setSelectedPlace, dataAmentities]);
-	console.log("dataAmen", dataAmentities);
 
 	const handleCommentSubmit = () => {
 		if (commentContent.trim() !== "") {
@@ -246,14 +264,6 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					Amenities Overview
 				</Grid>
 				<Grid xs={12} className={classes.wrapperAmenitiesDetail}>
-					{/* {dataAmentities?.map(item =>
-						item.data.map((amenities, i) => (
-							<Grid key={i} xs={6} sm={4} md={6} className={classes.amenityItem}>
-								<img src={amenities.amenity.icon} alt="Amenity Icon" className={classes.iconAmenity} />
-								{amenities.amenity.name}
-							</Grid>
-						))
-					)} */}
 					{dataAmentities !== undefined &&
 						dataAmentities[0]?.data.map((amenities, i) => (
 							<Grid key={i} xs={6} sm={4} md={6} className={classes.amenityItem}>
@@ -261,13 +271,6 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 								{amenities.amenity.name}
 							</Grid>
 						))}
-
-					{/* {amentityArr.map((item, i) => (
-						<Grid key={i} xs={6} sm={4} md={6} className={classes.amenityItem}>
-							<img src={item.icon} alt="Amenity Icon" className={classes.iconAmenity} />
-							{item.name}
-						</Grid>
-					))} */}
 				</Grid>
 			</Grid>
 			<Grid xs={12} className={classes.line}></Grid>
@@ -322,13 +325,16 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					))
 				)}
 
-				{reviews.length > 0 && isBooked && (
+				{reviews.length > 0 && hasNextPage && (
 					<Grid item xs={12} className={classes.wrapperBtn}>
 						<LoadingButton
 							size="small"
 							className={classes.buttonSeeMore}
-							onClick={() => fetchNextPage()}
-							loading={isLoadingReviews}
+							onClick={() => {
+								fetchNextPage();
+								setCountPage(countPage + 1);
+							}}
+							loading={isFetchingReviews}
 							loadingPosition="start"
 							startIcon={<ArrowDropDownCircleOutlinedIcon />}
 							variant="contained"
@@ -394,15 +400,6 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					Map
 				</Grid>
 				<Grid xs={12} className={classes.wrapperMap}>
-					{/* <div style={{ height: "500px", width: "90%", borderRadius: "50px" }}>
-						<GoogleMapReact
-							bootstrapURLKeys={{ key: "AIzaSyAHUq7rXW6gtVCss6HHxDGK9Su14uwkdU0" }}
-							defaultCenter={defaultLocation}
-							defaultZoom={14}
-							yesIWantToUseGoogleMapApiInternals
-							onGoogleApiLoaded={({ map, maps }) => renderMarkers(map, maps)}
-						></GoogleMapReact>
-					</div> */}
 					<MapContainer selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} />
 				</Grid>
 			</Grid>

@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Grid } from "@mui/material";
+import { Grid, IconButton } from "@mui/material";
 import { Avatar } from "@mui/material";
 import classes from "./Header.module.scss";
 import logo from "../../assets/images/logo.png";
@@ -17,6 +17,7 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Logout from "@mui/icons-material/Logout";
 import { logoutUser } from "../../store/acthAction";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 const UserProfileDropdown = () => {
 	const user = useSelector((state: RootState) => state.auth.login.currentUser);
@@ -39,9 +40,27 @@ const UserProfileDropdown = () => {
 
 	return (
 		<>
-			<div className={classes.wrapperUser} onClick={handleClick}>
-				<Avatar alt="User Avatar" src={user?.avatar ? user.avatar : defaultAvatar} />
-				<div className={classes.username}>{user?.name ? user?.name : ""}</div>
+			<div className={classes.wrapperRightHeader}>
+				<IconButton
+					size="small"
+					disableRipple
+					color="inherit"
+					sx={{ px: 1 }}
+					aria-controls="notification-menu"
+					aria-haspopup="true"
+					// onClick={event => setOpenMenu(event.currentTarget)}
+				>
+					<NotificationsIcon
+						sx={{
+							color: "#fff"
+						}}
+						fontSize="medium"
+					/>
+				</IconButton>
+				<div className={classes.wrapperUser} onClick={handleClick}>
+					<Avatar alt="User Avatar" src={user?.avatar ? user.avatar : defaultAvatar} />
+					<div className={classes.username}>{user?.name ? user?.name : ""}</div>
+				</div>
 			</div>
 			<Menu
 				anchorEl={anchorEl}

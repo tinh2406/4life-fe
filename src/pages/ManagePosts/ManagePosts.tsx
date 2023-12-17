@@ -108,7 +108,7 @@ const ManagePostsPage = (): React.JSX.Element => {
 				myChart.destroy();
 			};
 		}
-	}, []);
+	});
 
 	return (
 		<Grid container spacing={3} className={classes.wrapper}>

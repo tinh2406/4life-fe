@@ -35,7 +35,7 @@ const MapContainer = ({ selectedPlace, setSelectedPlace }: MapProps): React.JSX.
 	// 		lat: selectedPlace?.geometry.location.lat || 16.07,
 	// 		lng: selectedPlace?.geometry.location.lng || 108.15
 	// 	});
-	// }, [selectedPlace]);
+	// });
 
 	const onLoad = (ref: google.maps.places.SearchBox) => {
 		setSearchBox(ref);
@@ -87,7 +87,6 @@ const MapContainer = ({ selectedPlace, setSelectedPlace }: MapProps): React.JSX.
 						}}
 					/>
 				</StandaloneSearchBox>
-				<h1>Map</h1>
 				{selectedPlace && selectedPlace.geometry.location.lat && selectedPlace.geometry.location.lng && (
 					<>
 						<Marker
@@ -99,6 +98,7 @@ const MapContainer = ({ selectedPlace, setSelectedPlace }: MapProps): React.JSX.
 							}}
 							title={selectedPlace.name}
 						/>
+						{/* <h1>Map</h1> */}
 					</>
 				)}
 			</GoogleMap>
