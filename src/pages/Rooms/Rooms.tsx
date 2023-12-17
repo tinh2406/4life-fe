@@ -11,25 +11,29 @@ import {
 import classes from "./Rooms.module.scss";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
-// import PeopleIcon from "@mui/icons-material/People";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RoomsIntroduce from "../../assets/images/roomsIntroduce.png";
 import ActionAreaCard from "../../components/Card/Card";
 import useRooms from "../../hooks/user-rooms";
 import { LoadingButton } from "@mui/lab";
 import ArrowDropDownCircleOutlinedIcon from "@mui/icons-material/ArrowDropDownCircleOutlined";
-import { LocationResponse } from "../../types/axios/paging";
+import { LocationResponse, RoomResponse } from "../../types/axios/paging";
 import useLocations from "../../hooks/use-locations";
 import { format } from "date-fns";
 import { Favorite } from "../../types/model/favorite";
 import useCreateFavoriteAccommodation from "../../hooks/use-create-favorite-accommodation";
+import SuggestPost from "../../components/SuggestPost/SuggestPost";
+import useRoomsByLocation from "../../hooks/use-rooms-by-location";
 
 const RoomsPage = (): React.JSX.Element => {
 	const [selectedCheckInDate, setSelectedCheckInDate] = useState(format(new Date(), "yyyy-MM-dd"));
 	const [selectedCheckoutDate, setSelectedCheckoutDate] = useState(format(new Date(), "yyyy-MM-dd"));
+	const [hasNextPage, setHasNextPage] = useState<boolean>(true);
+	const [countPage, setCountPage] = useState<number>(0);
+	const [suggestRooms, setSuggestRooms] = useState<RoomResponse[]>([]);
+
 	const {
 		isLoading,
 		isError,
@@ -41,6 +45,12 @@ const RoomsPage = (): React.JSX.Element => {
 		handleCheckOutChange,
 		fetchNextPage
 	} = useRooms();
+	const { data: dataSuggestRooms } = useRoomsByLocation();
+
+	useEffect(() => {
+		dataSuggestRooms?.map(item => setSuggestRooms(item.data));
+	});
+
 	const { data: locationData } = useLocations();
 	const addFavorite = useCreateFavoriteAccommodation();
 	const extractedLocations = locationData ? locationData.map(page => page.data).flat() : [];
@@ -65,7 +75,7 @@ const RoomsPage = (): React.JSX.Element => {
 		</ListItem>
 	);
 
-	const onLocationChange = (event: React.ChangeEvent<unknown>, value: LocationResponse | null): void => {
+	const onLocationChange = (_event: React.ChangeEvent<unknown>, value: LocationResponse | null): void => {
 		handleLocationChange(value?.id ?? 0);
 	};
 
@@ -99,10 +109,16 @@ const RoomsPage = (): React.JSX.Element => {
 		addFavorite.mutateAsync(unFavoriteAccommodation);
 	};
 
+	useEffect(() => {
+		if (data !== undefined && data[countPage] !== undefined && data[countPage].data !== undefined) {
+			if (data[countPage].data.length % 12 !== 0) setHasNextPage(false);
+			else setHasNextPage(true);
+		}
+	}, [setHasNextPage, countPage, data]);
+
 	return (
-		<Grid container>
+		<Grid container className={classes.wrapper}>
 			<Grid item xs={12} className={classes.wrapperFilter}>
-				{/* <Paper elevation={6} className={classes.filter}> */}
 				<div className={classes.filter}>
 					<Autocomplete
 						options={extractedLocations as LocationResponse[]}
@@ -171,8 +187,13 @@ const RoomsPage = (): React.JSX.Element => {
 					</div>
 				</div>
 			</Grid>
+			<Grid item xs={12} className={classes.wrapperSuggestPost}>
+				<h2>Suggest Post</h2>
+				<SuggestPost posts={suggestRooms} handleFavorite={handleFavorite} handleUnFavorite={handleUnFavorite} />
+			</Grid>
 			<Grid container item xs={12} className={classes.wrapperRoooms}>
 				{isFetching &&
+					data === undefined &&
 					[1, 2, 3, 4].map((_item, index) => (
 						<Grid key={index} xs={6} sm={4} md={3} className={classes.roomItem}>
 							<Skeleton variant="rectangular" width={300} height={150} />
@@ -198,20 +219,25 @@ const RoomsPage = (): React.JSX.Element => {
 					))
 				)}
 			</Grid>
-			<Grid item xs={12} className={classes.wrapperBtn}>
-				<LoadingButton
-					size="small"
-					className={classes.buttonSeeMore}
-					onClick={() => fetchNextPage()}
-					loading={isFetching}
-					loadingPosition="start"
-					startIcon={<ArrowDropDownCircleOutlinedIcon />}
-					variant="contained"
-					disabled={isLoading || isError}
-				>
-					<span>See more</span>
-				</LoadingButton>
-			</Grid>
+			{hasNextPage && (
+				<Grid item xs={12} className={classes.wrapperBtn}>
+					<LoadingButton
+						size="small"
+						className={classes.buttonSeeMore}
+						onClick={() => {
+							fetchNextPage();
+							setCountPage(countPage + 1);
+						}}
+						loading={isFetching}
+						loadingPosition="start"
+						startIcon={<ArrowDropDownCircleOutlinedIcon />}
+						variant="contained"
+						disabled={isLoading || isError}
+					>
+						<span>See more</span>
+					</LoadingButton>
+				</Grid>
+			)}
 		</Grid>
 	);
 };

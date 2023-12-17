@@ -11,6 +11,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { useNavigate } from "react-router-dom";
+import { useNotify } from "../../../context/notify";
 
 const ResquestToModForm = (): React.JSX.Element => {
 	const user = useSelector((state: RootState) => state.auth.login.currentUser);
@@ -22,13 +23,19 @@ const ResquestToModForm = (): React.JSX.Element => {
 	const [isStartRegisterMod, setIsStartRegisterMod] = useState(false);
 	const [photoURLs, setPhotoURLs] = useState<string[]>([]);
 	const [loadingUpload, setLoadingUpload] = useState<number>(0);
-	const [isModRole, setIsModRole] = useState<boolean>(false);
+	const [isModRolePage, setIsModRolePage] = useState<boolean>(false);
+	const notify = useNotify();
 
 	useEffect(() => {
-		if (user?.statusModRole === "Active") {
-			setIsModRole(true);
+		if (user?.statusModRole === "Active" || localStorage.getItem("idMod") === "true") {
+			setIsModRolePage(true);
 		}
-	}, [user]);
+		if (notify?.isModRole) {
+			setIsModRolePage(true);
+			localStorage.setItem("isMod", "true");
+		}
+		console.log(notify?.isModRole);
+	}, [user, notify?.isModRole]);
 
 	const handleOTPChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -86,7 +93,6 @@ const ResquestToModForm = (): React.JSX.Element => {
 	const handleChangeAvatar = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
 		const file = event.target?.files?.[0];
 		setLoadingUpload(index);
-		console.log(index);
 		if (file) {
 			// const errorMessage = validateFileImage(file);
 			// if (errorMessage) {
@@ -130,7 +136,7 @@ const ResquestToModForm = (): React.JSX.Element => {
 
 	return (
 		<Grid container className={classes.wrapper}>
-			{!isModRole ? (
+			{!isModRolePage ? (
 				<>
 					{!isStartRegisterMod ? (
 						<>
@@ -158,9 +164,6 @@ const ResquestToModForm = (): React.JSX.Element => {
 									<img src={RegisterMod} alt="Resgiter to mod" className={classes.img} />
 								</Grid>
 							</Grid>
-							{/* <Grid item xs={12} className={classes.wrapperButton}>
-						
-					</Grid> */}
 						</>
 					) : !isVerifyOTP ? (
 						<>

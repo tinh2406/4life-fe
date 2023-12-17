@@ -30,7 +30,7 @@ const MyBookingsPages = (): React.JSX.Element => {
 		<Grid container>
 			<Grid xs={12} className={classes.wrapperRooms}>
 				{isLoading &&
-					[1, 2, 3, 4].map((item, index) => (
+					[1, 2, 3, 4].map((_item, index) => (
 						<Grid key={index} xs={6} sm={4} md={3} className={classes.roomItem}>
 							<Skeleton variant="rectangular" width={300} height={150} />
 							<Skeleton width="60%" />

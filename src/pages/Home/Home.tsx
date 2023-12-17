@@ -39,42 +39,6 @@ const HomePage = (): React.JSX.Element => {
 							Explore
 						</Button>
 					</div>
-					{/* <Paper elevation={6} className={classes.filter}>
-						<FilterSelect
-							label="Location"
-							icon={<LocationOnIcon />}
-							value="Da Nang"
-							onChange={(value: string) => console.log(value)}
-						/>
-						<FilterSelect
-							label="Type"
-							icon={<MapsHomeWorkIcon />}
-							value="Da Nang"
-							onChange={(value: string) => console.log(value)}
-						/>
-						<LocalizationProvider dateAdapter={AdapterDayjs}>
-							<DatePicker
-								className={classes.datePicker}
-								label="Check in"
-								value={value}
-								onChange={newValue => setValue(newValue)}
-							/>
-						</LocalizationProvider>
-						<LocalizationProvider dateAdapter={AdapterDayjs}>
-							<DatePicker
-								className={classes.datePicker}
-								label="Check out"
-								value={value}
-								onChange={newValue => setValue(newValue)}
-							/>
-						</LocalizationProvider>
-						<FilterSelect
-							label="Guests"
-							icon={<PeopleIcon />}
-							value="Da Nang"
-							onChange={(value: string) => console.log(value)}
-						/>
-					</Paper> */}
 				</Grid>
 				{/* <Grid item xs={10} className={classes.wrapperIntroduce}> */}
 				<div className={classes.introduce}>

@@ -50,6 +50,7 @@ const AddPostDialog = ({
 	const [photoURLs, setPhotoURLs] = useState<string[]>([]);
 	const [amentitiesIds, setAmentitiesIds] = useState<number[]>([]);
 	const { data: dataAccommodation } = useAccommodationDetail(idAccommodation);
+	console.log("dataAccommodation", dataAccommodation);
 	// const { data: dataAmentities } = useAmenitiesOfAccommodation(idAccommodation);
 	const updateAccommodation = useUpdateAccommodation();
 	const updateAmentitiesAccommodation = useUpdateAmentitiesAccommodation();
@@ -165,8 +166,8 @@ const AddPostDialog = ({
 		setValue("timeCheckinBefore", dataAccommodation?.checkInBefore ?? "");
 		setValue("timeCheckinAfter", dataAccommodation?.checkInAfter ?? "");
 		setValue("timeCheckoutBefore", dataAccommodation?.checkOutBefore ?? "");
-		setValue("quiteTimeBefore", dataAccommodation?.quiteHoursBefore ?? "");
-		setValue("quiteTimeAfter", dataAccommodation?.quiteHoursAfter ?? "");
+		setValue("quiteTimeBefore", dataAccommodation?.quietHoursBefore ?? "");
+		setValue("quiteTimeAfter", dataAccommodation?.quietHoursAfter ?? "");
 		setPhotoURLs(dataAccommodation?.imageUrls ?? []);
 		setOptionalForm({
 			description: dataAccommodation?.description || "",
@@ -177,7 +178,7 @@ const AddPostDialog = ({
 			numberOfBathrooms: dataAccommodation?.numberOfBathrooms || 0,
 			allowPets: dataAccommodation?.isPetAllowed || false,
 			allowSmoking: dataAccommodation?.isSmokingAllowed || false,
-			allowEvents: dataAccommodation?.isEventsAllowed || false,
+			allowEvents: dataAccommodation?.isEventAllowed || false,
 			allowPhoto: dataAccommodation?.isPhotoAllowed || false
 		});
 	}, [
@@ -190,8 +191,8 @@ const AddPostDialog = ({
 		dataAccommodation?.checkInBefore,
 		dataAccommodation?.checkInAfter,
 		dataAccommodation?.checkOutBefore,
-		dataAccommodation?.quiteHoursBefore,
-		dataAccommodation?.quiteHoursAfter,
+		dataAccommodation?.quietHoursBefore,
+		dataAccommodation?.quietHoursAfter,
 		dataAccommodation?.imageUrls,
 		getAmenityIds,
 		dataAccommodation?.description,
@@ -202,7 +203,7 @@ const AddPostDialog = ({
 		dataAccommodation?.numberOfBathrooms,
 		dataAccommodation?.isPetAllowed,
 		dataAccommodation?.isSmokingAllowed,
-		dataAccommodation?.isEventsAllowed,
+		dataAccommodation?.isEventAllowed,
 		dataAccommodation?.isPhotoAllowed
 	]);
 
@@ -230,10 +231,10 @@ const AddPostDialog = ({
 				checkOutBefore: getValues("timeCheckoutBefore"),
 				isPetAllowed: optionalForm.allowPets,
 				isSmokingAllowed: optionalForm.allowSmoking,
-				isEventsAllowed: optionalForm.allowEvents,
+				isEventAllowed: optionalForm.allowEvents,
 				isPhotoAllowed: optionalForm.allowPhoto,
-				quiteHoursAfter: getValues("quiteTimeAfter"),
-				quiteHoursBefore: getValues("quiteTimeBefore")
+				quietHoursAfter: getValues("quiteTimeAfter"),
+				quietHoursBefore: getValues("quiteTimeBefore")
 			} as AccommodationUpdate;
 			const amentitiesUpdate = {
 				accommodationId: idAccommodation,
@@ -250,8 +251,8 @@ const AddPostDialog = ({
 				locationId: data.location,
 				description: optionalForm.description,
 				address: data.address,
-				latitue: selectedPlace?.geometry.location.lat,
-				longtitue: selectedPlace?.geometry.location.lng,
+				latitude: selectedPlace?.geometry.location.lat,
+				longitude: selectedPlace?.geometry.location.lng,
 				numberOfBeds: optionalForm.numberOfBeds,
 				numberOfBedrooms: optionalForm.numberOfBedrooms,
 				numberOfBathrooms: optionalForm.numberOfBathrooms,
@@ -263,12 +264,13 @@ const AddPostDialog = ({
 				checkOutBefore: convertFormatTime(data.timeCheckoutBefore),
 				isPetAllowed: optionalForm.allowPets,
 				isSmokingAllowed: optionalForm.allowSmoking,
-				isEventsAllowed: optionalForm.allowEvents,
+				isEventAllowed: optionalForm.allowEvents,
 				isPhotoAllowed: optionalForm.allowPhoto,
-				quiteHoursAfter: convertFormatTime(data.quiteTimeAfter),
-				quiteHoursBefore: convertFormatTime(data.quiteTimeBefore),
+				quietHoursAfter: convertFormatTime(data.quiteTimeAfter),
+				quietHoursBefore: convertFormatTime(data.quiteTimeBefore),
 				amenityIds: data.amentities
 			} as Accommodation;
+			console.log("addCcom", accommodation);
 			try {
 				addAccommodation.mutateAsync(accommodation);
 				handleClose();
@@ -367,18 +369,6 @@ const AddPostDialog = ({
 								onChange={e => setOptionalForm({ ...optionalForm, maxGuests: +e.target.value })}
 							/>
 						</div>
-						{/* <div className={classes.wrapperInput}>
-							<div className={classes.text}>Number Of Rooms</div>
-							<TextField
-								id="standard-basic6"
-								variant="outlined"
-								type="number"
-								className={classes.inputField}
-								defaultValue={isEdit ? dataAccommodation?.numberOfBedrooms : 0}
-								inputProps={{ min: 0 }}
-								onChange={e => setOptionalForm({ ...optionalForm, numberOfRooms: +e.target.value })}
-							/>
-						</div> */}
 						<div className={classes.wrapperInput}>
 							<div className={classes.text}>Number Of Beds</div>
 							<TextField
@@ -561,7 +551,7 @@ const AddPostDialog = ({
 										options={transformAmenityOptions(dataAmenities ? dataAmenities[0].data : [])}
 										getOptionLabel={option => option.label}
 										defaultValue={field.value}
-										onChange={(e, values) => {
+										onChange={(_e, values) => {
 											field.onChange(values.map(value => value.value || 0));
 										}}
 										renderInput={params => (

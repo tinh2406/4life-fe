@@ -9,8 +9,8 @@ export interface AccommodationUpdate {
 	checkOutBefore: string;
 	isPetAllowed: boolean;
 	isSmokingAllowed: boolean;
-	isEventsAllowed: boolean;
+	isEventAllowed: boolean;
 	isPhotoAllowed: boolean;
-	quiteHoursAfter: string;
-	quiteHoursBefore: string;
+	quietHoursAfter: string;
+	quietHoursBefore: string;
 }

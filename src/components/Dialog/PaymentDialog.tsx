@@ -54,7 +54,7 @@ const BookingDialog = ({ id, total, open, handleClose }: BookingModalProps): Rea
 		</ListItem>
 	);
 
-	const handleChange = (event: React.ChangeEvent<unknown>, value: Bank | null) => {
+	const handleChange = (_event: React.ChangeEvent<unknown>, value: Bank | null) => {
 		if (value) {
 			setBankCode(value.shortName);
 		}

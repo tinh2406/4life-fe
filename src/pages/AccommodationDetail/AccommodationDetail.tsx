@@ -80,7 +80,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 
 	const { data: dataAmentities } = useAmenitiesOfAccommodation(Number(id));
 	const { data: dataReview, isLoading: isLoadingReviews, fetchNextPage } = useReviews(Number(id));
-	const postReview = usePostReview();
+	const postReview = usePostReview(Number(id));
 	const [isOpenAddPostDialog, setIsOpenAddPostDialog] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -100,14 +100,15 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 		const selectedPlaceTemp = {
 			geometry: {
 				location: {
-					lat: data?.latitue || 16.07,
-					lng: data?.longtitue || 108.15
+					lat: data?.latitude || 16.07,
+					lng: data?.longitude || 108.15
 				}
 			},
 			name: data?.address || ""
 		};
 		setSelectedPlace(selectedPlaceTemp);
-	}, [data?.latitue, data?.longtitue, dataReview, id, data?.address, setSelectedPlace]);
+	}, [data?.latitude, data?.longitude, dataReview, id, data?.address, setSelectedPlace, dataAmentities]);
+	console.log("dataAmen", dataAmentities);
 
 	const handleCommentSubmit = () => {
 		if (commentContent.trim() !== "") {
@@ -245,32 +246,30 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					Amenities Overview
 				</Grid>
 				<Grid xs={12} className={classes.wrapperAmenitiesDetail}>
-					{dataAmentities?.map(item =>
+					{/* {dataAmentities?.map(item =>
 						item.data.map((amenities, i) => (
 							<Grid key={i} xs={6} sm={4} md={6} className={classes.amenityItem}>
 								<img src={amenities.amenity.icon} alt="Amenity Icon" className={classes.iconAmenity} />
 								{amenities.amenity.name}
 							</Grid>
 						))
-					)}
+					)} */}
+					{dataAmentities !== undefined &&
+						dataAmentities[0]?.data.map((amenities, i) => (
+							<Grid key={i} xs={6} sm={4} md={6} className={classes.amenityItem}>
+								<img src={amenities.amenity.icon} alt="Amenity Icon" className={classes.iconAmenity} />
+								{amenities.amenity.name}
+							</Grid>
+						))}
+
+					{/* {amentityArr.map((item, i) => (
+						<Grid key={i} xs={6} sm={4} md={6} className={classes.amenityItem}>
+							<img src={item.icon} alt="Amenity Icon" className={classes.iconAmenity} />
+							{item.name}
+						</Grid>
+					))} */}
 				</Grid>
 			</Grid>
-			{/* {dataAmentities && (
-				<Grid item xs={12} className={classes.wrapperBtn}>
-					<LoadingButton
-						size="small"
-						className={classes.buttonSeeMore}
-						onClick={() => fetchNextPage()}
-						loading={isFetchingAmenities}
-						loadingPosition="start"
-						startIcon={<ArrowDropDownCircleOutlinedIcon />}
-						variant="contained"
-						disabled={isLoadingAmenities}
-					>
-						<span>See more</span>
-					</LoadingButton>
-				</Grid>
-			)} */}
 			<Grid xs={12} className={classes.line}></Grid>
 			<Grid xs={12} className={classes.wrapperAmenities}>
 				<Grid xs={12} className={classes.name}>

@@ -1,0 +1,34 @@
+.footer {
+    padding: 20px;
+    width: 100%;
+    background-color: #f0f0f0;
+}
+
+.footerInfo {
+    display: flex;
+    justify-content: space-between;
+}
+
+.footerInfoLeft,
+.footerInfoCenter,
+.footerInfoRight {
+    p {
+        &:first-child {
+            font-weight: bold;
+        }
+    }
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    background-color: #c5c5c5;
+    margin: 20px 0;
+}
+
+.copyRight {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between;
+}

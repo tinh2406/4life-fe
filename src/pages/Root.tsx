@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../components/Header/Header";
 import { Grid } from "@mui/material";
 import { Outlet } from "react-router-dom";
+import Footer from "../components/Footer/Footer";
 
 const RootLayout = (): React.JSX.Element => {
 	return (
@@ -11,6 +12,9 @@ const RootLayout = (): React.JSX.Element => {
 			</Grid>
 			<Grid item xs={12}>
 				<Outlet />
+			</Grid>
+			<Grid item xs={12}>
+				<Footer />
 			</Grid>
 		</Grid>
 	);

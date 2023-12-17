@@ -17,7 +17,7 @@ interface SelectOptionProps {
 }
 
 const SelectOption = ({ options, onChange, value }: SelectOptionProps): React.JSX.Element => {
-	const handleChange = (event: React.ChangeEvent<unknown>, value: SelectType | null) => {
+	const handleChange = (_event: React.ChangeEvent<unknown>, value: SelectType | null) => {
 		onChange(value?.value || 0);
 	};
 

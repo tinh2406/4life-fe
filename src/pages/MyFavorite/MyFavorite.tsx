@@ -6,10 +6,13 @@ import ArrowDropDownCircleOutlinedIcon from "@mui/icons-material/ArrowDropDownCi
 import useFavoriteAccommodations from "../../hooks/use-favorite-acommodations";
 import useCreateFavoriteAccommodation from "../../hooks/use-create-favorite-accommodation";
 import { Favorite } from "../../types/model/favorite";
+import { useEffect, useState } from "react";
 
 const MyFavoritePage = (): React.JSX.Element => {
 	const addFavorite = useCreateFavoriteAccommodation();
 	const { isLoading, isError, isFetching, data, fetchNextPage } = useFavoriteAccommodations();
+	const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+	const [countPage, setCountPage] = useState<number>(0);
 
 	const handleFavorite = async (id: number) => {
 		const favoriteAccommodation = {
@@ -26,6 +29,13 @@ const MyFavoritePage = (): React.JSX.Element => {
 		} as Favorite;
 		addFavorite.mutateAsync(unFavoriteAccommodation);
 	};
+
+	useEffect(() => {
+		if (data !== undefined && data[countPage] !== undefined && data[countPage].data !== undefined) {
+			if (data[countPage].data.length % 12 !== 0) setHasNextPage(false);
+			else setHasNextPage(true);
+		}
+	}, [setHasNextPage, countPage, data]);
 
 	return (
 		<Grid container spacing={3} className={classes.wrapper}>
@@ -57,20 +67,25 @@ const MyFavoritePage = (): React.JSX.Element => {
 						))
 					)}
 			</Grid>
-			<Grid item xs={12} className={classes.wrapperBtn}>
-				<LoadingButton
-					size="small"
-					className={classes.buttonSeeMore}
-					onClick={() => fetchNextPage()}
-					loading={isFetching}
-					loadingPosition="start"
-					startIcon={<ArrowDropDownCircleOutlinedIcon />}
-					variant="contained"
-					disabled={isLoading || isError}
-				>
-					<span>See more</span>
-				</LoadingButton>
-			</Grid>
+			{hasNextPage && (
+				<Grid item xs={12} className={classes.wrapperBtn}>
+					<LoadingButton
+						size="small"
+						className={classes.buttonSeeMore}
+						onClick={() => {
+							fetchNextPage();
+							setCountPage(countPage + 1);
+						}}
+						loading={isFetching}
+						loadingPosition="start"
+						startIcon={<ArrowDropDownCircleOutlinedIcon />}
+						variant="contained"
+						disabled={isLoading || isError}
+					>
+						<span>See more</span>
+					</LoadingButton>
+				</Grid>
+			)}
 		</Grid>
 	);
 };

@@ -1,0 +1,27 @@
+.yes_button {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        background-color: rgb(235, 47, 125);
+    }
+
+    text-transform: none;
+}
+
+.no_button {
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border: 1px solid var(--primary-color);
+
+    &:hover {
+        background-color: rgba(235, 47, 125, 0.1);
+        border-color: rgb(235, 47, 125);
+    }
+
+    text-transform: none;
+
+}

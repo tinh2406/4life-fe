@@ -10,6 +10,8 @@ import dayjs from "dayjs";
 import BookingSuccess from "../../assets/images/bookingIcon.png";
 import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import PaymentDialog from "../../components/Dialog/PaymentDialog";
+import { convertTo12HourFormat } from "../../utils/mapper";
+import { useNotify } from "../../context/notify";
 
 const BookingDetailPage = (): React.JSX.Element => {
 	const { id } = useParams();
@@ -20,6 +22,13 @@ const BookingDetailPage = (): React.JSX.Element => {
 		checkIn: "",
 		checkOut: ""
 	});
+	const [formatTime, setFormatTime] = useState({
+		checkInAfter: "",
+		checkOutBefore: ""
+	});
+	const [isPaid, setIsPaid] = useState<boolean>(false);
+	const notify = useNotify();
+
 	const [isOpenAddPostDialog, setIsOpenAddPostDialog] = useState<boolean>(false);
 	const handleOpenAddPostDialog = (): void => {
 		setIsOpenAddPostDialog(true);
@@ -40,7 +49,19 @@ const BookingDetailPage = (): React.JSX.Element => {
 				checkIn: formatDate(data?.checkInDate.split("T")[0] ?? ""),
 				checkOut: formatDate(data?.checkOutDate.split("T")[0] ?? "")
 			});
+			setFormatTime({
+				checkInAfter: convertTo12HourFormat(data?.accommodation.checkInAfter),
+				checkOutBefore: convertTo12HourFormat(data?.accommodation.checkOutBefore)
+			});
 		}
+		if (data?.isPaid || localStorage.getItem("isPaid") === "true") {
+			setIsPaid(true);
+		}
+		if (notify?.isPaid) {
+			setIsPaid(true);
+			localStorage.setItem("isPaid", "true");
+		}
+		// console.log(notify?.isModRole);
 	}, [data]);
 	return (
 		<Grid container className={classes.wrapper}>
@@ -78,11 +99,11 @@ const BookingDetailPage = (): React.JSX.Element => {
 				</Grid>
 				<Grid xs={12} className={classes.dateTimeItem}>
 					<DomainVerificationIcon className={classes.iconCheckDate} />
-					Check-in {formatDateForm.checkIn}, from {data?.checkInAfter}
+					Check-in {formatDateForm.checkIn}, from {formatTime.checkInAfter}
 				</Grid>
 				<Grid xs={12} className={classes.dateTimeItem}>
 					<DomainVerificationIcon className={classes.iconCheckDate} />
-					Check-out {formatDateForm.checkOut}, until {data?.checkOutBefore}
+					Check-out {formatDateForm.checkOut}, until {formatTime.checkOutBefore}
 				</Grid>
 			</Grid>
 			<Grid xs={12} className={classes.line}></Grid>
@@ -91,8 +112,8 @@ const BookingDetailPage = (): React.JSX.Element => {
 				<div className={classes.text}>
 					${data?.accommodation?.price ? data?.accommodation?.price * days + 15 : 0}
 				</div>
-				<div className={`${classes.payment} ${!data?.isPaid ? classes.unpay : classes.paid}`}>
-					{data?.isPaid ? "paid" : "unpay"}
+				<div className={`${classes.payment} ${!isPaid ? classes.unpay : classes.paid}`}>
+					{isPaid ? "paid" : "unpay"}
 				</div>
 				<Button variant="contained" className={classes.btnPayment} onClick={handleOpenAddPostDialog}>
 					Pay now

@@ -12,24 +12,31 @@ import { clientID } from "./utils/get-client-id.ts";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { NotifyProvider } from "./context/notify.tsx";
+import { ThemeProvider } from "@mui/material";
+import theme from "./assets/theme";
 
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<Provider store={store}>
-			<GoogleOAuthProvider clientId={clientID}>
-				<PersistGate loading={null} persistor={persistor}>
-					<StyledEngineProvider injectFirst>
-						<GlobalStyles>
-							<QueryClientProvider client={queryClient}>
-								<App />
-								<ToastContainer />
-							</QueryClientProvider>
-						</GlobalStyles>
-					</StyledEngineProvider>
-				</PersistGate>
-			</GoogleOAuthProvider>
+			<ThemeProvider theme={theme}>
+				<GoogleOAuthProvider clientId={clientID}>
+					<PersistGate loading={null} persistor={persistor}>
+						<StyledEngineProvider injectFirst>
+							<GlobalStyles>
+								<QueryClientProvider client={queryClient}>
+									<NotifyProvider>
+										<App />
+									</NotifyProvider>
+									<ToastContainer />
+								</QueryClientProvider>
+							</GlobalStyles>
+						</StyledEngineProvider>
+					</PersistGate>
+				</GoogleOAuthProvider>
+			</ThemeProvider>
 		</Provider>
 	</React.StrictMode>
 );

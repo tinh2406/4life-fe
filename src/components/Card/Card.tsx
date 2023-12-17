@@ -10,7 +10,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination, Navigation } from "swiper/modules";
 import { Swiper as SwiperType } from "swiper";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
@@ -18,6 +18,7 @@ import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import ConfirmDialog from "../Dialog/ConfirmDialog";
 
 type CardProps = {
 	idAccommodation: number;
@@ -36,6 +37,7 @@ type CardProps = {
 	handleClick?: (event: React.MouseEvent<HTMLButtonElement>, id: number) => void;
 	handleClose?: (id: number) => void;
 	handleDelete?: () => void;
+	setAnchorEl?: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };
 
 const ActionAreaCard = ({
@@ -54,112 +56,139 @@ const ActionAreaCard = ({
 	anchorEl,
 	handleClick,
 	handleClose,
-	handleDelete
+	handleDelete,
+	setAnchorEl
 }: CardProps): React.JSX.Element => {
 	const navigate = useNavigate();
 	const swiperRef = useRef<SwiperType>();
+	const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+
+	const onCloseConfirmDialog = (): void => {
+		setIsConfirmDialogOpen(false);
+		setAnchorEl && setAnchorEl(null);
+	};
+
+	const onConfirmDelete = (): void => {
+		setIsConfirmDialogOpen(false);
+		handleDelete && handleDelete();
+	};
 	return (
-		<Card sx={{ margin: "10px", minWidth: 200 }}>
-			<div className={classes.wrapperSwiper}>
-				<Swiper
-					pagination={{
-						dynamicBullets: true,
-						clickable: true
-					}}
-					modules={[Pagination, Navigation]}
-					onBeforeInit={swiper => {
-						swiperRef.current = swiper;
-					}}
-				>
-					{image.map((imageUrl, index) => (
-						<SwiperSlide key={index}>
-							<img src={imageUrl} alt={`Slide ${index}`} className={classes.imgAccommodations} />
-						</SwiperSlide>
-					))}
-				</Swiper>
-				<div onClick={() => swiperRef.current?.slidePrev()} className={classes.navigateBtnLeft}>
-					<ArrowLeftIcon className={classes.arrowIcon} />
-				</div>
-				<div onClick={() => swiperRef.current?.slideNext()} className={classes.navigateBtnRight}>
-					<ArrowRightIcon className={classes.arrowIcon} />
-				</div>
-				{!isFavorite && !isMyPost ? (
-					<div
-						className={classes.wrapperFavorite}
-						onClick={() => handleFavorite && handleFavorite(idAccommodation)}
+		<>
+			<Card sx={{ margin: "10px", minWidth: 200 }}>
+				<div className={classes.wrapperSwiper}>
+					<Swiper
+						pagination={{
+							dynamicBullets: true,
+							clickable: true
+						}}
+						modules={[Pagination, Navigation]}
+						onBeforeInit={swiper => {
+							swiperRef.current = swiper;
+						}}
 					>
-						<FavoriteBorderOutlinedIcon className={classes.favoriteIcon} />
+						{image.map((imageUrl, index) => (
+							<SwiperSlide key={index}>
+								<img src={imageUrl} alt={`Slide ${index}`} className={classes.imgAccommodations} />
+							</SwiperSlide>
+						))}
+					</Swiper>
+					<div onClick={() => swiperRef.current?.slidePrev()} className={classes.navigateBtnLeft}>
+						<ArrowLeftIcon className={classes.arrowIcon} />
 					</div>
-				) : isFavorite && !isMyPost ? (
-					<div
-						className={classes.wrapperFavorite}
-						onClick={() => handleUnFavorite && handleUnFavorite(idAccommodation)}
-					>
-						<FavoriteOutlinedIcon className={classes.favoritedIcon} />
+					<div onClick={() => swiperRef.current?.slideNext()} className={classes.navigateBtnRight}>
+						<ArrowRightIcon className={classes.arrowIcon} />
 					</div>
-				) : (
-					<>
-						<button
+					{!isFavorite && !isMyPost ? (
+						<div
 							className={classes.wrapperFavorite}
-							onClick={e => handleClick && handleClick(e, idAccommodation)}
+							onClick={() => handleFavorite && handleFavorite(idAccommodation)}
 						>
-							<MoreVertIcon className={classes.favoriteIcon} />
-						</button>
-						<Menu
-							id="basic-menu"
-							anchorEl={anchorEl}
-							open={open || false}
-							onClose={handleClose}
-							MenuListProps={{
-								"aria-labelledby": "basic-button"
-							}}
+							<FavoriteBorderOutlinedIcon className={classes.favoriteIcon} />
+						</div>
+					) : isFavorite && !isMyPost ? (
+						<div
+							className={classes.wrapperFavorite}
+							onClick={() => handleUnFavorite && handleUnFavorite(idAccommodation)}
 						>
-							<MenuItem onClick={() => handleClose && handleClose(idAccommodation)}>Edit</MenuItem>
-							<MenuItem onClick={handleDelete}>Delete</MenuItem>
-						</Menu>
-					</>
-				)}
-			</div>
-			<CardActionArea onClick={() => navigate(`/rooms/${idAccommodation}`)}>
-				<CardContent>
-					<div className={classes.wrapperTitle}>
-						<Typography
-							gutterBottom
-							variant="h5"
-							component="div"
-							className={`${classes.text} ${classes.name}`}
-						>
-							{title}
+							<FavoriteOutlinedIcon className={classes.favoritedIcon} />
+						</div>
+					) : (
+						<>
+							<button
+								className={classes.wrapperFavorite}
+								onClick={e => handleClick && handleClick(e, idAccommodation)}
+							>
+								<MoreVertIcon className={classes.favoriteIcon} />
+							</button>
+							<Menu
+								id="basic-menu"
+								anchorEl={anchorEl}
+								open={open || false}
+								onClose={handleClose}
+								MenuListProps={{
+									"aria-labelledby": "basic-button"
+								}}
+							>
+								<MenuItem onClick={() => handleClose && handleClose(idAccommodation)}>Edit</MenuItem>
+								<MenuItem
+									onClick={() => {
+										setIsConfirmDialogOpen(true);
+									}}
+								>
+									Delete
+								</MenuItem>
+							</Menu>
+						</>
+					)}
+				</div>
+				<CardActionArea onClick={() => navigate(`/rooms/${idAccommodation}`)}>
+					<CardContent>
+						<div className={classes.wrapperTitle}>
+							<Typography
+								gutterBottom
+								variant="h5"
+								component="div"
+								className={`${classes.text} ${classes.name}`}
+							>
+								{title}
+							</Typography>
+							<Typography gutterBottom component="div" className={`${classes.text} ${classes.footer}`}>
+								{type}
+							</Typography>
+						</div>
+						<Typography variant="body2" color="text.secondary" className={classes.text}>
+							{content}
 						</Typography>
-						<Typography gutterBottom component="div" className={`${classes.text} ${classes.footer}`}>
-							{type}
-						</Typography>
-					</div>
-					<Typography variant="body2" color="text.secondary" className={classes.text}>
-						{content}
-					</Typography>
-					<div className={classes.wraperRating}>
-						<Typography
-							variant="body2"
-							color="text.secondary"
-							className={`${classes.text} ${classes.footer}`}
-						>
-							{`$${price}/1 night`}
-						</Typography>
-						<div className={classes.wrapperRating}>
-							<StarIcon className={classes.startIcon} />
+						<div className={classes.wraperRating}>
 							<Typography
 								variant="body2"
 								color="text.secondary"
 								className={`${classes.text} ${classes.footer}`}
 							>
-								{rating.slice(0, 3)}
+								{`$${price}/1 night`}
 							</Typography>
+							<div className={classes.wrapperRating}>
+								<StarIcon className={classes.startIcon} />
+								<Typography
+									variant="body2"
+									color="text.secondary"
+									className={`${classes.text} ${classes.footer}`}
+								>
+									{rating.slice(0, 3)}
+								</Typography>
+							</div>
 						</div>
-					</div>
-				</CardContent>
-			</CardActionArea>
-		</Card>
+					</CardContent>
+				</CardActionArea>
+			</Card>
+			<ConfirmDialog
+				open={isConfirmDialogOpen}
+				onClose={onCloseConfirmDialog}
+				title="Confirm Deletion"
+				message={"Do you want to delete this accommodation?"}
+				onConfirm={onConfirmDelete}
+			/>
+		</>
 	);
 };
 

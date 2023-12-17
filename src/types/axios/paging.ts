@@ -55,7 +55,7 @@ export interface BookingOfMy {
 }
 export interface AmenitiesAccommodationResponse {
 	accommodationId: number;
-	amenity: AmenityResponse[];
+	amenity: AmenityResponse;
 }
 
 export interface AmenityResponse {
