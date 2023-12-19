@@ -1,0 +1,39 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "product" ]
+  pull_request:
+    branches: [ "product" ]
+
+jobs:
+  build-code:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+
+      - name: Install dependencies
+        # run: npm install --no-package-lock
+        run: npm ci
+      - run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag nqt206432006/pbl6_user:latest
+
+      - name: login hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: nqt206432006@gmail.com
+          password: Tinh@24hehe
+    
+      - name: Push to hub
+        run: docker push nqt206432006/pbl6_user:latest
