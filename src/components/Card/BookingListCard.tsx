@@ -65,7 +65,7 @@ const BookingListCard = ({
 					<ArrowRightIcon className={classes.arrowIcon} />
 				</div>
 			</div>
-			<CardActionArea onClick={!isMyPost ? () => navigate(`/accommodation/${idBooking}`) : undefined}>
+			<CardActionArea onClick={!isMyPost ? () => navigate(`/my-bookings/${idBooking}`) : undefined}>
 				<CardContent>
 					<div className={classes.wrapperTitle}>
 						<Typography

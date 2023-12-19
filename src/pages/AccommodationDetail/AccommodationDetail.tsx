@@ -10,7 +10,7 @@ import LinearProgress, { linearProgressClasses } from "@mui/material/LinearProgr
 import { useEffect, useState } from "react";
 import BookingDialog from "../../components/Dialog/BookingDialog";
 import Comment from "../../components/Comment/Comment";
-// import GoogleMapReact from "google-map-react";
+import GoogleMapReact from "google-map-react";
 import { Review } from "../../types/axios/accommodation-detail";
 import SendIcon from "@mui/icons-material/Send";
 import useReviews from "../../hooks/use-reviews";
@@ -20,7 +20,7 @@ import { formatDate } from "../../utils/get-date-month";
 import { LoadingButton } from "@mui/lab";
 import ArrowDropDownCircleOutlinedIcon from "@mui/icons-material/ArrowDropDownCircleOutlined";
 import { canReview } from "../../api/review.api";
-import MapContainer from "../../components/Map/Map";
+// import MapContainer from "../../components/Map/Map";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 	height: 6,
@@ -46,7 +46,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const { data, isLoading } = useAccommodationDetail(Number(id));
-	// const [defaultLocation, setDefaultLocation] = useState<{ lat: number; lng: number }>({ lat: 16.07, lng: 108.15 });
+	const [defaultLocation, _setDefaultLocation] = useState<{ lat: number; lng: number }>({ lat: 16.07, lng: 108.15 });
 	const [isBooked, setIsBooked] = useState<boolean>(true);
 	const [isReviewed, setIsReviewed] = useState<boolean>(false);
 	const [commentContent, setCommentContent] = useState("");
@@ -129,6 +129,15 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 		};
 		setSelectedPlace(selectedPlaceTemp);
 	}, [data?.latitude, data?.longitude, dataReview, id, data?.address, setSelectedPlace, dataAmentities]);
+
+	const renderMarkers = (map: any, maps: any) => {
+		const marker = new maps.Marker({
+			position: { lat: selectedPlace?.geometry.location.lat, lng: selectedPlace?.geometry.location.lng },
+			map,
+			title: "Hello World!"
+		});
+		return marker;
+	};
 
 	const handleCommentSubmit = () => {
 		if (commentContent.trim() !== "") {
@@ -414,8 +423,19 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					Map
 				</Grid>
 				<Grid xs={12} className={classes.wrapperMap}>
-					<MapContainer selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} />
+					<div style={{ height: "500px", width: "90%", borderRadius: "50px" }}>
+						<GoogleMapReact
+							bootstrapURLKeys={{ key: "AIzaSyAHUq7rXW6gtVCss6HHxDGK9Su14uwkdU0" }}
+							defaultCenter={defaultLocation}
+							defaultZoom={14}
+							yesIWantToUseGoogleMapApiInternals
+							onGoogleApiLoaded={({ map, maps }) => renderMarkers(map, maps)}
+						></GoogleMapReact>
+					</div>
 				</Grid>
+				{/* <Grid xs={12} className={classes.wrapperMap}>
+					<MapContainer selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} />
+				</Grid> */}
 			</Grid>
 			<BookingDialog
 				id={Number(id)}

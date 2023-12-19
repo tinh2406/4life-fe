@@ -31,11 +31,25 @@ const MapContainer = ({ selectedPlace, setSelectedPlace }: MapProps): React.JSX.
 	// console.log("markerPosition", markerPosition);
 
 	// useEffect(() => {
-	// 	setMarkerPosition({
-	// 		lat: selectedPlace?.geometry.location.lat || 16.07,
-	// 		lng: selectedPlace?.geometry.location.lng || 108.15
-	// 	});
-	// });
+	// 	// setMarkerPosition({
+	// 	// 	lat: selectedPlace?.geometry.location.lat || 16.07,
+	// 	// 	lng: selectedPlace?.geometry.location.lng || 108.15
+	// 	// });
+	// 	if (selectedPlace === null) {
+	// 		const temp = {
+	// 			geometry: {
+	// 				location: {
+	// 					lat: 16.07,
+	// 					lng: 108.15
+	// 				}
+	// 			},
+	// 			name: ""
+	// 		};
+	// 		setSelectedPlace(temp);
+	// 	} else {
+	// 		setSelectedPlace(selectedPlace);
+	// 	}
+	// }, []);
 
 	const onLoad = (ref: google.maps.places.SearchBox) => {
 		setSearchBox(ref);
