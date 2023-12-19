@@ -22,7 +22,7 @@ import divider from "./components/divider";
 import tableContainer from "./components/table/tableContainer";
 import tableHead from "./components/table/tableHead";
 import tableCell from "./components/table/tableCell";
-import linearProgress from "./components/linearProgress";
+// import linearProgress from "./components/linearProgress";
 import breadcrumbs from "./components/breadcrumbs";
 import avatar from "./components/avatar";
 import appBar from "./components/appBar";
@@ -61,7 +61,7 @@ export default createTheme({
 		MuiTableContainer: { ...tableContainer },
 		MuiTableHead: { ...tableHead },
 		MuiTableCell: { ...tableCell },
-		MuiLinearProgress: { ...linearProgress },
+		// MuiLinearProgress: { ...linearProgress },
 		MuiBreadcrumbs: { ...breadcrumbs },
 		MuiAvatar: { ...avatar },
 		MuiAppBar: { ...appBar },

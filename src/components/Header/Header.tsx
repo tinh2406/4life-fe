@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Grid, IconButton } from "@mui/material";
 import { Avatar } from "@mui/material";
@@ -18,13 +18,17 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Logout from "@mui/icons-material/Logout";
 import { logoutUser } from "../../store/acthAction";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import Notifycations from "../Notifycations/Notifycations";
+import { useNotify } from "../../context/notify";
 
 const UserProfileDropdown = () => {
 	const user = useSelector((state: RootState) => state.auth.login.currentUser);
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
+	const [openMenu, setOpenMenu] = useState<(EventTarget & HTMLButtonElement) | undefined>();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+	const notify = useNotify();
 
 	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -38,6 +42,8 @@ const UserProfileDropdown = () => {
 		localStorage.removeItem("user");
 	};
 
+	const handleCloseMenu = () => setOpenMenu(undefined);
+
 	return (
 		<>
 			<div className={classes.wrapperRightHeader}>
@@ -48,15 +54,32 @@ const UserProfileDropdown = () => {
 					sx={{ px: 1 }}
 					aria-controls="notification-menu"
 					aria-haspopup="true"
-					// onClick={event => setOpenMenu(event.currentTarget)}
+					onClick={event => {
+						setOpenMenu(event.currentTarget);
+						if (notify?.setHasNew) notify.setHasNew(false);
+					}}
 				>
 					<NotificationsIcon
 						sx={{
-							color: "#fff"
+							color: notify?.hasNew ? "red" : "#959595"
 						}}
 						fontSize="medium"
 					/>
+					{!!Object.keys(notify.newNoti).length && (
+						<p
+							style={{
+								position: "absolute",
+								right: "0.5rem",
+								top: "-0.5rem",
+								fontSize: 12,
+								color: "gray"
+							}}
+						>
+							{Object.keys(notify.newNoti).length}
+						</p>
+					)}
 				</IconButton>
+				<Notifycations close={handleCloseMenu} openMenu={openMenu} />
 				<div className={classes.wrapperUser} onClick={handleClick}>
 					<Avatar alt="User Avatar" src={user?.avatar ? user.avatar : defaultAvatar} />
 					<div className={classes.username}>{user?.name ? user?.name : ""}</div>

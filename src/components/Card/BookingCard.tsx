@@ -65,6 +65,13 @@ const BookingCard = ({
 					{address}
 				</Typography>
 				<div className={classes.line}></div>
+				{/* <div className={classes.wrapperPrice}>
+					<img
+						src="https://hoaminhngoc.vn/wp-content/uploads/2023/01/cute-1-300x300.png"
+						style={{ width: 40, height: 40, borderRadius: "50%" }}
+					/>
+					<div className={classes.text}>Aaaa</div>
+				</div> */}
 				<div className={classes.wrapperPrice}>
 					<div className={classes.text}>Price per night</div>
 					<div className={classes.text}>{`$${price}`}</div>

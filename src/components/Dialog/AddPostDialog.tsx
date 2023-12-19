@@ -26,6 +26,8 @@ import { AccommodationUpdate } from "../../types/model/AccommodationUpdate";
 // import useAmenitiesOfAccommodation from "../../hooks/use-amenities-of-accommodation";
 import useUpdateAccommodation from "../../hooks/use-update-accommodation";
 import useUpdateAmentitiesAccommodation from "../../hooks/use-update-amentities-accommodation";
+import useAmenitiesOfAccommodation from "../../hooks/use-amenities-of-accommodation";
+// import { AmenityResponse } from "../../types/axios/paging";
 
 interface AddPostModalProps {
 	open: boolean;
@@ -49,9 +51,9 @@ const AddPostDialog = ({
 	const [loadingUpload, setLoadingUpload] = useState<boolean>(false);
 	const [photoURLs, setPhotoURLs] = useState<string[]>([]);
 	const [amentitiesIds, setAmentitiesIds] = useState<number[]>([]);
+	// const [amentitiesOfAccommodation, setAmentitiesOfAccommodation] = useState<AmenityResponse[]>([]);
 	const { data: dataAccommodation } = useAccommodationDetail(idAccommodation);
-	console.log("dataAccommodation", dataAccommodation);
-	// const { data: dataAmentities } = useAmenitiesOfAccommodation(idAccommodation);
+	// console.log("dataAccommodation", dataAccommodation);
 	const updateAccommodation = useUpdateAccommodation();
 	const updateAmentitiesAccommodation = useUpdateAmentitiesAccommodation();
 
@@ -130,6 +132,11 @@ const AddPostDialog = ({
 
 	const { data } = useLocations();
 	const { data: dataAmenities } = useAmenities();
+	const { data: dataAmentitiesOfAccommodation } = useAmenitiesOfAccommodation(idAccommodation);
+	console.log("idAccommodation", idAccommodation);
+	console.log("dataAmenities", dataAmenities);
+	console.log("dataAmentitiesOfAccommodation", dataAmentitiesOfAccommodation);
+
 	const addAccommodation = useCreateAccommodation();
 
 	const getTypeOfYourAccomadation = (value: number): string | null => {
@@ -156,6 +163,14 @@ const AddPostDialog = ({
 		});
 		return amentitiesIds;
 	}, [amentitiesIds, dataAmenities]);
+
+	// useEffect(() => {
+	// 	dataAmentitiesOfAccommodation?.map(item => {
+	// 		item.data.map(dataAmenity => {
+	// 			setAmentitiesOfAccommodation([...amentitiesOfAccommodation, dataAmenity.amenity]);
+	// 		});
+	// 	});
+	// }, [dataAmentitiesOfAccommodation, setAmentitiesOfAccommodation, amentitiesOfAccommodation]);
 
 	useEffect(() => {
 		getAmenityIds();
@@ -240,8 +255,25 @@ const AddPostDialog = ({
 				accommodationId: idAccommodation,
 				amenityIds: getValues("amentities")
 			};
+			console.log("amentitiesUpdate", amentitiesUpdate);
 			updateAmentitiesAccommodation.mutateAsync(amentitiesUpdate);
 			updateAccommodation.mutateAsync({ idAccommodation, accomodationUpdate });
+			setIsEdit(false);
+			reset();
+			setOptionalForm({
+				description: "",
+				price: 0,
+				maxGuests: 0,
+				numberOfBeds: 0,
+				numberOfBedrooms: 0,
+				numberOfBathrooms: 0,
+				allowPets: false,
+				allowSmoking: false,
+				allowEvents: false,
+				allowPhoto: false
+			});
+			setPhotoURLs([]);
+			setAmentitiesIds([]);
 			handleClose();
 			setIsSubmitting(false);
 		} else {
@@ -544,7 +576,10 @@ const AddPostDialog = ({
 							<Controller
 								name="amentities"
 								control={control}
-								defaultValue={transformAmenityOptions(dataAmenities ? dataAmenities[0].data : [])}
+								// defaultValue={isEdit ? transformAmenityOptions(amentitiesOfAccommodation) : []}
+								defaultValue={
+									isEdit ? transformAmenityOptions(dataAmenities ? dataAmenities[0].data : []) : []
+								}
 								render={({ field }) => (
 									<Autocomplete
 										multiple

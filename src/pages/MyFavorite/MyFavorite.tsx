@@ -41,31 +41,31 @@ const MyFavoritePage = (): React.JSX.Element => {
 		<Grid container spacing={3} className={classes.wrapper}>
 			<Grid container item xs={12} className={classes.wrapperRoooms}>
 				{isFetching &&
+					data === undefined &&
 					[1, 2, 3, 4].map((_item, index) => (
 						<Grid key={index} xs={6} sm={4} md={3} className={classes.roomItem}>
 							<Skeleton variant="rectangular" width={300} height={158} />
 							<Skeleton width="60%" />
 						</Grid>
 					))}
-				{!isFetching &&
-					data?.map(item =>
-						item.data.map((room, i) => (
-							<Grid key={i} xs={6} sm={4} md={3} className={classes.roomItem}>
-								<ActionAreaCard
-									idAccommodation={room.id}
-									title={room.name}
-									type={room.type}
-									content={room.address}
-									image={room.imageUrls}
-									price={room.price.toString()}
-									rating={room.avgRating.toString()}
-									isFavorite={room.isFavorite}
-									handleFavorite={() => handleFavorite(room.id)}
-									handleUnFavorite={() => handleUnFavorite(room.id)}
-								/>
-							</Grid>
-						))
-					)}
+				{data?.map(item =>
+					item.data.map((room, i) => (
+						<Grid key={i} xs={6} sm={4} md={3} className={classes.roomItem}>
+							<ActionAreaCard
+								idAccommodation={room.id}
+								title={room.name}
+								type={room.type}
+								content={room.address}
+								image={room.imageUrls}
+								price={room.price.toString()}
+								rating={room.avgRating.toString()}
+								isFavorite={room.isFavorite}
+								handleFavorite={() => handleFavorite(room.id)}
+								handleUnFavorite={() => handleUnFavorite(room.id)}
+							/>
+						</Grid>
+					))
+				)}
 			</Grid>
 			{hasNextPage && (
 				<Grid item xs={12} className={classes.wrapperBtn}>

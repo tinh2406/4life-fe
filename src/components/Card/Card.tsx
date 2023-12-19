@@ -85,6 +85,7 @@ const ActionAreaCard = ({
 						onBeforeInit={swiper => {
 							swiperRef.current = swiper;
 						}}
+						onClick={() => navigate(`/rooms/${idAccommodation}`)}
 					>
 						{image.map((imageUrl, index) => (
 							<SwiperSlide key={index}>

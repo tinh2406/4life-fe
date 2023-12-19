@@ -9,7 +9,6 @@ type useAccommodationDetailReturnType = {
 };
 
 const useAccommodationDetail = (id: number): useAccommodationDetailReturnType => {
-
 	const { data, isLoading, isError } = useQuery({
 		queryKey: ["userAccomodationDetail", id],
 		queryFn: () => getAccomodationById(id),
@@ -21,7 +20,7 @@ const useAccommodationDetail = (id: number): useAccommodationDetailReturnType =>
 	return {
 		isLoading,
 		isError,
-		data,
+		data
 	};
 };
 

@@ -20,6 +20,8 @@ type BookingListCardProps = {
 	checkout: string;
 	isMyPost?: boolean;
 	isPaid?: boolean;
+	avatar?: string;
+	userBooking?: string;
 };
 
 const BookingListCard = ({
@@ -31,7 +33,9 @@ const BookingListCard = ({
 	checkin,
 	checkout,
 	isMyPost,
-	isPaid
+	isPaid,
+	avatar,
+	userBooking
 }: BookingListCardProps): React.JSX.Element => {
 	const navigate = useNavigate();
 	const swiperRef = useRef<SwiperType>();
@@ -61,7 +65,7 @@ const BookingListCard = ({
 					<ArrowRightIcon className={classes.arrowIcon} />
 				</div>
 			</div>
-			<CardActionArea onClick={() => navigate(`${idBooking}`)}>
+			<CardActionArea onClick={!isMyPost ? () => navigate(`/accommodation/${idBooking}`) : undefined}>
 				<CardContent>
 					<div className={classes.wrapperTitle}>
 						<Typography
@@ -82,6 +86,12 @@ const BookingListCard = ({
 						{address}
 					</Typography>
 					<div className={classes.line}></div>
+					{isMyPost && (
+						<div className={classes.wrapperUserBook}>
+							<img src={avatar} style={{ width: 40, height: 40, borderRadius: "50%", marginRight: 10 }} />
+							<div className={classes.text}>{userBooking} is booked</div>
+						</div>
+					)}
 					<div className={classes.wrapperPrice}>
 						<div className={classes.text}>Price per night</div>
 						<div className={classes.text}>{`$${price}`}</div>

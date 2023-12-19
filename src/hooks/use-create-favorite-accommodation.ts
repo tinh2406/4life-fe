@@ -7,6 +7,8 @@ const useCreateFavoriteAccommodation = () => {
 	return useMutation(addFavoriteAccommodation, {
 		onSuccess: () => {
 			queryClient.invalidateQueries(["all-rooms"]);
+			queryClient.invalidateQueries(["all-favorite-accommodations"]);
+			queryClient.invalidateQueries(["all-rooms-by-location"]);
 			// toast.success("The accommodation has been added to your favorite list");
 		},
 		onError: () => {

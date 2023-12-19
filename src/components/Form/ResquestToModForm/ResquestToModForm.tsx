@@ -27,10 +27,12 @@ const ResquestToModForm = (): React.JSX.Element => {
 	const notify = useNotify();
 
 	useEffect(() => {
-		if (user?.statusModRole === "Active" || localStorage.getItem("idMod") === "true") {
+		if (user?.statusModRole === "Active" || localStorage.getItem("isMod") === "true") {
 			setIsModRolePage(true);
 		}
 		if (notify?.isModRole) {
+			// notify.setIsModRole(true)
+			console.log(notify?.isModRole);
 			setIsModRolePage(true);
 			localStorage.setItem("isMod", "true");
 		}

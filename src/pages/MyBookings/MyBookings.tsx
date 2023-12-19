@@ -36,19 +36,25 @@ const MyBookingsPages = (): React.JSX.Element => {
 							<Skeleton width="60%" />
 						</Grid>
 					))}
-				{data?.map((item, index) => (
-					<Grid xs={6} sm={4} md={3} className={classes.roomItem}>
-						<BookingListCard
-							idBooking={item.id}
-							name={item.accommodation.name}
-							address={item.accommodation.address}
-							image={item.accommodation.imageUrls}
-							price={item.accommodation.price.toString()}
-							checkin={formatDateForm[index]?.checkIn}
-							checkout={formatDateForm[index]?.checkOut}
-						/>
-					</Grid>
-				))}
+				{data?.map(
+					(item, index) => (
+						console.log("index", index),
+						(
+							<Grid xs={6} sm={4} md={3} className={classes.roomItem}>
+								<BookingListCard
+									idBooking={item.id}
+									name={item.accommodation.name}
+									address={item.accommodation.address}
+									image={item.accommodation.imageUrls}
+									price={item.accommodation.price.toString()}
+									checkin={formatDateForm[index + 1]?.checkIn}
+									checkout={formatDateForm[index + 1]?.checkOut}
+									isMyPost={false}
+								/>
+							</Grid>
+						)
+					)
+				)}
 			</Grid>
 		</Grid>
 	);

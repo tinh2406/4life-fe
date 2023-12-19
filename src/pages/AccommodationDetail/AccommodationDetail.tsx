@@ -53,6 +53,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [hasNextPage, setHasNextPage] = useState<boolean>(true);
 	const [countPage, setCountPage] = useState<number>(0);
+	console.log("canreviews", data);
 
 	const [ratings, setRatings] = useState<Ratings>({
 		cleanliness: 0,
@@ -81,6 +82,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	};
 
 	const { data: dataAmentities } = useAmenitiesOfAccommodation(Number(id));
+	console.log("dataAmentities", dataAmentities);
 	const {
 		data: dataReview,
 		isLoading: isLoadingReviews,
@@ -111,7 +113,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 		canReview(Number(id))
 			.then(res => {
 				setIsBooked(res.isSuccess);
-				console.log(res);
+				console.log("canReview", res);
 			})
 			.catch(err => {
 				console.log(err);
@@ -286,25 +288,37 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 				<Grid xs={12} className={classes.wrapperPoint}>
 					<Grid xs={6} className={classes.point}>
 						<span>Cleanliness</span>
-						<BorderLinearProgress variant="determinate" value={(4 / 5) * 100} />
-						<span>{`${data?.avgCleanlinessRating.toFixed(2)}/5`}</span>
+						<BorderLinearProgress
+							variant="determinate"
+							value={data?.avgAmenitiesRating ? (data?.avgCleanlinessRating / 5) * 100 : 0}
+						/>
+						<span>{`${data?.avgCleanlinessRating}/5`}</span>
 					</Grid>
 					<Grid xs={6} className={classes.point}>
 						<span>Location</span>
-						<BorderLinearProgress variant="determinate" value={(4 / 5) * 100} />
-						<span>{`${data?.avgLocationRating.toFixed(1)}/5`}</span>
+						<BorderLinearProgress
+							variant="determinate"
+							value={data?.avgLocationRating ? (data?.avgLocationRating / 5) * 100 : 0}
+						/>
+						<span>{`${data?.avgLocationRating}/5`}</span>
 					</Grid>
 				</Grid>
 				<Grid xs={12} className={classes.wrapperPoint}>
 					<Grid xs={6} className={classes.point}>
 						<span>Amenities</span>
-						<BorderLinearProgress variant="determinate" value={(4 / 5) * 100} />
-						<span>{`${data?.avgAmenitiesRating.toFixed(1)}/5`}</span>
+						<BorderLinearProgress
+							variant="determinate"
+							value={data?.avgAmenitiesRating ? (data?.avgAmenitiesRating / 5) * 100 : 0}
+						/>
+						<span>{`${data?.avgAmenitiesRating}/5`}</span>
 					</Grid>
 					<Grid xs={6} className={classes.point}>
 						<span>Comfort</span>
-						<BorderLinearProgress variant="determinate" value={(4 / 5) * 100} />
-						<span>{`${data?.avgComfortRating.toFixed(1)}/5`}</span>
+						<BorderLinearProgress
+							variant="determinate"
+							value={data?.avgComfortRating ? (data?.avgComfortRating / 5) * 100 : 0}
+						/>
+						<span>{`${data?.avgComfortRating}/5`}</span>
 					</Grid>
 				</Grid>
 			</Grid>

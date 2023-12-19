@@ -54,15 +54,19 @@ const BookingDetailPage = (): React.JSX.Element => {
 				checkOutBefore: convertTo12HourFormat(data?.accommodation.checkOutBefore)
 			});
 		}
-		if (data?.isPaid || localStorage.getItem("isPaid") === "true") {
+		if (data?.isPaid) {
+			console.log("data", data?.isPaid);
 			setIsPaid(true);
 		}
 		if (notify?.isPaid) {
+			console.log("notify", notify?.isPaid);
 			setIsPaid(true);
-			localStorage.setItem("isPaid", "true");
+			notify?.setIsPaid(true);
+			// localStorage.setItem("isPaid", "true");
 		}
 		// console.log(notify?.isModRole);
-	}, [data]);
+	}, [data, notify]);
+	console.log("notify", notify?.isPaid);
 	return (
 		<Grid container className={classes.wrapper}>
 			<Grid item xs={12} className={classes.icon}>
