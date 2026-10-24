@@ -78,22 +78,26 @@
 }
 
 .status {
-    width: 60px;
-    height: 40px;
-    border-radius: 10px;
+	flex: 0 0 auto;
+	max-width: 45%;
+	padding: 7px 10px;
+	border-radius: 999px;
     display: flex;
     justify-content: center;
     align-items: center;
+	font-size: 12px;
+	font-weight: 700;
+	text-align: center;
 }
 
 .paid {
-    color: rgb(0, 197, 99);
-    background-color: rgba(60, 238, 170, 0.5);
+	color: #245f54;
+	background-color: #e4f1e9;
 }
 
 .unpay {
-    color: rgb(209, 137, 3);
-    background-color: rgb(209, 137, 3, 0.2);
+	color: #71451a;
+	background-color: #f6ead8;
 }
 
 .name {

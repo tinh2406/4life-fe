@@ -76,9 +76,9 @@ const BookingListCard = ({
 						>
 							{name}
 						</Typography>
-						{isMyPost && (
+						{isPaid !== undefined && (
 							<div className={`${classes.status} ${isPaid ? classes.paid : classes.unpay}`}>
-								{isPaid ? "paid" : "un pay"}
+								{isPaid ? "Paid" : "Payment due"}
 							</div>
 						)}
 					</div>

@@ -1,17 +1,16 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import classes from "./BookingDialog.module.scss";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useEffect, useState, useCallback } from "react";
-import dayjs, { Dayjs } from "dayjs";
-import { Controller, FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import dayjs from "dayjs";
+import classes from "./BookingDialog.module.scss";
 import { schemaBookingFrom } from "../../utils/get-schema-login-form";
 import { calculateDaysDifference } from "../../utils/get-date-month";
 import useBooking from "../../hooks/use-booking";
 import { Booking } from "../../types/model/booking";
-import CircularProgress from "@mui/material/CircularProgress";
 
-interface BookingModalProps {
+interface BookingDialogProps {
 	id: number;
 	open: boolean;
 	handleClose: () => void;
@@ -19,170 +18,145 @@ interface BookingModalProps {
 	price: number | undefined;
 }
 
-const BookingDialog = ({ id, nameAccommodation, price, open, handleClose }: BookingModalProps): React.JSX.Element => {
-	const [checkin, setCheckin] = useState<Dayjs | null>(null);
-	const [checkout, setCheckout] = useState<Dayjs | null>(null);
-	const [totalPrice, setTotalPrice] = useState<number>(0);
-	const [isBooking, setIsBooking] = useState<boolean>(false);
+type BookingFormValues = {
+	checkin: string;
+	checkout: string;
+};
 
+const BOOKING_FEE = 15;
+
+const BookingDialog = ({ id, nameAccommodation, price, open, handleClose }: BookingDialogProps): React.JSX.Element => {
 	const bookingAccommodation = useBooking();
-
-	const calculateTotalPrice = useCallback(
-		(checkin: Dayjs | null, checkout: Dayjs | null): number | undefined => {
-			if (price) {
-				const days = calculateDaysDifference(checkin, checkout);
-				return days * price;
-			}
-		},
-		[price]
-	);
-
-	useEffect(() => {
-		setTotalPrice(calculateTotalPrice(checkin, checkout) ?? 0);
-	}, [checkin, checkout, calculateTotalPrice]);
-
-	const {
-		reset,
-		handleSubmit,
-		formState: { errors },
-		control,
-		setValue
-	} = useForm({
-		resolver: yupResolver(schemaBookingFrom)
+	const { reset, handleSubmit, setValue, formState: { errors }, control } = useForm<BookingFormValues>({
+		resolver: yupResolver(schemaBookingFrom),
+		defaultValues: { checkin: "", checkout: "" }
 	});
+	const checkinValue = useWatch({ control, name: "checkin" });
+	const checkoutValue = useWatch({ control, name: "checkout" });
+	const checkin = checkinValue ? dayjs(checkinValue) : null;
+	const checkout = checkoutValue ? dayjs(checkoutValue) : null;
+	const nights = calculateDaysDifference(checkin, checkout);
+	const subtotal = Math.max(0, nights * (price ?? 0));
 
-	const onCancelButtonClick = (): void => {
+	const handleCancel = (): void => {
+		if (bookingAccommodation.isLoading) return;
 		reset();
 		handleClose();
 	};
 
-	const onSubmit: SubmitHandler<FieldValues> = async data => {
-		const dataBooking = {
+	const submitBooking: SubmitHandler<BookingFormValues> = async values => {
+		const booking: Booking = {
 			accommodationId: id,
-			checkInDate: data?.checkin,
-			checkOutDate: data?.checkout,
+			checkInDate: values.checkin,
+			checkOutDate: values.checkout,
 			note: ""
-		} as Booking;
-		setIsBooking(true);
-		bookingAccommodation
-			.mutateAsync(dataBooking)
-			.then(() => {
-				handleClose();
-				setIsBooking(false);
-			})
-			.catch(() => {
-				setIsBooking(false);
-			});
+		};
+
+		try {
+			await bookingAccommodation.mutateAsync(booking);
+			reset();
+			handleClose();
+		} catch {
+			// useBooking already shows the booking error to the user.
+		}
 	};
 
 	return (
-		<>
-			<Dialog open={open} scroll="paper" fullWidth maxWidth="sm">
-				<DialogTitle className={classes.dialog_title_wrapper}>{nameAccommodation}</DialogTitle>
-				<DialogContent dividers={true}>
+		<Dialog open={open} onClose={handleCancel} scroll="paper" fullWidth maxWidth="sm" aria-labelledby="booking-dialog-title">
+			<form className={classes.form} onSubmit={handleSubmit(submitBooking)}>
+				<DialogTitle id="booking-dialog-title" className={classes.dialogTitle}>
+					<div>Confirm your stay</div>
+					<Typography component="p" className={classes.accommodationName}>{nameAccommodation}</Typography>
+				</DialogTitle>
+				<DialogContent dividers>
 					<div className={classes.price}>{`$${price}/1 night`}</div>
 					<div className={classes.wrapperDate}>
 						<div className={classes.date}>
-							<div className={classes.text}>Checkin Date</div>
 							<Controller
 								name="checkin"
 								control={control}
 								render={({ field }) => (
 									<DatePicker
+										label="Check-in"
+										format="DD MMM YYYY"
+										value={field.value ? dayjs(field.value) : null}
+										onChange={date => {
+											field.onChange(date?.format("YYYY-MM-DD") ?? "");
+											if (date && checkout && !checkout.isAfter(date, "day")) {
+												setValue("checkout", "", { shouldDirty: true, shouldValidate: true });
+											}
+										}}
 										slotProps={{
 											textField: {
-												size: "small",
-												variant: "outlined"
+												fullWidth: true,
+												onBlur: field.onBlur,
+												inputRef: field.ref,
+												error: Boolean(errors.checkin),
+												helperText: errors.checkin?.message
 											}
 										}}
-										sx={{
-											"& .MuiOutlinedInput-root": {
-												fontSize: "16px",
-												fontFamily: "K2D",
-												height: "50px"
-											}
-										}}
-										format="YYYY-MM-DD"
-										value={checkin}
-										onChange={date => {
-											setCheckin(dayjs(date));
-											if (date) {
-												const dateStr = date.format("YYYY-MM-DD");
-												field.onChange(dateStr);
-												setValue("checkin", dateStr);
-											}
-										}}
-										className={classes.datePicker}
 									/>
 								)}
 							/>
-							<div className={classes.error}>{errors?.checkin?.message}</div>
 						</div>
 						<div className={classes.date}>
-							<div className={classes.text}>Checkout Date</div>
 							<Controller
 								name="checkout"
 								control={control}
-								render={({ field }) => (
-									<DatePicker
-										slotProps={{
-											textField: {
-												size: "small",
-												variant: "outlined"
-											}
-										}}
-										sx={{
-											"& .MuiOutlinedInput-root": {
-												fontSize: "16px",
-												fontFamily: "K2D",
-												height: "50px"
-											}
-										}}
-										format="YYYY-MM-DD"
-										value={checkout}
-										onChange={date => {
-											setCheckout(dayjs(date));
-											if (date) {
-												const dateStr = date.format("YYYY-MM-DD");
-												field.onChange(dateStr);
-												setValue("checkout", dateStr);
-											}
-										}}
-										className={classes.datePicker}
-									/>
-								)}
+								render={({ field }) => {
+									return (
+										<DatePicker
+											label="Check-out"
+											format="DD MMM YYYY"
+											value={field.value ? dayjs(field.value) : null}
+											minDate={checkin?.add(1, "day")}
+											onChange={date => field.onChange(date?.format("YYYY-MM-DD") ?? "")}
+											slotProps={{
+												textField: {
+													fullWidth: true,
+													onBlur: field.onBlur,
+													inputRef: field.ref,
+													error: Boolean(errors.checkout),
+													helperText: errors.checkout?.message
+												}
+											}}
+										/>
+									);
+								}}
 							/>
-							<div className={classes.error}>{errors?.checkout?.message}</div>
 						</div>
 					</div>
-					<div className={classes.line}></div>
-					<div className={classes.money}>
-						<div className={classes.text}>{`$${price} x ${calculateDaysDifference(
-							checkin,
-							checkout
-						)} nights`}</div>
-						<div className={classes.totalPrice}>{`$${totalPrice}`}</div>
-					</div>
+					<div className={classes.line} />
+					{price !== undefined && (
+						<div className={classes.money}>
+							<div className={classes.text}>{`$${price} × ${nights} ${nights === 1 ? "night" : "nights"}`}</div>
+							<div className={classes.totalPrice}>{`$${subtotal}`}</div>
+						</div>
+					)}
 					<div className={classes.money}>
 						<div className={classes.text}>Fee</div>
-						<div className={classes.totalPrice}>$15</div>
+						<div className={classes.totalPrice}>${BOOKING_FEE}</div>
 					</div>
-					<div className={classes.line}></div>
-					<div className={classes.money}>
-						<div className={classes.total}>Total</div>
-						<div className={classes.total}>${15 + totalPrice}</div>
-					</div>
+					<div className={classes.line} />
+					{nights > 0 ? (
+						<div className={`${classes.money} ${classes.totalRow}`}>
+							<div className={classes.total}>Total</div>
+							<div className={classes.total}>${BOOKING_FEE + subtotal}</div>
+						</div>
+					) : (
+						<p className={classes.dateHint}>Choose your dates to see the total.</p>
+					)}
 				</DialogContent>
-				<DialogActions>
-					<Button variant="contained" onClick={e => handleSubmit(onSubmit)(e)} className={classes.buttonSave}>
-						{isBooking ? <CircularProgress color="inherit" size={24} /> : "Booking"}
-					</Button>
-					<Button variant="outlined" onClick={onCancelButtonClick} className={classes.buttonCancel}>
+				<DialogActions className={classes.dialogActions}>
+					<LoadingButton type="submit" variant="contained" className={classes.buttonSave} loading={bookingAccommodation.isLoading}>
+						Create booking
+					</LoadingButton>
+					<Button type="button" variant="outlined" onClick={handleCancel} className={classes.buttonCancel} disabled={bookingAccommodation.isLoading}>
 						Cancel
 					</Button>
 				</DialogActions>
-			</Dialog>
-		</>
+			</form>
+		</Dialog>
 	);
 };
 

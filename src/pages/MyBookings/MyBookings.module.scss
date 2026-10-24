@@ -1,5 +1,57 @@
-.wrapperRooms {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 20px;
+.page {
+	box-sizing: border-box;
+	width: min(1280px, 100%);
+	min-height: 70vh;
+	margin: 0 auto;
+	padding: 32px clamp(16px, 4vw, 56px) 72px;
+	color: #172b3a;
+}
+
+.heading {
+	margin-bottom: 26px;
+
+	h1 {
+		margin: 0;
+		font-size: clamp(26px, 3vw, 34px);
+		line-height: 1.2;
+	}
+
+	p {
+		margin: 8px 0 0;
+		color: #586970;
+	}
+}
+
+.bookingGrid {
+	margin-top: 0;
+}
+
+.skeletonCard {
+	padding: 12px;
+	background: #fff;
+	border: 1px solid #dce3dd;
+	border-radius: 16px;
+}
+
+.statePanel {
+	padding: clamp(24px, 5vw, 44px);
+	background: #fff;
+	border: 1px solid #dce3dd;
+	border-radius: 16px;
+
+	h2 {
+		margin: 0;
+		font-size: 21px;
+	}
+
+	p {
+		margin: 8px 0 20px;
+		color: #586970;
+	}
+}
+
+@media (max-width: 600px) {
+	.page {
+		padding-top: 24px;
+	}
 }

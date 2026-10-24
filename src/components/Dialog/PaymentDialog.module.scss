@@ -1,29 +1,72 @@
 .logoBank {
-    width: 40px;
-    height: 20px;
-    object-fit: cover;
+	width: 42px;
+	height: 28px;
+	object-fit: contain;
+}
+
+.dialogTitle {
+	color: #172b3a;
+	font-size: 21px;
+	font-weight: 700;
+}
+
+.amount {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin: 0 0 18px;
+	color: #586970;
+	font-size: 14px;
+
+	strong {
+		color: #172b3a;
+		font-size: 20px;
+		font-variant-numeric: tabular-nums;
+	}
+}
+
+.dialogActions {
+	gap: 10px;
+	padding: 16px 24px;
 }
 
 .buttonSave {
-    background-color: var(--primary-color);
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    &:hover {
-        background-color: rgb(235, 47, 125);
-    }
-    text-transform: none;
+	min-height: 44px;
+	padding: 8px 20px;
+	color: #fff;
+	background: #2f7668;
+	border-radius: 999px;
+	font-weight: 700;
+	text-transform: none;
+
+	&:hover {
+		background: #245f54;
+	}
 }
 
 .buttonCancel {
-    color: var(--primary-color);
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    border: 1px solid var(--primary-color);
-    &:hover {
-        background-color: rgba(235, 47, 125,0.1);
-        border-color:  rgb(235, 47, 125);
-    }
-    text-transform: none;
+	min-height: 44px;
+	padding: 8px 18px;
+	color: #2f7668;
+	border: 1px solid #9ab5aa;
+	border-radius: 999px;
+	font-weight: 700;
+	text-transform: none;
 
+	&:hover {
+		background: #e9f0e8;
+		border-color: #2f7668;
+	}
+}
+
+@media (max-width: 600px) {
+	.dialogActions {
+		align-items: stretch;
+		flex-direction: column-reverse;
+
+		> button {
+			width: 100%;
+		}
+	}
 }

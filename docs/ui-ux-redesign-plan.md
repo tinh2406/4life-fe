@@ -3,9 +3,11 @@
 ## Tiến độ triển khai
 
 - **Rooms:** đã chuyển sang hướng Atlas khu phố với bộ lọc, kết quả cạnh bản đồ, marker giá, trạng thái tải/lỗi/rỗng và chế độ chuyển danh sách/bản đồ trên mobile.
+- **Trang chủ:** đã sắp lại hero theo bố cục trái, làm CTA tìm chỗ nổi bật hơn và gom phần giới thiệu thành danh sách dễ quét; giữ nguyên nội dung, ảnh và route.
 - **Chi tiết chỗ ở:** đã làm mới gallery, thứ tự thông tin, sức chứa, mô tả, tiện nghi, đánh giá, giá/CTA và bản đồ responsive; dialog booking giữ nguyên nghiệp vụ.
 - **Bản đồ:** các màn dùng `GOOGLE_MAPS_API_KEY` qua cấu hình môi trường; bỏ khóa nhúng trực tiếp trong component.
-- **Còn lại:** tiếp tục kiểm toán luồng booking/payment và các route khác theo từng lát cắt; mọi thay đổi quy tắc nghiệp vụ cần tách và xác nhận riêng.
+- **Đặt chỗ và thanh toán:** đã làm mới booking summary, dialog thanh toán và danh sách “My bookings”; giữ API/nghiệp vụ hiện có, hiển thị tổng tiền từ API và thêm trạng thái tải/lỗi/rỗng. URL thanh toán được xác thực trước khi điều hướng.
+- **Còn lại:** tiếp tục kiểm toán các route khác theo từng lát cắt; mọi thay đổi quy tắc nghiệp vụ cần tách và xác nhận riêng.
 
 ## Mục tiêu
 

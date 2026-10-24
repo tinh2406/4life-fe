@@ -33,6 +33,5 @@ export const getBookingDetail = async (id: number): Promise<BookingDetail> => {
 
 export const payment = async (data: Payment): Promise<string> => {
 	const response = await axiosInstance.post<string>("/payment", data);
-	console.log(response.data);
 	return response.data;
 };

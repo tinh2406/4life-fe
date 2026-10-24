@@ -1,135 +1,119 @@
-import { Button, Grid } from "@mui/material";
+import { Button, Skeleton } from "@mui/material";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import classes from "./BookingDetail.module.scss";
 import BookingCard from "../../components/Card/BookingCard";
 import { useNavigate, useParams } from "react-router-dom";
 import useBookingDetail from "../../hooks/use-booking-detail";
-import { useEffect, useState } from "react";
-import { calculateDaysDifference, formatDate } from "../../utils/get-date-month";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import dayjs from "dayjs";
-import BookingSuccess from "../../assets/images/bookingIcon.png";
-import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import PaymentDialog from "../../components/Dialog/PaymentDialog";
 import { convertTo12HourFormat } from "../../utils/mapper";
 import { useNotify } from "../../context/notify";
+import { useState } from "react";
+import { useQueryClient } from "react-query";
+import { useEffect } from "react";
 
 const BookingDetailPage = (): React.JSX.Element => {
 	const { id } = useParams();
+	const bookingId = Number(id);
 	const navigate = useNavigate();
-	const { data } = useBookingDetail(Number(id));
-	const [days, setDays] = useState<number>(0);
-	const [formatDateForm, setFormatDateForm] = useState({
-		checkIn: "",
-		checkOut: ""
-	});
-	const [formatTime, setFormatTime] = useState({
-		checkInAfter: "",
-		checkOutBefore: ""
-	});
-	const [isPaid, setIsPaid] = useState<boolean>(false);
-	const notify = useNotify();
-
-	const [isOpenAddPostDialog, setIsOpenAddPostDialog] = useState<boolean>(false);
-	const handleOpenAddPostDialog = (): void => {
-		setIsOpenAddPostDialog(true);
-	};
-
-	const handleCloseAddPostDialog = (): void => {
-		setIsOpenAddPostDialog(false);
-	};
+	const { data, isLoading, isError } = useBookingDetail(bookingId);
+	const { isPaid: hasPaymentNotification, setIsPaid: clearPaymentNotification } = useNotify();
+	const queryClient = useQueryClient();
+	const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+	const days = data ? dayjs(data.checkOutDate).diff(dayjs(data.checkInDate), "day") : 0;
+	const isPaid = Boolean(data?.isPaid);
 
 	useEffect(() => {
-		if (data?.checkInDate && data?.checkOutDate) {
-			const checkIn = dayjs(data?.checkInDate);
-			console.log(checkIn);
-			const checkOut = dayjs(data?.checkOutDate);
-			const diffDays = calculateDaysDifference(checkIn, checkOut);
-			setDays(diffDays);
-			setFormatDateForm({
-				checkIn: formatDate(data?.checkInDate.split("T")[0] ?? ""),
-				checkOut: formatDate(data?.checkOutDate.split("T")[0] ?? "")
-			});
-			setFormatTime({
-				checkInAfter: convertTo12HourFormat(data?.accommodation.checkInAfter),
-				checkOutBefore: convertTo12HourFormat(data?.accommodation.checkOutBefore)
-			});
+		if (hasPaymentNotification) {
+			void queryClient.invalidateQueries(["booking-detail", bookingId]);
+			clearPaymentNotification(false);
 		}
-		if (data?.isPaid) {
-			console.log("data", data?.isPaid);
-			setIsPaid(true);
-		}
-		if (notify?.isPaid) {
-			console.log("notify", notify?.isPaid);
-			setIsPaid(true);
-			notify?.setIsPaid(true);
-			// localStorage.setItem("isPaid", "true");
-		}
-		// console.log(notify?.isModRole);
-	}, [data, notify]);
-	console.log("notify", notify?.isPaid);
-	return (
-		<Grid container className={classes.wrapper}>
-			<Grid item xs={12} className={classes.icon}>
-				<KeyboardBackspaceIcon onClick={() => navigate("/my-bookings")} className={classes.backIcon} />
-			</Grid>
-			<Grid xs={12} className={classes.wrapperInformation}>
-				<Grid xs={5}>
-					<BookingCard
-						idBooking={Number(id)}
-						name={data?.accommodation.name ?? ""}
-						address={data?.accommodation.address ?? ""}
-						image={data?.accommodation.imageUrls ?? []}
-						price={data?.accommodation.price.toString() ?? ""}
-						numberOfNights={days.toString()}
-						fee={15}
-					/>
-				</Grid>
-				<Grid xs={7} className={classes.wrapperTextNotification}>
-					<Grid xs={12} className={classes.textNotification}>
-						<img src={BookingSuccess} alt="booking success" className={classes.successIcon} />
-					</Grid>
-					<Grid xs={12} className={classes.textNotification}>
-						Your booking is confirm!
-					</Grid>
-					<Grid xs={12} className={classes.textNotification}>
-						Thank you for booking with us!
-					</Grid>
-				</Grid>
-			</Grid>
-			<Grid xs={12} className={classes.line}></Grid>
-			<Grid xs={12} className={classes.wrapperInformationDate}>
-				<Grid xs={12} className={classes.dateTime}>
-					{`Your trip starts ${formatDateForm.checkIn}`}
-				</Grid>
-				<Grid xs={12} className={classes.dateTimeItem}>
-					<DomainVerificationIcon className={classes.iconCheckDate} />
-					Check-in {formatDateForm.checkIn}, from {formatTime.checkInAfter}
-				</Grid>
-				<Grid xs={12} className={classes.dateTimeItem}>
-					<DomainVerificationIcon className={classes.iconCheckDate} />
-					Check-out {formatDateForm.checkOut}, until {formatTime.checkOutBefore}
-				</Grid>
-			</Grid>
-			<Grid xs={12} className={classes.line}></Grid>
-			<Grid xs={12} className={classes.totalPrice}>
-				<div className={classes.text}>Total price:</div>
-				<div className={classes.text}>
-					${data?.accommodation?.price ? data?.accommodation?.price * days + 15 : 0}
-				</div>
-				<div className={`${classes.payment} ${!isPaid ? classes.unpay : classes.paid}`}>
-					{isPaid ? "paid" : "unpay"}
-				</div>
-				<Button variant="contained" className={classes.btnPayment} onClick={handleOpenAddPostDialog}>
-					Pay now
+	}, [bookingId, clearPaymentNotification, hasPaymentNotification, queryClient]);
+
+	if (isError) {
+		return (
+			<main className={classes.wrapper}>
+				<Button onClick={() => navigate("/my-bookings")} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
+					My bookings
 				</Button>
-			</Grid>
+				<p className={classes.stateMessage} role="alert">We could not load this booking. Return to your bookings and try again.</p>
+			</main>
+		);
+	}
+
+	if (isLoading || !data) {
+		return (
+			<main className={classes.wrapper}>
+				<Skeleton variant="rounded" height={280} />
+				<Skeleton width="60%" />
+			</main>
+		);
+	}
+
+	const handleOpenPayment = (): void => setIsPaymentDialogOpen(true);
+	const handleClosePayment = (): void => setIsPaymentDialogOpen(false);
+
+	return (
+		<main className={classes.wrapper}>
+			<Button onClick={() => navigate("/my-bookings")} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
+				My bookings
+			</Button>
+			<header className={classes.pageHeading}>
+				<div>
+					<h1>Booking details</h1>
+					<p>{data.accommodation.name}</p>
+				</div>
+				<span className={`${classes.paymentStatus} ${isPaid ? classes.paid : classes.unpaid}`} role="status">
+					{isPaid ? "Paid" : "Payment due"}
+				</span>
+			</header>
+
+			<div className={classes.bookingLayout}>
+				<section className={classes.bookingCard} aria-label="Booking cost summary">
+					<BookingCard
+						name={data.accommodation.name}
+						address={data.accommodation.address}
+						image={data.accommodation.imageUrls}
+						price={data.accommodation.price.toString()}
+						numberOfNights={days.toString()}
+						additionalAmount={data.totalPrice - data.accommodation.price * days}
+						totalPrice={data.totalPrice}
+					/>
+				</section>
+				<section className={classes.tripDetails} aria-labelledby="trip-details-heading">
+					<h2 id="trip-details-heading">Your trip</h2>
+					<p className={classes.tripRange}>
+						{dayjs(data.checkInDate).format("ddd, DD MMM YYYY")} – {dayjs(data.checkOutDate).format("ddd, DD MMM YYYY")}
+					</p>
+					<div className={classes.dateTimeItem}>
+						<DomainVerificationIcon className={classes.iconCheckDate} />
+						<span>Check-in <strong>{dayjs(data.checkInDate).format("DD MMM YYYY")}</strong>, from {convertTo12HourFormat(data.accommodation.checkInAfter)}</span>
+					</div>
+					<div className={classes.dateTimeItem}>
+						<DomainVerificationIcon className={classes.iconCheckDate} />
+						<span>Check-out <strong>{dayjs(data.checkOutDate).format("DD MMM YYYY")}</strong>, until {convertTo12HourFormat(data.accommodation.checkOutBefore)}</span>
+					</div>
+					<div className={classes.totalPrice}>
+						<div>
+							<span className={classes.totalLabel}>Total price</span>
+							<strong>${data.totalPrice}</strong>
+						</div>
+						{isPaid ? (
+							<span className={classes.paidNotice}>Payment complete</span>
+						) : (
+							<Button variant="contained" className={classes.btnPayment} onClick={handleOpenPayment}>Pay now</Button>
+						)}
+					</div>
+				</section>
+			</div>
 			<PaymentDialog
-				id={Number(id)}
-				total={data?.accommodation?.price ? data?.accommodation?.price * days + 15 : 0}
-				open={isOpenAddPostDialog}
-				handleClose={handleCloseAddPostDialog}
+				id={bookingId}
+				total={data.totalPrice}
+				open={isPaymentDialogOpen}
+				handleClose={handleClosePayment}
 			/>
-		</Grid>
+		</main>
 	);
 };
 

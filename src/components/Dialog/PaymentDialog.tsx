@@ -11,12 +11,12 @@ import {
 	ListSubheader,
 	TextField
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import classes from "./PaymentDialog.module.scss";
 import { allBanks } from "../../utils/get-all-bank";
 import { useState } from "react";
 import { Payment } from "../../types/model/payment";
 import { payment } from "../../api/booking.api";
-import { toast } from "react-toastify";
 
 interface BookingModalProps {
 	id: number;
@@ -25,24 +25,16 @@ interface BookingModalProps {
 	handleClose: () => void;
 }
 
-interface Bank {
-	id: number;
-	name: string;
-	code: string;
-	bin: string;
-	shortName: string;
-	logo: string;
-	transferSupported: number;
-	lookupSupported: number;
-	short_name: string;
-	support: number;
-	isTransfer: number;
-	swift_code: string;
-}
+type Bank = (typeof allBanks)[number];
 
 const BookingDialog = ({ id, total, open, handleClose }: BookingModalProps): React.JSX.Element => {
 	const [bankCode, setBankCode] = useState<string>("");
+	const [isPaying, setIsPaying] = useState(false);
+	const [paymentError, setPaymentError] = useState("");
 	const onCancelButtonClick = (): void => {
+		if (isPaying) return;
+		setBankCode("");
+		setPaymentError("");
 		handleClose();
 	};
 	const renderOption = (props: object, option: Bank) => (
@@ -55,48 +47,73 @@ const BookingDialog = ({ id, total, open, handleClose }: BookingModalProps): Rea
 	);
 
 	const handleChange = (_event: React.ChangeEvent<unknown>, value: Bank | null) => {
-		if (value) {
-			setBankCode(value.shortName);
-		}
+		setBankCode(value?.shortName ?? "");
+		setPaymentError("");
 	};
 
 	const handlePay = async () => {
 		if (bankCode === "") {
-			toast.error("Please select a bank");
+			setPaymentError("Choose a bank to continue.");
 			return;
 		}
-		const paymentData = {
+		setIsPaying(true);
+		setPaymentError("");
+		const paymentWindow = window.open("about:blank", "_blank");
+		const paymentData: Payment = {
 			bookingId: id,
 			bankCode: bankCode,
 			amount: total,
 			orderDesc: ""
-		} as Payment;
-		const res = await payment(paymentData);
-		if (res) {
-			handleClose();
-			window.open(res, "_blank");
+		};
+		try {
+			const res = await payment(paymentData);
+			if (res) {
+				const paymentUrl = new URL(res);
+				if (paymentUrl.protocol !== "https:" && paymentUrl.protocol !== "http:") {
+					throw new Error("Unsupported payment URL protocol");
+				}
+				setBankCode("");
+				handleClose();
+				if (paymentWindow) {
+					paymentWindow.opener = null;
+					paymentWindow.location.href = paymentUrl.href;
+				} else {
+					window.location.assign(paymentUrl.href);
+				}
+			} else {
+				paymentWindow?.close();
+				setPaymentError("We could not start the payment. Please try again.");
+			}
+		} catch {
+			paymentWindow?.close();
+			setPaymentError("We could not start the payment. Please try again.");
+		} finally {
+			setIsPaying(false);
 		}
 	};
 
 	return (
 		<>
-			<Dialog open={open} scroll="paper" fullWidth maxWidth="sm">
-				<DialogTitle className={classes.dialog_title_wrapper}>Payment</DialogTitle>
+			<Dialog open={open} onClose={onCancelButtonClick} scroll="paper" fullWidth maxWidth="sm" aria-labelledby="payment-dialog-title">
+				<DialogTitle id="payment-dialog-title" className={classes.dialogTitle}>Choose a payment bank</DialogTitle>
 				<DialogContent dividers={true}>
+					<p className={classes.amount}>Amount due <strong>${total}</strong></p>
 					<Autocomplete
-						options={allBanks as Bank[]}
+						options={allBanks}
 						getOptionLabel={option => option.short_name}
 						renderOption={renderOption}
-						renderInput={params => <TextField {...params} label="Select Bank" variant="outlined" />}
+						renderInput={params => (
+							<TextField {...params} label="Bank" variant="outlined" error={Boolean(paymentError)} helperText={paymentError} />
+						)}
 						renderGroup={params => <ListSubheader component="div" id="grouped-banks" {...params} />}
 						onChange={handleChange}
 					/>
 				</DialogContent>
-				<DialogActions>
-					<Button variant="contained" className={classes.buttonSave} onClick={handlePay}>
-						Pay
-					</Button>
-					<Button variant="outlined" onClick={onCancelButtonClick} className={classes.buttonCancel}>
+				<DialogActions className={classes.dialogActions}>
+					<LoadingButton variant="contained" className={classes.buttonSave} onClick={() => void handlePay()} loading={isPaying}>
+						Continue to payment
+					</LoadingButton>
+					<Button variant="outlined" onClick={onCancelButtonClick} className={classes.buttonCancel} disabled={isPaying}>
 						Cancel
 					</Button>
 				</DialogActions>
