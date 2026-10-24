@@ -3,11 +3,12 @@ import typography from "../../base/typography";
 
 // Material Dashboard 2 React Helper Functions
 import pxToRem from "../../functions/pxToRem";
+import { CSSInterpolation } from "@mui/styled-engine";
 
-const { white, text, info, secondary } = colors;
+const { white, text, primary, secondary } = colors;
 const { size } = typography;
 
-const contained = {
+const contained: Record<"base" | "small" | "large" | "primary" | "secondary", CSSInterpolation> = {
 	base: {
 		backgroundColor: white.main,
 		minHeight: pxToRem(40),
@@ -50,10 +51,10 @@ const contained = {
 	},
 
 	primary: {
-		backgroundColor: info.main,
+		backgroundColor: primary.main,
 
 		"&:hover": {
-			backgroundColor: info.main
+			backgroundColor: primary.focus
 		},
 
 		"&:focus:not(:hover)": {

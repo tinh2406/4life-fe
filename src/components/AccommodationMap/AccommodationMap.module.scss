@@ -1,0 +1,115 @@
+.mapPanel {
+	position: sticky;
+	top: 24px;
+	align-self: start;
+	min-width: 0;
+	padding: 14px;
+	background: #e9f0e8;
+	border: 1px solid #cad7d0;
+	border-radius: 16px;
+}
+
+.mapHeading {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	padding: 4px 4px 13px;
+	color: #172b3a;
+
+	strong,
+	span {
+		display: block;
+	}
+
+	strong {
+		font-size: 14px;
+		font-weight: 700;
+	}
+
+	div > span {
+		margin-top: 3px;
+		color: #586970;
+		font-size: 12px;
+	}
+}
+
+.mapIcon {
+	display: grid;
+	width: 34px;
+	height: 34px;
+	place-items: center;
+	color: #2f7668;
+	background: #fff;
+	border-radius: 50%;
+}
+
+.mapCanvas {
+	height: min(68vh, 680px);
+	min-height: 390px;
+	background: #d8e3dc;
+	border-radius: 11px;
+	overflow: hidden;
+}
+
+.mapEmpty {
+	display: grid;
+	place-content: center;
+	justify-items: center;
+	gap: 12px;
+	height: 100%;
+	padding: 24px;
+	color: #586970;
+	text-align: center;
+}
+
+.marker {
+	padding: 7px 10px;
+	color: #172b3a;
+	background: #fff;
+	border: 1px solid #cad7d0;
+	border-radius: 7px 7px 7px 2px;
+	box-shadow: 0 2px 8px rgb(23 43 58 / 18%);
+	font: 700 12px/1.1 'K2D', sans-serif;
+	white-space: nowrap;
+	cursor: pointer;
+
+	&:focus-visible {
+		outline: 3px solid #d36b4a;
+		outline-offset: 2px;
+	}
+}
+
+.markerSelected {
+	color: #fff;
+	background: #2f7668;
+	border-color: #2f7668;
+	transform: scale(1.08);
+}
+
+.mapFootnote {
+	margin: 11px 4px 2px;
+	color: #586970;
+	font-size: 12px;
+}
+
+@media (max-width: 900px) {
+	.mapPanel {
+		position: static;
+		display: none;
+	}
+
+	.mapPanelOpen {
+		display: block;
+	}
+
+	.mapCanvas {
+		height: 55vh;
+		min-height: 320px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.markerSelected {
+		transform: none;
+	}
+}

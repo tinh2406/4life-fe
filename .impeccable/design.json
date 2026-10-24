@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-24T07:00:00.000Z",
+  "title": "Design System: 4LIFE",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Neighborhood Green",
+        "canonical": "#2f7668",
+        "tonalRamp": [
+          "#14352f",
+          "#1c4b42",
+          "#245f54",
+          "#2f7668",
+          "#5a9387",
+          "#86afa5",
+          "#b6d0c8",
+          "#e9f0e8"
+        ]
+      },
+      "primary-deep": {
+        "role": "primary",
+        "displayName": "Deep Canopy",
+        "canonical": "#245f54",
+        "tonalRamp": [
+          "#14352f",
+          "#1c4b42",
+          "#245f54",
+          "#2f7668",
+          "#5a9387",
+          "#86afa5",
+          "#b6d0c8",
+          "#e9f0e8"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Harbor Ink",
+        "canonical": "#172b3a",
+        "tonalRamp": [
+          "#101f2a",
+          "#172b3a",
+          "#2c4351",
+          "#435965",
+          "#586970",
+          "#849196",
+          "#b2bbbc",
+          "#e1e5e2"
+        ]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Slate Current",
+        "canonical": "#586970",
+        "tonalRamp": [
+          "#26363b",
+          "#3d5158",
+          "#586970",
+          "#73848a",
+          "#8e9ca0",
+          "#abb5b6",
+          "#c9d0ce",
+          "#e7eae7"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper Ground",
+        "canonical": "#f7f8f5",
+        "tonalRamp": [
+          "#26363b",
+          "#3d5158",
+          "#586970",
+          "#849196",
+          "#b6c0ba",
+          "#d5ddd6",
+          "#e9f0e8",
+          "#f7f8f5"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "White Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#26363b",
+          "#3d5158",
+          "#586970",
+          "#849196",
+          "#b6c0ba",
+          "#d5ddd6",
+          "#e9f0e8",
+          "#ffffff"
+        ]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Soft Field",
+        "canonical": "#fcfdfa",
+        "tonalRamp": [
+          "#26363b",
+          "#3d5158",
+          "#586970",
+          "#849196",
+          "#b6c0ba",
+          "#d5ddd6",
+          "#e9f0e8",
+          "#fcfdfa"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Mist Border",
+        "canonical": "#dce3dd",
+        "tonalRamp": [
+          "#26363b",
+          "#3d5158",
+          "#586970",
+          "#849196",
+          "#b6c0ba",
+          "#d5ddd6",
+          "#e9f0e8",
+          "#dce3dd"
+        ]
+      },
+      "map-surface": {
+        "role": "secondary",
+        "displayName": "Map Sage",
+        "canonical": "#e9f0e8",
+        "tonalRamp": [
+          "#14352f",
+          "#1c4b42",
+          "#245f54",
+          "#2f7668",
+          "#5a9387",
+          "#86afa5",
+          "#b6d0c8",
+          "#e9f0e8"
+        ]
+      },
+      "terracotta": {
+        "role": "tertiary",
+        "displayName": "Terracotta Signal",
+        "canonical": "#d36b4a",
+        "tonalRamp": [
+          "#482016",
+          "#713723",
+          "#a14f34",
+          "#d36b4a",
+          "#df896b",
+          "#e9a98f",
+          "#f2cbb9",
+          "#f9eee7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "K2D Display",
+        "purpose": "Main discovery page headings."
+      },
+      "body": {
+        "displayName": "K2D Text",
+        "purpose": "Search labels, listing details, and supporting copy."
+      }
+    },
+    "shadows": [
+      {
+        "name": "search-panel",
+        "value": "0 7px 20px rgb(23 43 58 / 5%)",
+        "purpose": "Quiet separation from the page ground."
+      },
+      {
+        "name": "card-hover",
+        "value": "0 8px 20px rgb(23 43 58 / 7%)",
+        "purpose": "Transient listing interaction feedback."
+      }
+    ],
+    "motion": [
+      {
+        "name": "short-state-feedback",
+        "value": "160ms ease",
+        "purpose": "Hover and selection feedback; disable nonessential motion for reduced-motion preference."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile-map",
+        "value": "900px"
+      },
+      {
+        "name": "header-mobile",
+        "value": "700px"
+      },
+      {
+        "name": "detail-gallery-mobile",
+        "value": "560px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "primary-action",
+      "description": "Main action in the shared navigation.",
+      "html": "<button class=\"ds-button-primary\">Sign in</button>",
+      "css": ".ds-button-primary { color: #fff; background: #2f7668; border: 1px solid #2f7668; border-radius: 999px; padding: 7px 20px; font: 700 14px K2D, sans-serif; cursor: pointer; transition: background 160ms ease; } .ds-button-primary:hover { background: #245f54; } .ds-button-primary:focus-visible { outline: 3px solid #d36b4a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "description": "Outlined search and date fields.",
+      "html": "<label class=\"ds-field\">Where are you going?<input placeholder=\"Choose an area\"></label>",
+      "css": ".ds-field { display: grid; gap: 6px; color: #586970; font: 500 13px K2D, sans-serif; } .ds-field input { min-height: 54px; padding: 0 14px; color: #172b3a; background: #fcfdfa; border: 1px solid #dce3dd; border-radius: 10px; font: 400 15px K2D, sans-serif; } .ds-field input:focus-visible { border-color: #2f7668; outline: 2px solid #2f7668; outline-offset: 1px; }"
+    },
+    {
+      "name": "Accommodation Card",
+      "kind": "card",
+      "description": "Place result with image and booking details.",
+      "html": "<article class=\"ds-card\"><strong>Accommodation name</strong><p>Address and stay details</p></article>",
+      "css": ".ds-card { padding: 14px; color: #172b3a; background: #fff; border: 1px solid #dce3dd; border-radius: 14px; } .ds-card:hover { border-color: #a6bdb1; box-shadow: 0 8px 20px rgb(23 43 58 / 7%); } .ds-card strong { font: 700 16px K2D, sans-serif; } .ds-card p { color: #586970; font: 400 14px/1.6 K2D, sans-serif; }"
+    },
+    {
+      "name": "Price Marker",
+      "kind": "custom",
+      "description": "Map selection control for one listing.",
+      "html": "<button class=\"ds-marker\" aria-label=\"Accommodation name, $120 per night\">$120</button>",
+      "css": ".ds-marker { padding: 7px 10px; color: #172b3a; background: #fff; border: 1px solid #dce3dd; border-radius: 7px 7px 7px 2px; box-shadow: 0 2px 8px rgb(23 43 58 / 18%); font: 700 12px K2D, sans-serif; white-space: nowrap; cursor: pointer; } .ds-marker:focus-visible { outline: 3px solid #d36b4a; outline-offset: 2px; } .ds-marker[aria-pressed=\"true\"] { color: #fff; background: #2f7668; border-color: #2f7668; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Atlas khu phố",
+    "overview": "4LIFE presents accommodation discovery like a legible neighborhood atlas: practical information stays in the foreground, while the map gives each place a useful geographic context. The surface is calm and light, with deep blue-green text, leaf-green actions, and restrained terracotta reserved for focus details. The existing 4LIFE name and logo remain recognizable anchors.\n\nThe interface favors quick scanning and direct manipulation over decorative effects. On a listing detail page, photography leads into property facts, description, pricing action, amenities, reviews, and location in that order. Maps, prices, dates, and place cards should feel connected and navigable. Keep motion short and purposeful, primarily to confirm hover, focus, or selection.",
+    "keyCharacteristics": [
+      "Light paper-like canvas with clear white work surfaces.",
+      "Deep teal-green actions and dark blue-green text.",
+      "Search and results are organized around location and map context.",
+      "Moderate information density with clear spacing between tasks."
+    ],
+    "rules": [
+      {
+        "name": "The Map-First Context Rule",
+        "body": "Location and spatial context should clarify results, never obscure their names, prices, or actions.",
+        "section": "colors"
+      },
+      {
+        "name": "The Action Green Rule",
+        "body": "Reserve Neighborhood Green for actions and active states so affordances remain easy to spot.",
+        "section": "colors"
+      },
+      {
+        "name": "The Quiet Rest Rule",
+        "body": "Cards sit nearly flat until interaction; keep strong shadows for transient feedback.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do preserve the 4LIFE name and logo.",
+      "Do keep location, dates, stay type, results, and map context easy to scan together.",
+      "Do show loading, error, empty, focus, and selected states with useful text and contrast.",
+      "Do keep the mobile map behind an explicit, labeled toggle."
+    ],
+    "donts": [
+      "Don't invent reviews, availability, amenities, prices, policies, or performance claims.",
+      "Don't use color alone to communicate focus, errors, or selection.",
+      "Don't let the map crowd out the accommodation cards or booking information.",
+      "Don't add new dependencies or replace MUI/SCSS Modules for styling convenience."
+    ]
+  }
+}

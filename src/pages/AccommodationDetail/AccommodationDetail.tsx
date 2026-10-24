@@ -4,6 +4,7 @@ import classes from "./AccomodationDetail.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import useAccommodationDetail from "../../hooks/use-accomodation-detail";
 import StarIcon from "@mui/icons-material/Star";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import useAmenitiesOfAccommodation from "../../hooks/use-amenities-of-accommodation";
 import { styled } from "@mui/material/styles";
 import LinearProgress, { linearProgressClasses } from "@mui/material/LinearProgress";
@@ -11,7 +12,6 @@ import { useEffect, useState } from "react";
 import BookingDialog from "../../components/Dialog/BookingDialog";
 import Comment from "../../components/Comment/Comment";
 import GoogleMapReact from "google-map-react";
-import { Review } from "../../types/axios/accommodation-detail";
 import SendIcon from "@mui/icons-material/Send";
 import useReviews from "../../hooks/use-reviews";
 import { PostReview } from "../../types/model/postReview";
@@ -20,7 +20,20 @@ import { formatDate } from "../../utils/get-date-month";
 import { LoadingButton } from "@mui/lab";
 import ArrowDropDownCircleOutlinedIcon from "@mui/icons-material/ArrowDropDownCircleOutlined";
 import { canReview } from "../../api/review.api";
-// import MapContainer from "../../components/Map/Map";
+
+const mapApiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
+
+type AccommodationMarkerProps = {
+	lat: number;
+	lng: number;
+	name: string;
+};
+
+const AccommodationMarker = ({ name }: AccommodationMarkerProps): React.JSX.Element => (
+	<div className={classes.mapMarker} role="img" aria-label={`Map location for ${name}`}>
+		<LocationOnIcon />
+	</div>
+);
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 	height: 6,
@@ -31,7 +44,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 	},
 	[`& .${linearProgressClasses.bar}`]: {
 		borderRadius: 5,
-		backgroundColor: theme.palette.mode === "light" ? "#FF385C" : "#FF385C"
+		backgroundColor: theme.palette.primary.main
 	}
 }));
 
@@ -45,15 +58,10 @@ interface Ratings {
 const AccommodationDetailPage = (): React.JSX.Element => {
 	const navigate = useNavigate();
 	const { id } = useParams();
-	const { data, isLoading } = useAccommodationDetail(Number(id));
-	const [defaultLocation, _setDefaultLocation] = useState<{ lat: number; lng: number }>({ lat: 16.07, lng: 108.15 });
-	const [isBooked, setIsBooked] = useState<boolean>(true);
+	const { data, isLoading, isError } = useAccommodationDetail(Number(id));
+	const [isBooked, setIsBooked] = useState<boolean>(false);
 	const [isReviewed, setIsReviewed] = useState<boolean>(false);
 	const [commentContent, setCommentContent] = useState("");
-	const [reviews, setReviews] = useState<Review[]>([]);
-	const [hasNextPage, setHasNextPage] = useState<boolean>(true);
-	const [countPage, setCountPage] = useState<number>(0);
-	console.log("canreviews", data);
 
 	const [ratings, setRatings] = useState<Ratings>({
 		cleanliness: 0,
@@ -61,16 +69,6 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 		amenities: 0,
 		comfort: 0
 	});
-
-	const [selectedPlace, setSelectedPlace] = useState<{
-		geometry: {
-			location: {
-				lat: number;
-				lng: number;
-			};
-		};
-		name: string;
-	} | null>(null);
 
 	const handleRatingChange = (key: keyof Ratings, newValue: number | null) => {
 		if (newValue !== null) {
@@ -82,64 +80,28 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	};
 
 	const { data: dataAmentities } = useAmenitiesOfAccommodation(Number(id));
-	console.log("dataAmentities", dataAmentities);
 	const {
 		data: dataReview,
 		isLoading: isLoadingReviews,
 		isFetching: isFetchingReviews,
+		isError: isReviewsError,
 		fetchNextPage
 	} = useReviews(Number(id));
+	const lastReviewPage = dataReview?.[dataReview.length - 1];
+	const hasNextPage = Boolean(lastReviewPage && lastReviewPage.meta.pageIndex < lastReviewPage.meta.totalPages);
+	const reviewCount = dataReview?.reduce((total, page) => total + page.data.length, 0) ?? 0;
 	const postReview = usePostReview(Number(id));
 	const [isOpenAddPostDialog, setIsOpenAddPostDialog] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (
-			dataReview !== undefined &&
-			dataReview[countPage] !== undefined &&
-			dataReview[countPage].data !== undefined
-		) {
-			if (dataReview[countPage].data.length % 3 !== 0) setHasNextPage(false);
-			else setHasNextPage(true);
-		}
-	}, [setHasNextPage, countPage, dataReview]);
-	console.log(hasNextPage);
-
-	useEffect(() => {
-		// setDefaultLocation({
-		// 	lat: data?.latitue ?? 16.07,
-		// 	lng: data?.longtitue ?? 108.15
-		// });
-		setReviews(dataReview ? dataReview[0]?.data : []);
 		canReview(Number(id))
 			.then(res => {
 				setIsBooked(res.isSuccess);
-				console.log("canReview", res);
 			})
-			.catch(err => {
-				console.log(err);
-			});
-		const selectedPlaceTemp = {
-			geometry: {
-				location: {
-					lat: data?.latitude || 16.07,
-					lng: data?.longitude || 108.15
-				}
-			},
-			name: data?.address || ""
-		};
-		setSelectedPlace(selectedPlaceTemp);
-	}, [data?.latitude, data?.longitude, dataReview, id, data?.address, setSelectedPlace, dataAmentities]);
+			.catch(() => setIsBooked(false));
+	}, [id]);
 
-	const renderMarkers = (map: any, maps: any) => {
-		const marker = new maps.Marker({
-			position: { lat: selectedPlace?.geometry.location.lat, lng: selectedPlace?.geometry.location.lng },
-			map,
-			title: "Hello World!"
-		});
-		return marker;
-	};
-
-	const handleCommentSubmit = () => {
+	const handleCommentSubmit = (): void => {
 		if (commentContent.trim() !== "") {
 			const newReview: PostReview = {
 				accommodationId: Number(id),
@@ -151,11 +113,9 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 			};
 			postReview.mutate(newReview);
 			setIsReviewed(true);
-			// setReviews([...reviews, newReview]);
 			setCommentContent("");
 		}
 	};
-	console.log(reviews);
 
 	const handleOpenAddPostDialog = (): void => {
 		setIsOpenAddPostDialog(true);
@@ -165,12 +125,25 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 		setIsOpenAddPostDialog(false);
 	};
 
+	if (isError) {
+		return (
+			<main className={classes.wrapper}>
+				<Button onClick={() => navigate("/rooms")} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
+					Back to places
+				</Button>
+				<p className={classes.stateMessage} role="alert">We could not load this place. Return to the results and try again.</p>
+			</main>
+		);
+	}
+
 	return (
 		<Grid container className={classes.wrapper}>
 			<Grid item xs={12} className={classes.icon}>
-				<KeyboardBackspaceIcon onClick={() => navigate("/rooms")} className={classes.backIcon} />
+				<Button onClick={() => navigate("/rooms")} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
+					Back to places
+				</Button>
 			</Grid>
-			<Grid container spacing={2}>
+			<Grid item container xs={12} spacing={2} className={classes.gallery}>
 				{isLoading ? (
 					<>
 						<Grid item xs={6}>
@@ -198,21 +171,21 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 				) : (
 					<>
 						<Grid item xs={6}>
-							<img src={data?.imageUrls[0]} alt="Accommodation Image" className={classes.imgOne} />
+							<img src={data?.imageUrls[0]} alt={`${data?.name ?? "Accommodation"}, photo 1`} className={classes.imgOne} />
 						</Grid>
 						<Grid item xs={6}>
 							<Grid container spacing={2}>
 								<Grid item xs={6}>
 									<img
 										src={data?.imageUrls[1]}
-										alt="Accommodation Image"
+										alt={`${data?.name ?? "Accommodation"}, photo 2`}
 										className={classes.imgTwo}
 									/>
 								</Grid>
 								<Grid item xs={6}>
 									<img
 										src={data?.imageUrls[2]}
-										alt="Accommodation Image"
+										alt={`${data?.name ?? "Accommodation"}, photo 3`}
 										className={classes.imgTwo}
 									/>
 								</Grid>
@@ -221,14 +194,14 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 								<Grid item xs={6}>
 									<img
 										src={data?.imageUrls[3]}
-										alt="Accommodation Image"
+										alt={`${data?.name ?? "Accommodation"}, photo 4`}
 										className={classes.imgTwo}
 									/>
 								</Grid>
 								<Grid item xs={6}>
 									<img
 										src={data?.imageUrls[4]}
-										alt="Accommodation Image"
+										alt={`${data?.name ?? "Accommodation"}, photo 5`}
 										className={classes.imgTwo}
 									/>
 								</Grid>
@@ -237,28 +210,41 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					</>
 				)}
 			</Grid>
-			<Grid xs={12} className={classes.wrapperInformation}>
-				<Grid xs={6} className={classes.name}>
+			<Grid item xs={12} className={classes.wrapperInformation}>
+				<Grid item xs={12} md={8} component="h1" className={classes.name}>
 					{data?.name}
 				</Grid>
-				<Grid xs={6} className={classes.wrapperRating}>
+				<Grid item xs={12} md={4} className={classes.wrapperRating}>
 					<StarIcon className={classes.startIcon} />
 					{data?.avgRating.toFixed(1)}
 				</Grid>
 			</Grid>
-			<Grid xs={12} className={classes.wrapperSubInformation}>
-				<Grid xs={6} className={classes.text}>
+			<Grid item xs={12} className={classes.wrapperSubInformation}>
+				<Grid item xs={12} md={8} className={classes.text}>
 					{data?.address}
 				</Grid>
-				<Grid xs={6} className={`${classes.wrapperRating} ${classes.text}`}>
+				<Grid item xs={12} md={4} className={`${classes.wrapperRating} ${classes.text}`}>
 					{`${data?.totalReview} reviews`}
 				</Grid>
 			</Grid>
-			<Grid xs={12} className={classes.wrapperSubInformation}>
-				<Grid xs={6} className={classes.price}>
+			<Grid item xs={12} className={classes.detailFacts}>
+				<span>{data?.type}</span>
+				<span>{data?.maxGuests} guests</span>
+				<span>{data?.numberOfBedrooms} bedrooms</span>
+				<span>{data?.numberOfBeds} beds</span>
+				<span>{data?.numberOfBathrooms} bathrooms</span>
+			</Grid>
+			{data?.description && (
+				<Grid item xs={12} className={classes.description}>
+					<Typography component="h2" className={classes.sectionTitle}>About this place</Typography>
+					<p>{data.description}</p>
+				</Grid>
+			)}
+			<Grid item xs={12} className={`${classes.wrapperSubInformation} ${classes.bookingSummary}`}>
+				<Grid item xs={12} sm={6} className={classes.price}>
 					{`$${data?.price}/1night`}
 				</Grid>
-				<Grid xs={6} className={`${classes.wrapperRating} ${classes.text}`}>
+				<Grid item xs={12} sm={6} className={`${classes.wrapperRating} ${classes.text}`}>
 					<Button
 						variant="contained"
 						color="primary"
@@ -269,41 +255,41 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					</Button>
 				</Grid>
 			</Grid>
-			<Grid xs={12} className={classes.line}></Grid>
-			<Grid xs={12} className={classes.wrapperAmenities}>
-				<Grid xs={12} className={classes.name}>
+			<Grid item xs={12} className={classes.line}></Grid>
+			<Grid item xs={12} className={classes.wrapperAmenities}>
+				<Grid item xs={12} component="h2" className={classes.name}>
 					Amenities Overview
 				</Grid>
-				<Grid xs={12} className={classes.wrapperAmenitiesDetail}>
+				<Grid item xs={12} className={classes.wrapperAmenitiesDetail}>
 					{dataAmentities !== undefined &&
-						dataAmentities[0]?.data.map((amenities, i) => (
-							<Grid key={i} xs={6} sm={4} md={6} className={classes.amenityItem}>
-								<img src={amenities.amenity.icon} alt="Amenity Icon" className={classes.iconAmenity} />
+						dataAmentities[0]?.data.map(amenities => (
+							<Grid item key={amenities.amenity.id} xs={12} sm={6} md={4} className={classes.amenityItem}>
+								<img src={amenities.amenity.icon} alt="" className={classes.iconAmenity} />
 								{amenities.amenity.name}
 							</Grid>
 						))}
 				</Grid>
 			</Grid>
-			<Grid xs={12} className={classes.line}></Grid>
-			<Grid xs={12} className={classes.wrapperAmenities}>
-				<Grid xs={12} className={classes.name}>
+			<Grid item xs={12} className={classes.line}></Grid>
+			<Grid item xs={12} className={classes.wrapperAmenities}>
+				<Grid item xs={12} component="h2" className={classes.name}>
 					Reviews
 				</Grid>
-				<Grid xs={12} className={classes.wrapperRatingDetail}>
+				<Grid item xs={12} className={classes.wrapperRatingDetail}>
 					<StarIcon className={classes.startIcon} />
 					{data?.avgRating.toFixed(1)}
 					<span className={classes.totalReview}>{data?.totalReview} reviews</span>
 				</Grid>
-				<Grid xs={12} className={classes.wrapperPoint}>
-					<Grid xs={6} className={classes.point}>
+				<Grid item xs={12} className={classes.wrapperPoint}>
+					<Grid item xs={12} md={6} className={classes.point}>
 						<span>Cleanliness</span>
 						<BorderLinearProgress
 							variant="determinate"
-							value={data?.avgAmenitiesRating ? (data?.avgCleanlinessRating / 5) * 100 : 0}
+							value={data?.avgCleanlinessRating ? (data.avgCleanlinessRating / 5) * 100 : 0}
 						/>
 						<span>{`${data?.avgCleanlinessRating}/5`}</span>
 					</Grid>
-					<Grid xs={6} className={classes.point}>
+					<Grid item xs={12} md={6} className={classes.point}>
 						<span>Location</span>
 						<BorderLinearProgress
 							variant="determinate"
@@ -312,8 +298,8 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 						<span>{`${data?.avgLocationRating}/5`}</span>
 					</Grid>
 				</Grid>
-				<Grid xs={12} className={classes.wrapperPoint}>
-					<Grid xs={6} className={classes.point}>
+				<Grid item xs={12} className={classes.wrapperPoint}>
+					<Grid item xs={12} md={6} className={classes.point}>
 						<span>Amenities</span>
 						<BorderLinearProgress
 							variant="determinate"
@@ -321,7 +307,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 						/>
 						<span>{`${data?.avgAmenitiesRating}/5`}</span>
 					</Grid>
-					<Grid xs={6} className={classes.point}>
+					<Grid item xs={12} md={6} className={classes.point}>
 						<span>Comfort</span>
 						<BorderLinearProgress
 							variant="determinate"
@@ -331,11 +317,14 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					</Grid>
 				</Grid>
 			</Grid>
-			<Grid xs={12} className={classes.line}></Grid>
-			<Grid xs={12} className={classes.wrapperComment}>
+			<Grid item xs={12} className={classes.line}></Grid>
+			<Grid item xs={12} className={classes.wrapperComment}>
+				{isReviewsError && <p className={classes.stateMessage} role="alert">Reviews could not be loaded.</p>}
+				{isLoadingReviews && <Skeleton variant="rounded" width="100%" height={96} />}
 				{dataReview?.map(item =>
 					item.data.map(review => (
 						<Comment
+							key={review.useId}
 							avatar={
 								review.user.avatar === null
 									? "https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png"
@@ -347,15 +336,17 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 						/>
 					))
 				)}
+				{!isLoadingReviews && !isReviewsError && reviewCount === 0 && (
+					<p className={classes.emptyReviews}>No reviews yet.</p>
+				)}
 
-				{reviews.length > 0 && hasNextPage && (
+				{reviewCount > 0 && hasNextPage && (
 					<Grid item xs={12} className={classes.wrapperBtn}>
 						<LoadingButton
 							size="small"
 							className={classes.buttonSeeMore}
 							onClick={() => {
-								fetchNextPage();
-								setCountPage(countPage + 1);
+								void fetchNextPage();
 							}}
 							loading={isFetchingReviews}
 							loadingPosition="start"
@@ -408,7 +399,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 							fullWidth
 							InputProps={{
 								endAdornment: (
-									<IconButton onClick={handleCommentSubmit}>
+									<IconButton onClick={handleCommentSubmit} aria-label="Submit review">
 										<SendIcon />
 									</IconButton>
 								)
@@ -417,25 +408,30 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					</>
 				)}
 			</Grid>
-			<Grid xs={12} className={classes.line}></Grid>
-			<Grid xs={12} className={classes.wrapperAmenities}>
-				<Grid xs={12} className={classes.name}>
+			<Grid item xs={12} className={classes.line}></Grid>
+			<Grid item xs={12} className={classes.wrapperAmenities}>
+				<Grid item xs={12} component="h2" className={classes.name}>
 					Map
 				</Grid>
-				<Grid xs={12} className={classes.wrapperMap}>
-					<div style={{ height: "500px", width: "90%", borderRadius: "50px" }}>
-						<GoogleMapReact
-							bootstrapURLKeys={{ key: "AIzaSyAHUq7rXW6gtVCss6HHxDGK9Su14uwkdU0" }}
-							defaultCenter={defaultLocation}
-							defaultZoom={14}
-							yesIWantToUseGoogleMapApiInternals
-							onGoogleApiLoaded={({ map, maps }) => renderMarkers(map, maps)}
-						></GoogleMapReact>
-					</div>
+				<Grid item xs={12} className={classes.wrapperMap}>
+					{mapApiKey && data ? (
+						<div className={classes.mapCanvas}>
+							<GoogleMapReact
+								bootstrapURLKeys={{ key: mapApiKey }}
+								center={{ lat: data.latitude, lng: data.longitude }}
+								defaultZoom={14}
+								options={{ fullscreenControl: false, mapTypeControl: false, streetViewControl: false }}
+							>
+								<AccommodationMarker lat={data.latitude} lng={data.longitude} name={data.name} />
+							</GoogleMapReact>
+						</div>
+					) : (
+						<div className={classes.mapUnavailable} role="status">
+							<LocationOnIcon />
+							<span>The map preview is unavailable right now.</span>
+						</div>
+					)}
 				</Grid>
-				{/* <Grid xs={12} className={classes.wrapperMap}>
-					<MapContainer selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} />
-				</Grid> */}
 			</Grid>
 			<BookingDialog
 				id={Number(id)}

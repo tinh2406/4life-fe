@@ -2,6 +2,7 @@ import { createTheme } from "@mui/material/styles";
 
 import breakpoints from "./base/breakpoints";
 import globals from "./base/globals";
+import colors from "./base/colors";
 
 // import sidenav from "./components/sidenav";
 import list from "./components/list";
@@ -34,6 +35,12 @@ import svgIcon from "./components/svgIcon";
 
 export default createTheme({
 	breakpoints: { ...breakpoints },
+	palette: {
+		primary: {
+			main: colors.primary.main,
+			dark: colors.primary.focus
+		}
+	},
 
 	components: {
 		MuiCssBaseline: {

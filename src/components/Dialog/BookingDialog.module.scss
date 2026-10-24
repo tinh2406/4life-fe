@@ -2,6 +2,7 @@
     display: flex;
     justify-content: center;
     font-weight: 600;
+	color: #172b3a;
 }
 
 .loading_container {
@@ -16,6 +17,7 @@
     font-size: 22px;
     font-weight: 600;
     margin: 14px 0;
+	color: #172b3a;
 }
 
 .wrapperDate {
@@ -23,6 +25,7 @@
     justify-content: space-between;
     align-items: center;
     margin: 24px 0;
+	gap: 14px;
 }
 
 .text {
@@ -39,7 +42,7 @@
 .line {
     width: 100%;
     height: 1px;
-    background-color: #e0e0e0;
+	background-color: #dce3dd;
     margin: 24px 0;
 }
 
@@ -66,9 +69,9 @@
     background-color: var(--primary-color);
     color: white;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+	transition: background-color 160ms ease;
     &:hover {
-        background-color: rgb(235, 47, 125);
+		background-color: #245f54;
     }
     text-transform: none;
 }
@@ -76,12 +79,26 @@
 .buttonCancel {
     color: var(--primary-color);
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+	transition: background-color 160ms ease;
     border: 1px solid var(--primary-color);
     &:hover {
-        background-color: rgba(235, 47, 125,0.1);
-        border-color:  rgb(235, 47, 125);
+		background-color: #e9f0e8;
+		border-color: #2f7668;
     }
     text-transform: none;
 
+}
+
+@media (max-width: 600px) {
+	.wrapperDate {
+		align-items: stretch;
+		flex-direction: column;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.buttonSave,
+	.buttonCancel {
+		transition: none;
+	}
 }

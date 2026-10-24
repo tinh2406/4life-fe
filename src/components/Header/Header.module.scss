@@ -5,13 +5,15 @@
 
 .wrapperHeader {
     display: flex;
-    width: 100vw;
-    min-height: 52px;
-    background-color: white;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 74px;
+	background-color: #f7f8f5;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 30px;
-    filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.25));
+	gap: 24px;
+	padding: 8px clamp(18px, 4vw, 64px);
+	border-bottom: 1px solid #dce3dd;
 }
 
 .wrapperTab {
@@ -19,22 +21,29 @@
 }
 
 .tabItem {
-    color: var(--text-color);
-    font-size: 16px;
-    margin: 10px;
+	position: relative;
+	color: #586970;
+	font-size: 14px;
+	margin: 8px 14px;
     cursor: pointer;
     text-decoration: none;
     font-weight: 500;
+	white-space: nowrap;
+	transition: color 160ms ease;
+
+	&:hover {
+		color: #172b3a;
+	}
 }
 
 .active {
-    color: var(--primary-color);
+	color: #2f7668;
     font-weight: 700;
 }
 
 .logo {
-    width: 90px;
-    height: 60px;
+	width: 82px;
+	height: 56px;
     object-fit: contain;
 }
 
@@ -51,27 +60,28 @@
 }
 
 .customButton {
-    padding: 4px 22px;
+	padding: 7px 20px;
     text-transform: none;
     margin-left: 10px;
-    border-radius: 16px;
+	border-radius: 999px;
+	font-weight: 700;
 }
 
 .suBtn {
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
+	color: #2f7668;
+	border: 1px solid #9ab5aa;
 
     &:hover {
-        background-color: rgb(252, 243, 246);
-        border: 1px solid rgb(235, 47, 125);
+		background-color: #e9f0e8;
+		border: 1px solid #2f7668;
     }
 }
 
 .lgBtn {
-    background-color: var(--primary-color);
+	background-color: #2f7668;
 
     &:hover {
-        background-color: rgb(235, 47, 125);
+		background-color: #245f54;
     }
 }
 
@@ -86,4 +96,61 @@
     font-family: K2D, sans-serif;
     font-size: 16px;
     color: var(--text-color);
+}
+
+@media (max-width: 700px) {
+	.wrapperHeader {
+		min-height: 66px;
+		gap: 8px;
+		padding: 6px 14px;
+	}
+
+	.logo {
+		width: 64px;
+		height: 48px;
+	}
+
+	.tabItem {
+		margin: 8px;
+		font-size: 12px;
+	}
+
+	.customButton {
+		min-width: 0;
+		margin-left: 5px;
+		padding: 6px 11px;
+		font-size: 12px;
+	}
+}
+
+@media (max-width: 480px) {
+	.wrapperHeader {
+		gap: 4px;
+		padding-right: 8px;
+		padding-left: 8px;
+	}
+
+	.wrapperTab {
+		flex: 1;
+		justify-content: center;
+	}
+
+	.tabItem {
+		margin: 7px 5px;
+		font-size: 11px;
+	}
+
+	.logo {
+		width: 52px;
+	}
+
+	.username {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tabItem {
+		transition: none;
+	}
 }
