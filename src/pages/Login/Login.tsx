@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Grid from "@mui/material/Grid";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Button, IconButton, InputAdornment, TextField } from "@mui/material";
 import { schemaLoginForm } from "../../utils/get-schema-login-form";
@@ -11,12 +10,10 @@ import { UserLogin } from "../../types/model/userLogin";
 import { useGoogleLogin } from "@react-oauth/google";
 import { axiosInstance } from "../../api/instance";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
 import { getUserProfile } from "../../api/auth.api";
 import { loginSuccess } from "../../store/authSlice";
-import AuthImg from "../../assets/images/auth.png";
-import classes from "./Login.module.scss";
+import AuthLayout from "../../components/Auth/AuthLayout";
+import authForm from "../../components/Auth/AuthForm.module.scss";
 import React from "react";
 
 const LoginPage = (): React.JSX.Element => {
@@ -73,122 +70,17 @@ const LoginPage = (): React.JSX.Element => {
 	};
 
 	return (
-		<Grid container className={classes.wrapperLogin}>
-			<Grid item xs={0} md={6} sm={6}>
-				<img src={AuthImg} alt="Auth" className={classes.authImg} />
-			</Grid>
-			<Grid container item xs={12} md={6} sm={6} className={classes.loginForm}>
-				<Grid item xs={10} className={classes.options}>
-					<Grid item xs={3}>
-						<h3
-							className={`${classes.link} ${classes.signup}`}
-							onClick={() => {
-								navigate("/signup");
-							}}
-						>
-							Sign Up
-						</h3>
-					</Grid>
-					<Grid item xs={9}>
-						<h3
-							className={`${classes.link} ${classes.linkActive}`}
-							onClick={() => {
-								navigate("/login");
-							}}
-						>
-							Login
-						</h3>
-					</Grid>
-				</Grid>
-				<Grid item xs={10}>
-					<div className={classes.ggBtn}>
-						<img
-							className={classes.ggBtnImg}
-							src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
-							alt="Google"
-						></img>
-						<div className={classes.text} onClick={() => login()}>
-							Log in with Google
-						</div>
-					</div>
-					<div className={classes.line}></div>
-				</Grid>
-				<Grid item xs={10}>
-					<form onSubmit={handleSubmit(onSubmit)}>
-						<Grid item xs={12} className={classes.wrapperInput}>
-							<TextField
-								id="email"
-								label="Enter your email"
-								variant="standard"
-								className={classes.inputField}
-								error={!!errors.email}
-								helperText={errors.email?.message}
-								{...register("email")}
-								placeholder="Email"
-							/>
-							<div className={classes.text}>Email</div>
-						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								id="password"
-								label="Enter your password"
-								variant="standard"
-								error={!!errors.password}
-								helperText={errors.password?.message}
-								{...register("password")}
-								placeholder="Password"
-								type={showPassword ? "text" : "password"}
-								InputProps={{
-									endAdornment: (
-										<InputAdornment position="end">
-											<IconButton
-												aria-label="toggle password visibility"
-												onClick={handleClickShowPassword}
-												edge="end"
-											>
-												{showPassword ? <Visibility /> : <VisibilityOff />}
-											</IconButton>
-										</InputAdornment>
-									)
-								}}
-								className={classes.inputField}
-							/>
-							<div className={classes.text}>Password</div>
-						</Grid>
-						<Grid item xs={12}>
-							<div className={classes.error}>{errorLogin}</div>
-						</Grid>
-						<Grid item xs={12} className={classes.wrapperForgotPassword}>
-							<div className={classes.forgotPassword} onClick={() => navigate("/forgot-password")}>
-								Forgot password
-							</div>
-						</Grid>
-						<Grid item xs={12}>
-							<Button
-								type="submit"
-								variant="contained"
-								data-testid="login-button"
-								className={classes.btnLogin}
-							>
-								{isSubmitting ? (
-									<Box sx={{ display: "flex" }}>
-										<CircularProgress color="inherit" />
-									</Box>
-								) : (
-									"Login"
-								)}
-							</Button>
-						</Grid>
-						<Grid item xs={12} className={classes.switchOption}>
-							<div className={classes.text}>You don't have account?</div>
-							<div className={classes.forgotPassword} onClick={() => navigate("/signup")}>
-								Sign Up
-							</div>
-						</Grid>
-					</form>
-				</Grid>
-			</Grid>
-		</Grid>
+		<AuthLayout mode="login" onGoogleLogin={() => login()}>
+			<form className={authForm.form} onSubmit={handleSubmit(onSubmit)}>
+				<TextField id="email" label="Email" type="email" autoComplete="email" variant="outlined" className={authForm.field} error={!!errors.email} helperText={errors.email?.message} {...register("email")} />
+				<div>
+					<TextField id="password" label="Password" type={showPassword ? "text" : "password"} autoComplete="current-password" variant="outlined" className={authForm.field} error={!!errors.password} helperText={errors.password?.message} {...register("password")} InputProps={{ endAdornment: <InputAdornment position="end"><IconButton aria-label={showPassword ? "Hide password" : "Show password"} onClick={handleClickShowPassword} edge="end">{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment> }} />
+					<div className={authForm.formOptions}><Link className={authForm.textLink} to="/forgot-password">Forgot password?</Link></div>
+				</div>
+				{errorLogin && <p className={authForm.error} role="alert">{errorLogin}</p>}
+				<Button type="submit" variant="contained" data-testid="login-button" className={authForm.submitButton} disabled={isSubmitting}>{isSubmitting ? "Logging in…" : "Log in"}</Button>
+			</form>
+		</AuthLayout>
 	);
 };
 

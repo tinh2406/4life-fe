@@ -1,0 +1,312 @@
+.page {
+	width: 100%;
+	min-width: 0;
+	height: 100vh;
+	height: 100dvh;
+	display: grid;
+	place-items: center;
+	box-sizing: border-box;
+	overflow: hidden;
+	padding: 32px;
+	background: #f7f8f5;
+	color: #172b3a;
+}
+
+.panel {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(420px, 0.9fr);
+	width: min(1120px, 100%);
+	height: min(800px, calc(100dvh - 64px));
+	background: #fff;
+	border: 1px solid #dce3dd;
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 18px 55px rgb(23 43 58 / 9%);
+}
+
+.visual {
+	position: relative;
+	min-height: 100%;
+	background: #245f54;
+	color: #fff;
+}
+
+.visualImage,
+.visualShade {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.visualImage {
+	object-fit: cover;
+	object-position: center;
+}
+
+.visualShade {
+	background: linear-gradient(180deg, rgb(36 95 84 / 5%) 18%, rgb(36 95 84 / 82%) 100%);
+}
+
+.brand {
+	position: relative;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	color: inherit;
+	font-size: 28px;
+	font-weight: 700;
+	letter-spacing: -0.04em;
+	text-decoration: none;
+}
+
+.brand {
+	margin: 34px 38px;
+
+	img {
+		width: 136px;
+		height: auto;
+	}
+}
+
+.visualCopy {
+	position: absolute;
+	left: clamp(30px, 5vw, 64px);
+	right: clamp(30px, 5vw, 64px);
+	bottom: 62px;
+	max-width: 460px;
+
+	h1 {
+		max-width: 430px;
+		margin: 0 0 14px;
+		font-size: clamp(34px, 4vw, 48px);
+		line-height: 1.08;
+		letter-spacing: -0.035em;
+	}
+
+	> p:last-child {
+		max-width: 360px;
+		margin: 0;
+		color: #fff;
+		font-size: 15px;
+		line-height: 1.65;
+	}
+}
+
+.content {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	min-height: 0;
+	overflow-y: auto;
+	scrollbar-gutter: stable;
+	align-self: stretch;
+	justify-self: center;
+	height: 100%;
+	width: min(100% - 88px, 410px);
+	margin: 0;
+	padding: 24px 0;
+}
+
+
+.switcher {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 4px;
+	padding: 4px;
+	border-radius: 12px;
+	background: #e9f0e8;
+}
+
+.tab,
+.activeTab {
+	display: flex;
+	min-height: 42px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 10px;
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: background-color 160ms ease, color 160ms ease;
+}
+
+.tab {
+	color: #586970;
+
+	&:hover {
+		color: #245f54;
+	}
+}
+
+.activeTab {
+	background: #fff;
+	color: #245f54;
+	box-shadow: 0 1px 3px rgb(23 43 58 / 12%);
+}
+
+.heading {
+	margin: 22px 0 18px;
+
+	h2 {
+		margin: 0 0 8px;
+		color: #172b3a;
+		font-size: 30px;
+		font-weight: 700;
+		line-height: 1.2;
+		letter-spacing: -0.035em;
+	}
+
+	p {
+		margin: 0;
+	color: #586970;
+		font-size: 14px;
+		line-height: 1.6;
+	}
+}
+
+.googleButton {
+	width: 100%;
+	min-height: 48px;
+	gap: 10px;
+	border-color: #dce3dd;
+	border-radius: 10px;
+	color: #172b3a;
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	text-transform: none;
+
+	&:hover {
+		border-color: #2f7668;
+		background: #f7f8f5;
+	}
+
+	img {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+.divider {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	margin: 14px 0;
+	color: #586970;
+	font-size: 12px;
+	white-space: nowrap;
+
+	&::before,
+	&::after {
+		content: "";
+		width: 100%;
+		height: 1px;
+		background: #dce3dd;
+	}
+}
+
+.legal {
+	margin: 16px 0 0;
+	color: #586970;
+	font-size: 12px;
+	line-height: 1.55;
+	text-align: center;
+}
+
+@media (max-width: 800px) {
+	.page {
+		padding: 18px;
+	}
+
+	.panel {
+		grid-template-columns: minmax(0, 0.78fr) minmax(390px, 1fr);
+	}
+
+	.content {
+		width: min(100% - 56px, 410px);
+	}
+
+	.brand {
+		margin: 26px;
+	}
+
+	.visualCopy {
+		left: 28px;
+		right: 24px;
+		bottom: 38px;
+
+		h1 {
+			font-size: 34px;
+		}
+	}
+}
+
+@media (max-width: 640px) {
+	.page {
+		min-height: 0;
+		height: 100dvh;
+		place-items: stretch center;
+		overflow: hidden;
+		padding: 0;
+		background: #fff;
+	}
+
+	.panel {
+		display: flex;
+		width: 100%;
+		min-height: 0;
+		height: 100%;
+		flex-direction: column;
+		border: 0;
+		border-radius: 0;
+		box-shadow: none;
+	}
+
+	.visual {
+		min-height: 168px;
+		flex: 0 0 168px;
+	}
+
+	.visualShade {
+		background: linear-gradient(90deg, rgb(36 95 84 / 82%), rgb(36 95 84 / 5%));
+	}
+
+	.brand {
+		margin: 24px;
+	}
+
+	.visualCopy {
+		display: none;
+	}
+
+	.content {
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 0;
+		flex: 1 1 auto;
+		height: auto;
+		max-width: 500px;
+		margin: 0 auto;
+		padding: 26px 24px 36px;
+		overflow-y: auto;
+		justify-self: stretch;
+	}
+
+	.heading {
+		margin-top: 26px;
+
+		h2 {
+			font-size: 28px;
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tab,
+	.activeTab,
+	.googleButton {
+		transition: none;
+	}
+}

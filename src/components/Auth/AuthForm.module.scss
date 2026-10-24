@@ -1,0 +1,110 @@
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.field {
+	width: 100%;
+	background: #fcfdfa;
+	font-family: inherit;
+
+	:global(.MuiInputBase-root),
+	:global(.MuiInputLabel-root),
+	:global(.MuiFormHelperText-root) {
+		font-family: inherit;
+	}
+
+	:global(.MuiOutlinedInput-root) {
+		min-height: 52px;
+		border-radius: 10px;
+	}
+
+	:global(.MuiOutlinedInput-notchedOutline) {
+		border-color: #dce3dd;
+	}
+
+	:global(.MuiInputLabel-root.Mui-focused) {
+		color: #2f7668 !important;
+	}
+
+	&:hover :global(.MuiOutlinedInput-notchedOutline) {
+		border-color: #2f7668;
+	}
+
+	:global(.Mui-focused .MuiOutlinedInput-notchedOutline) {
+		border-color: #2f7668;
+		border-width: 2px;
+	}
+}
+
+.formOptions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: -4px;
+}
+
+.textLink {
+	color: #245f54;
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	text-underline-offset: 3px;
+
+	&:hover {
+		color: #173f38;
+		text-decoration: underline;
+	}
+
+	&:focus-visible {
+		border-radius: 3px;
+		outline: 2px solid #d36b4a;
+		outline-offset: 3px;
+	}
+}
+
+.submitButton {
+	min-height: 50px;
+	border-radius: 10px;
+	background: #2f7668;
+	color: #fff;
+	font-family: inherit;
+	font-size: 15px;
+	font-weight: 700;
+	text-transform: none;
+	box-shadow: none;
+	
+	&:global(.MuiButton-root) {
+		background: #2f7668;
+	}
+
+	&:hover {
+		background: #245f54;
+		box-shadow: 0 5px 14px rgb(36 95 84 / 18%);
+
+		&:global(.MuiButton-root) {
+			background: #245f54;
+		}
+	}
+
+	&:focus-visible {
+		outline: 3px solid #d36b4a;
+		outline-offset: 3px;
+	}
+
+	&:global(.Mui-disabled) {
+		background: #a9bdb5;
+		color: #fff;
+	}
+}
+
+.error {
+	margin: 0;
+	color: #a33224;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.error:empty {
+	display: none;
+}
