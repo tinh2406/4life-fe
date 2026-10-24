@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Grid, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { Avatar } from "@mui/material";
 import classes from "./Header.module.scss";
 import logo from "../../assets/images/logo.png";
@@ -198,9 +198,8 @@ const Header = (): React.JSX.Element => {
 	const user = useSelector((state: RootState) => state.auth.login.currentUser);
 
 	return (
-		<>
-			<Grid container>
-				<div className={classes.wrapperHeader}>
+		<header className={classes.header}>
+			<div className={classes.wrapperHeader}>
 					<div className={classes.wrapperLogo}>
 						<img src={logo} alt="Logo" className={classes.logo} />
 					</div>
@@ -235,9 +234,8 @@ const Header = (): React.JSX.Element => {
 							</Button>
 						</div>
 					)}
-				</div>
-			</Grid>
-		</>
+			</div>
+		</header>
 	);
 };
 

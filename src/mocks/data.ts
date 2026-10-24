@@ -26,10 +26,10 @@ const host = { id: 2, name: "Linh Tran", email: "host@4life.test", phoneNumber: 
 const images = ["https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1200", "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200"];
 
 export const mockRooms: RoomResponse[] = [
-	{ id: 1, name: "Sunny apartment near the beach", address: "12 Vo Nguyen Giap, Son Tra", price: 72, latitude: 16.06, longitude: 108.24, imageUrls: images, type: "Apartment", location: mockLocations[1], mod: host, isFavorite: false, totalReviews: 18, avgRating: 4.8 },
-	{ id: 2, name: "Quiet home in the city center", address: "8 Bach Dang, Hai Chau", price: 55, latitude: 16.07, longitude: 108.22, imageUrls: images, type: "House", location: mockLocations[0], mod: host, isFavorite: true, totalReviews: 12, avgRating: 4.6 },
-	{ id: 3, name: "Modern studio with a view", address: "25 Tran Phu, Hai Chau", price: 48, latitude: 16.08, longitude: 108.22, imageUrls: images, type: "Apartment", location: mockLocations[0], mod: host, isFavorite: false, totalReviews: 9, avgRating: 4.7 },
-	{ id: 4, name: "Garden villa with pool", address: "34 Ho Nghinh, Son Tra", price: 130, latitude: 16.09, longitude: 108.25, imageUrls: images, type: "Villa", location: mockLocations[1], mod: host, isFavorite: false, totalReviews: 21, avgRating: 4.9 }
+	{ id: 1, name: "Sunny apartment near the beach", address: "12 Vo Nguyen Giap, Son Tra", price: 72, maxGuests: 4, latitude: 16.06, longitude: 108.24, imageUrls: images, type: "Apartment", location: mockLocations[1], mod: host, isFavorite: false, totalReviews: 18, avgRating: 4.8 },
+	{ id: 2, name: "Quiet home in the city center", address: "8 Bach Dang, Hai Chau", price: 55, maxGuests: 2, latitude: 16.07, longitude: 108.22, imageUrls: images, type: "House", location: mockLocations[0], mod: host, isFavorite: true, totalReviews: 12, avgRating: 4.6 },
+	{ id: 3, name: "Modern studio with a view", address: "25 Tran Phu, Hai Chau", price: 48, maxGuests: 2, latitude: 16.08, longitude: 108.22, imageUrls: images, type: "Apartment", location: mockLocations[0], mod: host, isFavorite: false, totalReviews: 9, avgRating: 4.7 },
+	{ id: 4, name: "Garden villa with pool", address: "34 Ho Nghinh, Son Tra", price: 130, maxGuests: 6, latitude: 16.09, longitude: 108.25, imageUrls: images, type: "Villa", location: mockLocations[1], mod: host, isFavorite: false, totalReviews: 21, avgRating: 4.9 }
 ];
 
 export const mockReviews: Review[] = [{

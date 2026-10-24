@@ -75,6 +75,7 @@ export interface RoomResponse {
 	name: string;
 	address: string;
 	price: number;
+	maxGuests?: number;
 	latitude: number;
 	longitude: number;
 	imageUrls: string[];

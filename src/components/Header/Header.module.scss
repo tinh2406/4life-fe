@@ -3,17 +3,23 @@
     align-items: center;
 }
 
+.header {
+	width: 100%;
+	background-color: #f7f8f5;
+	border-bottom: 1px solid #dce3dd;
+}
+
 .wrapperHeader {
     display: flex;
 	box-sizing: border-box;
 	width: 100%;
+	max-width: 1440px;
+	margin: 0 auto;
 	min-height: 74px;
-	background-color: #f7f8f5;
     justify-content: space-between;
     align-items: center;
 	gap: 24px;
 	padding: 8px clamp(18px, 4vw, 64px);
-	border-bottom: 1px solid #dce3dd;
 }
 
 .wrapperTab {

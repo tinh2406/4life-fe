@@ -45,7 +45,13 @@ export const handlers = [
 	http.get(`${API}/locations`, ({ request }) => HttpResponse.json(page(mockLocations, request))),
 	http.get(`${API}/amenities`, ({ request }) => HttpResponse.json(page(mockAmenities, request))),
 	http.get(`${API}/accommodations`, ({ request }) => {
-		const rooms = mockRooms.map(room => ({ ...room, isFavorite: favoriteIds.has(room.id) }));
+		const url = new URL(request.url);
+		const locationId = Number(url.searchParams.get("locationId"));
+		const maxGuests = Number(url.searchParams.get("MaxGuests"));
+		const rooms = mockRooms
+			.filter(room => !locationId || room.location.id === locationId)
+			.filter(room => !maxGuests || (room.maxGuests ?? 0) >= maxGuests)
+			.map(room => ({ ...room, isFavorite: favoriteIds.has(room.id) }));
 		return HttpResponse.json(page(rooms, request));
 	}),
 	http.get(`${API}/accommodations/self`, ({ request }) => HttpResponse.json(page(accommodations, request))),

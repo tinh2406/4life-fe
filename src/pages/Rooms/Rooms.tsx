@@ -5,6 +5,7 @@ import {
 	ListItemAvatar,
 	ListItemText,
 	ListSubheader,
+	MenuItem,
 	Skeleton,
 	TextField
 } from "@mui/material";
@@ -14,6 +15,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import classes from "./Rooms.module.scss";
 import ActionAreaCard from "../../components/Card/Card";
 import useRooms from "../../hooks/user-rooms";
@@ -31,8 +33,10 @@ import AccommodationMap from "../../components/AccommodationMap/AccommodationMap
 const accommodationTypes = ["Homestay", "Villa", "Other"];
 
 const RoomsPage = (): React.JSX.Element => {
-	const [selectedCheckInDate, setSelectedCheckInDate] = useState(format(new Date(), "yyyy-MM-dd"));
-	const [selectedCheckoutDate, setSelectedCheckoutDate] = useState(format(new Date(), "yyyy-MM-dd"));
+	const [searchParams] = useSearchParams();
+	const [selectedCheckInDate, setSelectedCheckInDate] = useState(searchParams.get("checkIn") ?? format(new Date(), "yyyy-MM-dd"));
+	const [selectedCheckoutDate, setSelectedCheckoutDate] = useState(searchParams.get("checkOut") ?? format(new Date(), "yyyy-MM-dd"));
+	const [selectedLocationId, setSelectedLocationId] = useState(Number(searchParams.get("locationId")) || 0);
 	const [selectedAccommodationId, setSelectedAccommodationId] = useState<number | null>(null);
 	const [isMobileMapOpen, setIsMobileMapOpen] = useState(false);
 
@@ -45,12 +49,14 @@ const RoomsPage = (): React.JSX.Element => {
 		handleTypeChange,
 		handleCheckInChange,
 		handleCheckOutChange,
+		handleMaxGuestsChange,
 		fetchNextPage
 	} = useRooms();
 	const { data: dataSuggestRooms } = useRoomsByLocation();
 	const { data: locationData } = useLocations();
 	const addFavorite = useCreateFavoriteAccommodation();
 
+	const [selectedMaxGuests, setSelectedMaxGuests] = useState(Number(searchParams.get("MaxGuests")) || 0);
 	const rooms = useMemo(() => data?.flatMap(page => page.data) ?? [], [data]);
 	const suggestedRooms = useMemo(() => dataSuggestRooms?.flatMap(page => page.data) ?? [], [dataSuggestRooms]);
 	const locations = useMemo(() => locationData?.flatMap(page => page.data) ?? [], [locationData]);
@@ -77,6 +83,7 @@ const RoomsPage = (): React.JSX.Element => {
 	);
 
 	const handleLocationSelection = (_event: React.SyntheticEvent, value: LocationResponse | null): void => {
+		setSelectedLocationId(value?.id ?? 0);
 		handleLocationChange(value?.id ?? 0);
 	};
 
@@ -94,6 +101,12 @@ const RoomsPage = (): React.JSX.Element => {
 		const value = date?.format("YYYY-MM-DD") ?? "";
 		handleCheckOutChange(value);
 		setSelectedCheckoutDate(value);
+	};
+
+	const handleMaxGuestsSelection = (event: React.ChangeEvent<HTMLInputElement>): void => {
+		const value = Number(event.target.value);
+		setSelectedMaxGuests(value);
+		handleMaxGuestsChange(value);
 	};
 
 	const handleFavorite = (id: number): void => {
@@ -120,6 +133,7 @@ const RoomsPage = (): React.JSX.Element => {
 					<div className={classes.searchFieldLocation}>
 						<Autocomplete
 							options={locations}
+							value={locations.find(location => location.id === selectedLocationId) ?? null}
 							getOptionLabel={option => `${option.city}, ${option.district}`}
 							renderOption={renderOptionLocation}
 							renderInput={params => <TextField {...params} label="Where are you going?" variant="outlined" />}
@@ -154,6 +168,19 @@ const RoomsPage = (): React.JSX.Element => {
 							onChange={handleCheckOutSelection}
 							slotProps={{ textField: { fullWidth: true, variant: "outlined" } }}
 						/>
+					</div>
+					<div className={classes.searchFieldDate}>
+						<TextField
+							select
+							fullWidth
+							label="Guests"
+							value={selectedMaxGuests}
+							onChange={handleMaxGuestsSelection}
+						>
+							{[0, 1, 2, 3, 4, 5, 6, 7, 8].map(count => (
+								<MenuItem key={count} value={count}>{count === 0 ? "Any number" : `${count} ${count === 1 ? "guest" : "guests"}`}</MenuItem>
+							))}
+						</TextField>
 					</div>
 				</section>
 

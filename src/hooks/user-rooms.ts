@@ -4,6 +4,7 @@ import { GetRoomsParams } from "../types/axios/get-room-params";
 import { InfiniteQueryObserverResult, useInfiniteQuery } from "react-query";
 import { getRooms } from "../api/rooms.api";
 import { PagingResponse } from "../types/axios/paging";
+import { useSearchParams } from "react-router-dom";
 
 const LIMIT_ROW_PER_PAGE = 12;
 
@@ -24,11 +25,19 @@ type ReturnType = {
 	handleLocationChange: (value: number) => void;
 	handleCheckInChange: (value: string) => void;
 	handleCheckOutChange: (value: string) => void;
+	handleMaxGuestsChange: (value: number) => void;
 	fetchNextPage: () => Promise<InfiniteQueryObserverResult<PagingResponse<RoomResponse>, unknown>>;
 };
 
 const useRooms = (): ReturnType => {
-	const [params, setParams] = useState<GetRoomsParams>(initialRequestParams);
+	const [searchParams] = useSearchParams();
+	const [params, setParams] = useState<GetRoomsParams>(() => ({
+		...initialRequestParams,
+		locationId: Number(searchParams.get("locationId")) || undefined,
+		checkIn: searchParams.get("checkIn") || undefined,
+		checkOut: searchParams.get("checkOut") || undefined,
+		MaxGuests: Number(searchParams.get("MaxGuests")) || undefined
+	}));
 
 	const { data, isLoading, isFetching, isError, fetchNextPage } = useInfiniteQuery<
 		PagingResponse<RoomResponse>,
@@ -60,6 +69,10 @@ const useRooms = (): ReturnType => {
 		setParams((state: GetRoomsParams) => ({ ...state, checkOut: value, PageIndex: 1 }));
 	}, []);
 
+	const handleMaxGuestsChange = useCallback((value: number): void => {
+		setParams((state: GetRoomsParams) => ({ ...state, MaxGuests: value, PageIndex: 1 }));
+	}, []);
+
 	// const handleSearchChange = useCallback((searchTerm: string) => {
 	// 	setParams(state => ({ ...state, keyword: searchTerm, pageIndex: 1 }));
 	// }, []);
@@ -74,6 +87,7 @@ const useRooms = (): ReturnType => {
 		handleLocationChange,
 		handleCheckInChange,
 		handleCheckOutChange,
+		handleMaxGuestsChange,
 		fetchNextPage
 	};
 };
