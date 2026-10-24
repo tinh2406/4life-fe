@@ -9,8 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { loginUser } from "../../store/acthAction";
 import { UserLogin } from "../../types/model/userLogin";
 import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import { URL } from "../../utils/get-client-id";
+import { axiosInstance } from "../../api/instance";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
@@ -34,7 +33,7 @@ const LoginPage = (): React.JSX.Element => {
 		onSuccess: async tokenResponse => {
 			const accessToken = tokenResponse?.access_token;
 			try {
-				const apiResponse = await axios.post(`${URL}/auths/google-login`, {
+				const apiResponse = await axiosInstance.post("/auths/google-login", {
 					accessToken
 				});
 				localStorage.setItem("accessToken", apiResponse.data.token);

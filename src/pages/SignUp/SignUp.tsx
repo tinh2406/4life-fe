@@ -10,8 +10,7 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerUser } from "../../store/acthAction";
 import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import { URL } from "../../utils/get-client-id";
+import { axiosInstance } from "../../api/instance";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { UserRegister } from "../../types/model/userRegister";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -30,7 +29,7 @@ const SignUpPage = (): React.JSX.Element => {
 		onSuccess: async tokenResponse => {
 			const accessToken = tokenResponse?.access_token;
 			try {
-				const apiResponse = await axios.post(`${URL}/auths/google-login`, {
+				const apiResponse = await axiosInstance.post("/auths/google-login", {
 					accessToken
 				});
 				navigate("/home");
