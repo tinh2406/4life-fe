@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { IconButton } from "@mui/material";
-import { Avatar } from "@mui/material";
+import { IconButton, Avatar, Badge, Button, Menu, MenuItem, Divider } from "@mui/material";
 import classes from "./Header.module.scss";
 import logo from "../../assets/images/logo.png";
 import defaultAvatar from "../../assets/images/defaultAvatar.jpg";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Button from "@mui/material/Button";
 import { RootState } from "../../store";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Divider from "@mui/material/Divider";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -49,41 +44,47 @@ const UserProfileDropdown = () => {
 			<div className={classes.wrapperRightHeader}>
 				<IconButton
 					size="small"
-					disableRipple
 					color="inherit"
-					sx={{ px: 1 }}
+					className={classes.notifyBtn}
 					aria-controls="notification-menu"
 					aria-haspopup="true"
+					aria-label="Notifications"
 					onClick={event => {
 						setOpenMenu(event.currentTarget);
 						if (notify?.setHasNew) notify.setHasNew(false);
 					}}
 				>
-					<NotificationsIcon
+					<Badge
+						color="error"
+						variant="dot"
+						invisible={!notify?.hasNew && !Object.keys(notify?.newNoti ?? {}).length}
 						sx={{
-							color: notify?.hasNew ? "red" : "#959595"
+							"& .MuiBadge-badge": {
+								bgcolor: "#d36b4a",
+								right: 3,
+								top: 3
+							}
 						}}
-						fontSize="medium"
-					/>
-					{!!Object.keys(notify.newNoti).length && (
-						<p
-							style={{
-								position: "absolute",
-								right: "0.5rem",
-								top: "-0.5rem",
-								fontSize: 12,
-								color: "gray"
-							}}
-						>
-							{Object.keys(notify.newNoti).length}
-						</p>
-					)}
+					>
+						<NotificationsIcon className={classes.notifyIcon} />
+					</Badge>
 				</IconButton>
 				<Notifycations close={handleCloseMenu} openMenu={openMenu} />
-				<div className={classes.wrapperUser} onClick={handleClick}>
-					<Avatar alt="User Avatar" src={user?.avatar ? user.avatar : defaultAvatar} />
-					<div className={classes.username}>{user?.name ? user?.name : ""}</div>
-				</div>
+				<button
+					type="button"
+					className={classes.wrapperUser}
+					onClick={handleClick}
+					aria-expanded={open}
+					aria-haspopup="true"
+					aria-label="User menu"
+				>
+					<Avatar
+						alt={user?.name ?? "User Avatar"}
+						src={user?.avatar ? user.avatar : defaultAvatar}
+						sx={{ width: 32, height: 32 }}
+					/>
+					{user?.name && <span className={classes.username}>{user.name}</span>}
+				</button>
 			</div>
 			<Menu
 				anchorEl={anchorEl}
@@ -191,7 +192,7 @@ const UserProfileDropdown = () => {
 
 const Header = (): React.JSX.Element => {
 	const location = useLocation();
-	const isHomeActive = location.pathname.startsWith("/home");
+	const isHomeActive = location.pathname === "/" || location.pathname.startsWith("/home");
 	const isRoomsActive = location.pathname.startsWith("/rooms");
 	const isAboutActive = location.pathname.startsWith("/about");
 	const navigate = useNavigate();
@@ -200,40 +201,57 @@ const Header = (): React.JSX.Element => {
 	return (
 		<header className={classes.header}>
 			<div className={classes.wrapperHeader}>
-					<div className={classes.wrapperLogo}>
-						<img src={logo} alt="Logo" className={classes.logo} />
+				<div className={classes.wrapperLogo}>
+					<NavLink to="/home" className={classes.logoLink} aria-label="4LIFE Home">
+						<img src={logo} alt="4LIFE" className={classes.logo} />
+					</NavLink>
+				</div>
+				<nav className={classes.navPill} aria-label="Main Navigation">
+					<NavLink
+						to="/home"
+						className={({ isActive }) =>
+							`${classes.navItem} ${isActive || isHomeActive ? classes.active : ""}`
+						}
+					>
+						Home
+					</NavLink>
+					<NavLink
+						to="/rooms"
+						className={({ isActive }) =>
+							`${classes.navItem} ${isActive || isRoomsActive ? classes.active : ""}`
+						}
+					>
+						Accommodations
+					</NavLink>
+					<NavLink
+						to="/about"
+						className={({ isActive }) =>
+							`${classes.navItem} ${isActive || isAboutActive ? classes.active : ""}`
+						}
+					>
+						About
+					</NavLink>
+				</nav>
+				{user || localStorage.getItem("user") ? (
+					<UserProfileDropdown />
+				) : (
+					<div className={classes.wrapperBtn}>
+						<Button
+							variant="outlined"
+							className={`${classes.customButton} ${classes.suBtn}`}
+							onClick={() => navigate("/signup")}
+						>
+							Sign Up
+						</Button>
+						<Button
+							variant="contained"
+							className={`${classes.customButton} ${classes.lgBtn}`}
+							onClick={() => navigate("/login")}
+						>
+							Login
+						</Button>
 					</div>
-					<div className={classes.wrapperTab}>
-						<NavLink to="home" className={`${classes.tabItem} ${isHomeActive ? classes.active : ""}`}>
-							Home
-						</NavLink>
-						<NavLink to="rooms" className={`${classes.tabItem} ${isRoomsActive ? classes.active : ""}`}>
-							Accommodations
-						</NavLink>
-						<NavLink to="about" className={`${classes.tabItem} ${isAboutActive ? classes.active : ""}`}>
-							About
-						</NavLink>
-					</div>
-					{user || localStorage.getItem("user") ? (
-						<UserProfileDropdown />
-					) : (
-						<div className={classes.wrapperBtn}>
-							<Button
-								variant="outlined"
-								className={`${classes.customButton} ${classes.suBtn}`}
-								onClick={() => navigate("/signup")}
-							>
-								Sign Up
-							</Button>
-							<Button
-								variant="contained"
-								className={`${classes.customButton} ${classes.lgBtn}`}
-								onClick={() => navigate("/login")}
-							>
-								Login
-							</Button>
-						</div>
-					)}
+				)}
 			</div>
 		</header>
 	);

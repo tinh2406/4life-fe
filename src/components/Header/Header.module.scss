@@ -1,7 +1,4 @@
-.wrapperRightHeader {
-    display: flex;
-    align-items: center;
-}
+/* ─── Header shell (static, non-sticky to preserve vertical room) ─── */
 
 .header {
 	width: 100%;
@@ -10,153 +7,273 @@
 }
 
 .wrapperHeader {
-    display: flex;
+	display: flex;
 	box-sizing: border-box;
 	width: 100%;
 	max-width: 1440px;
 	margin: 0 auto;
-	min-height: 74px;
-    justify-content: space-between;
-    align-items: center;
+	min-height: 72px;
+	justify-content: space-between;
+	align-items: center;
 	gap: 24px;
 	padding: 8px clamp(18px, 4vw, 64px);
 }
 
-.wrapperTab {
-    display: flex;
+/* ─── Logo affordance ─────────────────────────────────────────────── */
+
+.wrapperLogo {
+	display: flex;
+	align-items: center;
 }
 
-.tabItem {
-	position: relative;
-	color: #586970;
-	font-size: 14px;
-	margin: 8px 14px;
-    cursor: pointer;
-    text-decoration: none;
-    font-weight: 500;
-	white-space: nowrap;
-	transition: color 160ms ease;
+.logoLink {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 8px;
+	text-decoration: none;
+	transition: opacity 160ms ease, transform 160ms ease;
 
 	&:hover {
-		color: #172b3a;
+		opacity: 0.88;
+		transform: scale(1.02);
 	}
-}
 
-.active {
-	color: #2f7668;
-    font-weight: 700;
+	&:focus-visible {
+		outline: 2px solid #2f7668;
+		outline-offset: 4px;
+	}
 }
 
 .logo {
 	width: 82px;
 	height: 56px;
-    object-fit: contain;
+	object-fit: contain;
+}
+
+/* ─── Segmented Pill Navigation ──────────────────────────────────── */
+
+.navPill {
+	display: inline-flex;
+	align-items: center;
+	padding: 4px;
+	background: #edf2ed;
+	border: 1px solid #dce3dd;
+	border-radius: 999px;
+	gap: 4px;
+}
+
+.navItem {
+	position: relative;
+	padding: 7px 20px;
+	color: #586970;
+	font-family: 'K2D', sans-serif;
+	font-size: 14px;
+	font-weight: 500;
+	text-decoration: none;
+	white-space: nowrap;
+	border-radius: 999px;
+	transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+
+	&:hover {
+		color: #172b3a;
+		background: rgba(255, 255, 255, 0.6);
+	}
+
+	&:focus-visible {
+		outline: 2px solid #2f7668;
+		outline-offset: 2px;
+	}
+}
+
+.active {
+	color: #2f7668 !important;
+	font-weight: 700;
+	background: #ffffff;
+	box-shadow: 0 2px 8px rgb(23 43 58 / 8%);
+
+	&:hover {
+		color: #245f54 !important;
+		background: #ffffff;
+	}
+}
+
+/* ─── User Profile & Notifications ───────────────────────────────── */
+
+.wrapperRightHeader {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.notifyBtn {
+	padding: 8px !important;
+	border-radius: 50% !important;
+	transition: background-color 150ms ease !important;
+
+	&:hover {
+		background-color: rgba(47, 118, 104, 0.08) !important;
+	}
+
+	&:focus-visible {
+		outline: 2px solid #2f7668 !important;
+		outline-offset: 2px !important;
+	}
+}
+
+.notifyIcon {
+	font-size: 22px !important;
+	color: #586970;
 }
 
 .wrapperUser {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	padding: 4px 14px 4px 4px;
+	background: #ffffff;
+	border: 1px solid #dce3dd;
+	border-radius: 999px;
+	cursor: pointer;
+	outline: none;
+	transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+
+	&:hover {
+		border-color: #a6bdb1;
+		box-shadow: 0 2px 8px rgb(23 43 58 / 8%);
+		background: #fafbfa;
+	}
+
+	&:focus-visible {
+		outline: 2px solid #2f7668;
+		outline-offset: 2px;
+	}
 }
 
 .username {
-    font-size: 16px;
-    font-weight: 500;
-    margin-left: 10px;
+	margin-left: 8px;
+	color: #172b3a;
+	font-family: 'K2D', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+/* ─── Auth Buttons (Unauthenticated) ─────────────────────────────── */
+
+.wrapperBtn {
+	display: flex;
+	align-items: center;
 }
 
 .customButton {
-	padding: 7px 20px;
-    text-transform: none;
-    margin-left: 10px;
-	border-radius: 999px;
-	font-weight: 700;
+	padding: 7px 20px !important;
+	font-family: 'K2D', sans-serif !important;
+	font-size: 14px !important;
+	font-weight: 700 !important;
+	text-transform: none !important;
+	border-radius: 999px !important;
+	margin-left: 10px !important;
 }
 
 .suBtn {
-	color: #2f7668;
-	border: 1px solid #9ab5aa;
+	color: #2f7668 !important;
+	border: 1px solid #9ab5aa !important;
 
-    &:hover {
-		background-color: #e9f0e8;
-		border: 1px solid #2f7668;
-    }
+	&:hover {
+		background-color: #e9f0e8 !important;
+		border: 1px solid #2f7668 !important;
+	}
 }
 
 .lgBtn {
-	background-color: #2f7668;
+	color: #ffffff !important;
+	background-color: #2f7668 !important;
 
-    &:hover {
-		background-color: #245f54;
-    }
+	&:hover {
+		background-color: #245f54 !important;
+	}
 }
 
-//Menu
+/* ─── Menu Popover ───────────────────────────────────────────────── */
+
 .menuIcon {
-    font-size: 16px;
-    color: var(--text-color);
-    margin-right: 10px;
+	font-size: 18px !important;
+	color: #586970 !important;
+	margin-right: 12px !important;
 }
 
 .menuItem {
-    font-family: K2D, sans-serif;
-    font-size: 16px;
-    color: var(--text-color);
+	font-family: 'K2D', sans-serif;
+	font-size: 15px;
+	color: #172b3a;
+	width: 100%;
 }
 
-@media (max-width: 700px) {
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
 	.wrapperHeader {
-		min-height: 66px;
-		gap: 8px;
-		padding: 6px 14px;
+		min-height: 64px;
+		gap: 12px;
+		padding: 6px 16px;
 	}
 
 	.logo {
-		width: 64px;
+		width: 68px;
 		height: 48px;
 	}
 
-	.tabItem {
-		margin: 8px;
-		font-size: 12px;
+	.navPill {
+		padding: 3px;
+		gap: 2px;
+	}
+
+	.navItem {
+		padding: 6px 12px;
+		font-size: 13px;
 	}
 
 	.customButton {
-		min-width: 0;
-		margin-left: 5px;
-		padding: 6px 11px;
-		font-size: 12px;
+		min-width: 0 !important;
+		margin-left: 6px !important;
+		padding: 6px 14px !important;
+		font-size: 13px !important;
 	}
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
 	.wrapperHeader {
-		gap: 4px;
-		padding-right: 8px;
-		padding-left: 8px;
-	}
-
-	.wrapperTab {
-		flex: 1;
-		justify-content: center;
-	}
-
-	.tabItem {
-		margin: 7px 5px;
-		font-size: 11px;
+		gap: 8px;
+		padding: 6px 12px;
 	}
 
 	.logo {
-		width: 52px;
+		width: 54px;
+		height: 38px;
+	}
+
+	.navPill {
+		padding: 2px;
+		gap: 1px;
+	}
+
+	.navItem {
+		padding: 5px 8px;
+		font-size: 12px;
 	}
 
 	.username {
 		display: none;
 	}
+
+	.customButton {
+		padding: 5px 10px !important;
+		font-size: 12px !important;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.tabItem {
-		transition: none;
+	.logoLink,
+	.navItem,
+	.wrapperUser {
+		transition: none !important;
 	}
 }
