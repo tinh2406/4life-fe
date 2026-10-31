@@ -37,7 +37,7 @@
 
 .searchPanel {
 	display: grid;
-	grid-template-columns: minmax(220px, 1.55fr) minmax(155px, 1fr) minmax(160px, 1fr) minmax(160px, 1fr);
+	grid-template-columns: minmax(200px, 1.4fr) minmax(140px, 1fr) minmax(145px, 1fr) minmax(145px, 1fr) minmax(130px, 0.9fr);
 	gap: 10px;
 	padding: 13px;
 	background: #fff;
@@ -46,13 +46,22 @@
 	box-shadow: 0 7px 20px rgb(23 43 58 / 5%);
 
 	:global(.MuiOutlinedInput-root) {
-		min-height: 54px;
+		height: 54px;
 		background: #fcfdfa;
 		border-radius: 10px;
 	}
 
 	:global(.MuiInputLabel-root) {
 		color: #586970;
+		line-height: 1.4;
+	}
+
+	:global(.MuiInputLabel-root:not(.MuiInputLabel-shrink)) {
+		transform: translate(14px, 17px) scale(1);
+	}
+
+	:global(.MuiInputLabel-root.MuiInputLabel-shrink) {
+		transform: translate(14px, -9px) scale(0.75);
 	}
 
 	:global(.MuiOutlinedInput-notchedOutline) {
@@ -63,12 +72,48 @@
 		border-color: #2f7668;
 		border-width: 2px;
 	}
+
+	:global(.MuiInputLabel-root.Mui-focused) {
+		color: #2f7668;
+	}
+
+	:global(.MuiSelect-select.MuiOutlinedInput-input) {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		padding: 0 14px !important;
+		box-sizing: border-box;
+	}
 }
 
 .searchFieldLocation,
-.searchFieldType,
+.searchFieldType {
+	min-width: 0;
+
+	:global(.MuiAutocomplete-inputRoot.MuiOutlinedInput-root) {
+		padding-top: 0;
+		padding-bottom: 0;
+		padding-left: 14px;
+		display: flex;
+		align-items: center;
+
+		.MuiAutocomplete-input {
+			padding: 0;
+			height: 100%;
+			box-sizing: border-box;
+		}
+	}
+}
+
 .searchFieldDate {
 	min-width: 0;
+
+	:global(.MuiOutlinedInput-input) {
+		padding-top: 0;
+		padding-bottom: 0;
+		height: 54px;
+		box-sizing: border-box;
+	}
 }
 
 .icon {

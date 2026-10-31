@@ -6,6 +6,8 @@ import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlin
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import dayjs, { Dayjs } from "dayjs";
+import { DatePicker } from "@mui/x-date-pickers";
 import { useQuery } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import HomeImage from "../../assets/images/home.png";
@@ -21,8 +23,8 @@ const locationParams: GetRoomsParams = { PageIndex: 1, PageSize: 100, IsDescendi
 const HomePage = (): React.JSX.Element => {
 	const navigate = useNavigate();
 	const [location, setLocation] = useState<LocationResponse | null>(null);
-	const [checkIn, setCheckIn] = useState("");
-	const [checkOut, setCheckOut] = useState("");
+	const [checkIn, setCheckIn] = useState<Dayjs | null>(null);
+	const [checkOut, setCheckOut] = useState<Dayjs | null>(null);
 	const [guests, setGuests] = useState(2);
 	const [searchError, setSearchError] = useState("");
 
@@ -39,15 +41,15 @@ const HomePage = (): React.JSX.Element => {
 
 	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		if (checkIn && checkOut && checkOut <= checkIn) {
+		if (checkIn && checkOut && !checkOut.isAfter(checkIn, "day")) {
 			setSearchError("Check-out must be after check-in.");
 			return;
 		}
 		setSearchError("");
 		const params = new URLSearchParams();
 		if (location) params.set("locationId", String(location.id));
-		if (checkIn) params.set("checkIn", checkIn);
-		if (checkOut) params.set("checkOut", checkOut);
+		if (checkIn && checkIn.isValid()) params.set("checkIn", checkIn.format("YYYY-MM-DD"));
+		if (checkOut && checkOut.isValid()) params.set("checkOut", checkOut.format("YYYY-MM-DD"));
 		params.set("MaxGuests", String(guests));
 		navigate(`/rooms?${params.toString()}`);
 	};
@@ -83,21 +85,36 @@ const HomePage = (): React.JSX.Element => {
 						renderInput={params => <TextField {...params} label="Destination" placeholder="Choose an area" />}
 					/>
 				</div>
-				<TextField
+				<DatePicker
 					label="Check in"
-					type="date"
+					format="DD MMM YYYY"
 					value={checkIn}
-					onChange={event => setCheckIn(event.target.value)}
-					inputProps={{ min: new Date().toISOString().slice(0, 10) }}
-					InputLabelProps={{ shrink: true }}
+					minDate={dayjs()}
+					onChange={value => {
+						setCheckIn(value);
+						if (value && checkOut && !checkOut.isAfter(value, "day")) {
+							setCheckOut(null);
+						}
+					}}
+					slotProps={{
+						textField: {
+							fullWidth: true,
+							placeholder: ""
+						}
+					}}
 				/>
-				<TextField
+				<DatePicker
 					label="Check out"
-					type="date"
+					format="DD MMM YYYY"
 					value={checkOut}
-					onChange={event => setCheckOut(event.target.value)}
-					inputProps={{ min: checkIn || new Date().toISOString().slice(0, 10) }}
-					InputLabelProps={{ shrink: true }}
+					minDate={checkIn ? checkIn.add(1, "day") : dayjs().add(1, "day")}
+					onChange={value => setCheckOut(value)}
+					slotProps={{
+						textField: {
+							fullWidth: true,
+							placeholder: ""
+						}
+					}}
 				/>
 				<TextField select label="Guests" value={guests} onChange={event => setGuests(Number(event.target.value))}>
 					{[1, 2, 3, 4, 5, 6, 7, 8].map(count => (

@@ -57,40 +57,53 @@
 	}
 }
 
-.exploreButton,
 .searchButton {
 	min-height: 48px;
+	min-width: 145px;
+	padding: 0 18px;
 	border-radius: 10px;
-	background: #a8432c;
+	background: #2f7668;
 	color: #fff;
 	font-weight: 700;
 	text-transform: none;
 	box-shadow: none;
 
 	&:hover {
-		background: #843b2a;
-		box-shadow: 0 6px 16px rgb(23 43 58 / 18%);
+		background: #245f54;
+		box-shadow: 0 6px 16px rgb(36 95 84 / 24%);
 	}
 
 	&:focus-visible {
-		outline: 3px solid #d36b4a;
+		outline: 3px solid #2f7668;
 		outline-offset: 3px;
 	}
 }
 
 .exploreButton {
+	min-height: 48px;
 	margin-top: 26px;
 	padding: 0 24px;
+	border-radius: 10px;
 	background: #fff;
 	color: #245f54;
+	font-weight: 700;
+	text-transform: none;
+	box-shadow: none;
+
+	&:hover,
+	&:global(.MuiButton-root.MuiButton-contained:hover) {
+		background: #e9f0e8;
+		color: #245f54;
+		box-shadow: 0 6px 16px rgb(23 43 58 / 18%);
+	}
+
+	&:focus-visible {
+		outline: 3px solid #fff;
+		outline-offset: 3px;
+	}
 
 	&:global(.MuiButton-root.MuiButton-contained) {
 		background: #fff;
-		color: #245f54;
-	}
-
-	&:global(.MuiButton-root.MuiButton-contained:hover) {
-		background: #e9f0e8;
 		color: #245f54;
 	}
 }
@@ -111,9 +124,21 @@
 	box-shadow: 0 8px 24px rgb(23 43 58 / 10%);
 
 	:global(.MuiOutlinedInput-root) {
-		min-height: 54px;
+		height: 54px;
 		background: #fcfdfa;
 		border-radius: 10px;
+	}
+
+	:global(.MuiInputLabel-root) {
+		line-height: 1.4;
+	}
+
+	:global(.MuiInputLabel-root:not(.MuiInputLabel-shrink)) {
+		transform: translate(14px, 17px) scale(1);
+	}
+
+	:global(.MuiInputLabel-root.MuiInputLabel-shrink) {
+		transform: translate(14px, -9px) scale(0.75);
 	}
 
 	:global(.MuiOutlinedInput-notchedOutline) {
@@ -132,11 +157,20 @@
 
 .searchLocation {
 	min-width: 0;
-}
 
-.searchButton {
-	min-width: 145px;
-	padding: 0 18px;
+	:global(.MuiAutocomplete-inputRoot.MuiOutlinedInput-root) {
+		padding-top: 0;
+		padding-bottom: 0;
+		padding-left: 14px;
+		display: flex;
+		align-items: center;
+
+		.MuiAutocomplete-input {
+			padding: 0;
+			height: 100%;
+			box-sizing: border-box;
+		}
+	}
 }
 
 .searchError {

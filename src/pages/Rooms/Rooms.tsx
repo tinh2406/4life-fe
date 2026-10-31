@@ -92,13 +92,13 @@ const RoomsPage = (): React.JSX.Element => {
 	};
 
 	const handleCheckInSelection = (date: Dayjs | null): void => {
-		const value = date?.format("YYYY-MM-DD") ?? "";
+		const value = date && date.isValid() ? date.format("YYYY-MM-DD") : "";
 		handleCheckInChange(value);
 		setSelectedCheckInDate(value);
 	};
 
 	const handleCheckOutSelection = (date: Dayjs | null): void => {
-		const value = date?.format("YYYY-MM-DD") ?? "";
+		const value = date && date.isValid() ? date.format("YYYY-MM-DD") : "";
 		handleCheckOutChange(value);
 		setSelectedCheckoutDate(value);
 	};
@@ -155,18 +155,20 @@ const RoomsPage = (): React.JSX.Element => {
 						<DatePicker
 							label="Check in"
 							format="DD MMM YYYY"
-							value={dayjs(selectedCheckInDate)}
+							value={selectedCheckInDate ? dayjs(selectedCheckInDate) : null}
+							minDate={dayjs()}
 							onChange={handleCheckInSelection}
-							slotProps={{ textField: { fullWidth: true, variant: "outlined" } }}
+							slotProps={{ textField: { fullWidth: true, variant: "outlined", placeholder: "" } }}
 						/>
 					</div>
 					<div className={classes.searchFieldDate}>
 						<DatePicker
 							label="Check out"
 							format="DD MMM YYYY"
-							value={dayjs(selectedCheckoutDate)}
+							value={selectedCheckoutDate ? dayjs(selectedCheckoutDate) : null}
+							minDate={selectedCheckInDate ? dayjs(selectedCheckInDate).add(1, "day") : dayjs().add(1, "day")}
 							onChange={handleCheckOutSelection}
-							slotProps={{ textField: { fullWidth: true, variant: "outlined" } }}
+							slotProps={{ textField: { fullWidth: true, variant: "outlined", placeholder: "" } }}
 						/>
 					</div>
 					<div className={classes.searchFieldDate}>

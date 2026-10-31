@@ -43,7 +43,8 @@ export const NotifyProvider = ({ children }: { children: ReactNode }) => {
 	const queryClient = useQueryClient();
 	const token = localStorage.getItem("accessToken");
 	useEffect(() => {
-		if (!token || import.meta.env.VITE_ENABLE_MOCKS === "true") return;
+		const isMockEnabled = import.meta.env.VITE_ENABLE_MOCKS === "true" || import.meta.env.MODE === "mock";
+		if (!token || isMockEnabled) return;
 		connection = new HubConnectionBuilder()
 			.withUrl("https://tuna.whitemage.tech/NotificationHub", {
 				accessTokenFactory: () => token,
