@@ -48,10 +48,37 @@ export const handlers = [
 		const url = new URL(request.url);
 		const locationId = Number(url.searchParams.get("locationId"));
 		const maxGuests = Number(url.searchParams.get("MaxGuests"));
-		const rooms = mockRooms
+		const type = url.searchParams.get("type");
+		const keyword = (url.searchParams.get("Keyword") ?? url.searchParams.get("keyword") ?? "").toLowerCase();
+		let rooms = mockRooms
 			.filter(room => !locationId || room.location.id === locationId)
 			.filter(room => !maxGuests || (room.maxGuests ?? 0) >= maxGuests)
+			.filter(room => {
+				if (!type) return true;
+				if (type.toLowerCase() === "other") {
+					return !["homestay", "villa"].includes(room.type.toLowerCase());
+				}
+				return room.type.toLowerCase() === type.toLowerCase();
+			})
+			.filter(room => {
+				if (!keyword) return true;
+				return (
+					room.name.toLowerCase().includes(keyword) ||
+					room.address.toLowerCase().includes(keyword) ||
+					room.location.city.toLowerCase().includes(keyword) ||
+					room.location.district.toLowerCase().includes(keyword)
+				);
+			})
 			.map(room => ({ ...room, isFavorite: favoriteIds.has(room.id) }));
+
+		const sortBy = url.searchParams.get("SortBy") ?? url.searchParams.get("sortBy");
+		const isDescending = (url.searchParams.get("IsDescending") ?? url.searchParams.get("isDescending")) === "true";
+		if (sortBy === "Price") {
+			rooms = [...rooms].sort((a, b) => isDescending ? b.price - a.price : a.price - b.price);
+		} else if (sortBy === "Name") {
+			rooms = [...rooms].sort((a, b) => isDescending ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name));
+		}
+
 		return HttpResponse.json(page(rooms, request));
 	}),
 	http.get(`${API}/accommodations/self`, ({ request }) => HttpResponse.json(page(accommodations, request))),

@@ -153,6 +153,14 @@
 	:global(.MuiInputLabel-root.Mui-focused) {
 		color: #2f7668;
 	}
+
+	:global(.MuiSelect-select.MuiOutlinedInput-input) {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		padding: 0 14px !important;
+		box-sizing: border-box;
+	}
 }
 
 .searchLocation {

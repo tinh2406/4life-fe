@@ -23,8 +23,8 @@ import { LoadingButton } from "@mui/lab";
 import ArrowDropDownCircleOutlinedIcon from "@mui/icons-material/ArrowDropDownCircleOutlined";
 import { LocationResponse } from "../../types/axios/paging";
 import useLocations from "../../hooks/use-locations";
-import { format } from "date-fns";
 import { Favorite } from "../../types/model/favorite";
+import { GUEST_OPTIONS } from "../../types/axios/get-room-params";
 import useCreateFavoriteAccommodation from "../../hooks/use-create-favorite-accommodation";
 import SuggestPost from "../../components/SuggestPost/SuggestPost";
 import useRoomsByLocation from "../../hooks/use-rooms-by-location";
@@ -34,8 +34,15 @@ const accommodationTypes = ["Homestay", "Villa", "Other"];
 
 const RoomsPage = (): React.JSX.Element => {
 	const [searchParams] = useSearchParams();
-	const [selectedCheckInDate, setSelectedCheckInDate] = useState(searchParams.get("checkIn") ?? format(new Date(), "yyyy-MM-dd"));
-	const [selectedCheckoutDate, setSelectedCheckoutDate] = useState(searchParams.get("checkOut") ?? format(new Date(), "yyyy-MM-dd"));
+	const initialCheckIn = searchParams.get("checkIn") ?? "";
+	const rawCheckOut = searchParams.get("checkOut") ?? "";
+	const initialCheckOut =
+		initialCheckIn && rawCheckOut && !dayjs(rawCheckOut).isAfter(dayjs(initialCheckIn), "day")
+			? dayjs(initialCheckIn).add(1, "day").format("YYYY-MM-DD")
+			: rawCheckOut;
+
+	const [selectedCheckInDate, setSelectedCheckInDate] = useState(initialCheckIn);
+	const [selectedCheckoutDate, setSelectedCheckoutDate] = useState(initialCheckOut);
 	const [selectedLocationId, setSelectedLocationId] = useState(Number(searchParams.get("locationId")) || 0);
 	const [selectedAccommodationId, setSelectedAccommodationId] = useState<number | null>(null);
 	const [isMobileMapOpen, setIsMobileMapOpen] = useState(false);
@@ -95,6 +102,13 @@ const RoomsPage = (): React.JSX.Element => {
 		const value = date && date.isValid() ? date.format("YYYY-MM-DD") : "";
 		handleCheckInChange(value);
 		setSelectedCheckInDate(value);
+		if (date && date.isValid()) {
+			if (!selectedCheckoutDate || !dayjs(selectedCheckoutDate).isAfter(date, "day")) {
+				const nextDay = date.add(1, "day").format("YYYY-MM-DD");
+				handleCheckOutChange(nextDay);
+				setSelectedCheckoutDate(nextDay);
+			}
+		}
 	};
 
 	const handleCheckOutSelection = (date: Dayjs | null): void => {
@@ -179,8 +193,8 @@ const RoomsPage = (): React.JSX.Element => {
 							value={selectedMaxGuests}
 							onChange={handleMaxGuestsSelection}
 						>
-							{[0, 1, 2, 3, 4, 5, 6, 7, 8].map(count => (
-								<MenuItem key={count} value={count}>{count === 0 ? "Any number" : `${count} ${count === 1 ? "guest" : "guests"}`}</MenuItem>
+							{GUEST_OPTIONS.map(option => (
+								<MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
 							))}
 						</TextField>
 					</div>

@@ -1,0 +1,43 @@
+.sliderWrapper {
+    position: relative;
+    padding: 0 44px;
+}
+
+.sliderArrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    transition: background-color 0.15s, box-shadow 0.15s, transform 0.15s;
+
+    &:hover {
+        background-color: #fff;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+        transform: translateY(-50%) scale(1.07);
+    }
+
+    svg {
+        font-size: 26px;
+        color: #333;
+    }
+}
+
+.sliderArrowPrev {
+    left: 0;
+}
+
+.sliderArrowNext {
+    right: 0;
+}
+

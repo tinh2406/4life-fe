@@ -11,8 +11,8 @@ import "swiper/css/pagination";
 import { Pagination, Navigation } from "swiper/modules";
 import { Swiper as SwiperType } from "swiper";
 import { useRef, useState } from "react";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
+import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -63,6 +63,28 @@ const ActionAreaCard = ({
 	const swiperRef = useRef<SwiperType>();
 	const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
 
+	// Unified drag detection via Pointer Events — works for both mouse and touch,
+	// across Swiper (image area) and CardActionArea (text area).
+	const pointerStartX = useRef(0);
+	const pointerStartY = useRef(0);
+	const wasDragged = useRef(false);
+
+	const handlePointerDown = (e: React.PointerEvent): void => {
+		pointerStartX.current = e.clientX;
+		pointerStartY.current = e.clientY;
+		wasDragged.current = false;
+	};
+
+	const handlePointerMove = (e: React.PointerEvent): void => {
+		const dx = Math.abs(e.clientX - pointerStartX.current);
+		const dy = Math.abs(e.clientY - pointerStartY.current);
+		if (dx > 6 || dy > 6) wasDragged.current = true;
+	};
+
+	const handleNavigate = (): void => {
+		if (!wasDragged.current) navigate(`/rooms/${idAccommodation}`);
+	};
+
 	const onCloseConfirmDialog = (): void => {
 		setIsConfirmDialogOpen(false);
 		setAnchorEl && setAnchorEl(null);
@@ -74,7 +96,11 @@ const ActionAreaCard = ({
 	};
 	return (
 		<>
-			<Card sx={{ margin: "10px", minWidth: 200 }}>
+			<Card
+					sx={{ margin: "10px", minWidth: 200 }}
+					onPointerDown={handlePointerDown}
+					onPointerMove={handlePointerMove}
+				>
 				<div className={classes.wrapperSwiper}>
 					<Swiper
 						pagination={{
@@ -85,7 +111,7 @@ const ActionAreaCard = ({
 						onBeforeInit={swiper => {
 							swiperRef.current = swiper;
 						}}
-						onClick={() => navigate(`/rooms/${idAccommodation}`)}
+						onClick={handleNavigate}
 					>
 						{image.map((imageUrl, index) => (
 							<SwiperSlide key={index}>
@@ -93,11 +119,17 @@ const ActionAreaCard = ({
 							</SwiperSlide>
 						))}
 					</Swiper>
-					<div onClick={() => swiperRef.current?.slidePrev()} className={classes.navigateBtnLeft}>
-						<ArrowLeftIcon className={classes.arrowIcon} />
+					<div
+						onClick={e => { e.stopPropagation(); swiperRef.current?.slidePrev(); }}
+						className={classes.navigateBtnLeft}
+					>
+						<ChevronLeftRoundedIcon className={classes.arrowIcon} />
 					</div>
-					<div onClick={() => swiperRef.current?.slideNext()} className={classes.navigateBtnRight}>
-						<ArrowRightIcon className={classes.arrowIcon} />
+					<div
+						onClick={e => { e.stopPropagation(); swiperRef.current?.slideNext(); }}
+						className={classes.navigateBtnRight}
+					>
+						<ChevronRightRoundedIcon className={classes.arrowIcon} />
 					</div>
 					{!isFavorite && !isMyPost ? (
 						<div
@@ -142,7 +174,7 @@ const ActionAreaCard = ({
 						</>
 					)}
 				</div>
-				<CardActionArea onClick={() => navigate(`/rooms/${idAccommodation}`)}>
+				<CardActionArea onClick={handleNavigate}>
 					<CardContent>
 						<div className={classes.wrapperTitle}>
 							<Typography

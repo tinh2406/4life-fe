@@ -14,7 +14,7 @@ import HomeImage from "../../assets/images/home.png";
 import { getRooms } from "../../api/rooms.api";
 import { getLocations } from "../../api/location.api";
 import { RoomResponse, LocationResponse } from "../../types/axios/paging";
-import { GetRoomsParams } from "../../types/axios/get-room-params";
+import { GetRoomsParams, GUEST_OPTIONS } from "../../types/axios/get-room-params";
 import classes from "./Home.module.scss";
 
 const searchParams: GetRoomsParams = { PageIndex: 1, PageSize: 4, IsDescending: false, SortBy: "Name" };
@@ -50,7 +50,7 @@ const HomePage = (): React.JSX.Element => {
 		if (location) params.set("locationId", String(location.id));
 		if (checkIn && checkIn.isValid()) params.set("checkIn", checkIn.format("YYYY-MM-DD"));
 		if (checkOut && checkOut.isValid()) params.set("checkOut", checkOut.format("YYYY-MM-DD"));
-		params.set("MaxGuests", String(guests));
+		if (guests > 0) params.set("MaxGuests", String(guests));
 		navigate(`/rooms?${params.toString()}`);
 	};
 
@@ -117,8 +117,10 @@ const HomePage = (): React.JSX.Element => {
 					}}
 				/>
 				<TextField select label="Guests" value={guests} onChange={event => setGuests(Number(event.target.value))}>
-					{[1, 2, 3, 4, 5, 6, 7, 8].map(count => (
-						<MenuItem key={count} value={count}>{count} {count === 1 ? "guest" : "guests"}</MenuItem>
+					{GUEST_OPTIONS.map(option => (
+						<MenuItem key={option.value} value={option.value}>
+							{option.label}
+						</MenuItem>
 					))}
 				</TextField>
 				<Button type="submit" variant="contained" className={classes.searchButton} startIcon={<SearchRoundedIcon />}>
