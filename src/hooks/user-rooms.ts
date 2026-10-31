@@ -20,6 +20,7 @@ type ReturnType = {
 	isLoading: boolean;
 	isFetching: boolean;
 	isError: boolean;
+	hasNextPage: boolean;
 	data: PagingResponse<RoomResponse>[] | undefined;
 	handleTypeChange: (value: string) => void;
 	handleLocationChange: (value: number) => void;
@@ -39,7 +40,7 @@ const useRooms = (): ReturnType => {
 		MaxGuests: Number(searchParams.get("MaxGuests")) || undefined
 	}));
 
-	const { data, isLoading, isFetching, isError, fetchNextPage } = useInfiniteQuery<
+	const { data, isLoading, isFetching, isError, fetchNextPage, hasNextPage } = useInfiniteQuery<
 		PagingResponse<RoomResponse>,
 		unknown,
 		PagingResponse<RoomResponse>
@@ -49,7 +50,10 @@ const useRooms = (): ReturnType => {
 			return await getRooms({ ...params, PageIndex: pageParam });
 		},
 		{
-			getNextPageParam: lastPage => lastPage.meta.pageIndex + 1
+			getNextPageParam: lastPage =>
+				lastPage.meta.pageIndex < lastPage.meta.totalPages
+					? lastPage.meta.pageIndex + 1
+					: undefined
 		}
 	);
 
@@ -81,6 +85,7 @@ const useRooms = (): ReturnType => {
 		isLoading,
 		isError,
 		isFetching,
+		hasNextPage: hasNextPage ?? false,
 		data: data?.pages,
 		// handleSearchChange,
 		handleTypeChange,

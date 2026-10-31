@@ -14,13 +14,12 @@ import { DatePicker } from "@mui/x-date-pickers";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import classes from "./Rooms.module.scss";
 import ActionAreaCard from "../../components/Card/Card";
 import useRooms from "../../hooks/user-rooms";
-import { LoadingButton } from "@mui/lab";
-import ArrowDropDownCircleOutlinedIcon from "@mui/icons-material/ArrowDropDownCircleOutlined";
+import { CircularProgress } from "@mui/material";
 import { LocationResponse } from "../../types/axios/paging";
 import useLocations from "../../hooks/use-locations";
 import { Favorite } from "../../types/model/favorite";
@@ -57,7 +56,8 @@ const RoomsPage = (): React.JSX.Element => {
 		handleCheckInChange,
 		handleCheckOutChange,
 		handleMaxGuestsChange,
-		fetchNextPage
+		fetchNextPage,
+		hasNextPage
 	} = useRooms();
 	const { data: dataSuggestRooms } = useRoomsByLocation();
 	const { data: locationData } = useLocations();
@@ -68,8 +68,40 @@ const RoomsPage = (): React.JSX.Element => {
 	const suggestedRooms = useMemo(() => dataSuggestRooms?.flatMap(page => page.data) ?? [], [dataSuggestRooms]);
 	const locations = useMemo(() => locationData?.flatMap(page => page.data) ?? [], [locationData]);
 	const resultCount = data?.[0]?.meta.totalCount;
-	const lastPage = data?.[data.length - 1];
-	const hasNextPage = Boolean(lastPage && lastPage.meta.pageIndex < lastPage.meta.totalPages);
+
+	// Infinity scroll — sentinel div at the bottom; when it enters the viewport,
+	// fetch the next page automatically (only when there are more pages and not already fetching).
+	const sentinelRef = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		const el = sentinelRef.current;
+		if (!el) return;
+		const observer = new IntersectionObserver(
+			entries => {
+				if (entries[0].isIntersecting && hasNextPage && !isFetching) {
+					void fetchNextPage();
+				}
+			},
+			{ rootMargin: "200px" } // start loading a bit before reaching the very bottom
+		);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, [hasNextPage, isFetching, fetchNextPage]);
+
+	// Detect when searchPanel reaches the bottom of the post list (near footer)
+	const [isAtBottom, setIsAtBottom] = useState(false);
+	const bottomSentinelRef = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		const el = bottomSentinelRef.current;
+		if (!el) return;
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				setIsAtBottom(entry.isIntersecting);
+			},
+			{ rootMargin: "0px 0px 40px 0px" }
+		);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, []);
 
 	const renderOptionLocation = (props: object, option: LocationResponse) => (
 		<ListItem {...props}>
@@ -136,21 +168,46 @@ const RoomsPage = (): React.JSX.Element => {
 	return (
 		<main className={classes.page}>
 			<div className={classes.pageInner}>
+				{suggestedRooms.length > 0 && (
+					<section className={classes.suggestions} aria-labelledby="nearby-heading">
+						<div className={classes.sectionHeading}>
+							<div>
+								<h2 id="nearby-heading">Stay near you</h2>
+								<p>Places to stay around your current location.</p>
+							</div>
+							<span className={classes.sectionIndex}>CURRENT LOCATION</span>
+						</div>
+						<SuggestPost
+							posts={suggestedRooms}
+							handleFavorite={handleFavorite}
+							handleUnFavorite={handleUnFavorite}
+						/>
+					</section>
+				)}
+
 				<header className={classes.pageHeading}>
 					<div>
 						<h1>Find your place</h1>
-						<p className={classes.intro}>Filter by neighborhood, dates and stay type to find the right place for your trip.</p>
+						<p className={classes.intro}>
+							Filter by neighborhood, dates and stay type to find the right place for your trip.
+						</p>
 					</div>
 				</header>
 
-				<section className={classes.searchPanel} aria-label="Find accommodation">
+				<div className={classes.browseContainer}>
+					<div
+						className={`${classes.stickyHeader} ${isAtBottom ? classes.stickyHeaderStopped : ""}`}
+					>
+						<section className={classes.searchPanel} aria-label="Find accommodation">
 					<div className={classes.searchFieldLocation}>
 						<Autocomplete
 							options={locations}
 							value={locations.find(location => location.id === selectedLocationId) ?? null}
 							getOptionLabel={option => `${option.city}, ${option.district}`}
 							renderOption={renderOptionLocation}
-							renderInput={params => <TextField {...params} label="Where are you going?" variant="outlined" />}
+							renderInput={params => (
+								<TextField {...params} label="Where are you going?" variant="outlined" />
+							)}
 							renderGroup={params => <ListSubheader component="div" {...params} />}
 							onChange={handleLocationSelection}
 						/>
@@ -180,7 +237,9 @@ const RoomsPage = (): React.JSX.Element => {
 							label="Check out"
 							format="DD MMM YYYY"
 							value={selectedCheckoutDate ? dayjs(selectedCheckoutDate) : null}
-							minDate={selectedCheckInDate ? dayjs(selectedCheckInDate).add(1, "day") : dayjs().add(1, "day")}
+							minDate={
+								selectedCheckInDate ? dayjs(selectedCheckInDate).add(1, "day") : dayjs().add(1, "day")
+							}
 							onChange={handleCheckOutSelection}
 							slotProps={{ textField: { fullWidth: true, variant: "outlined", placeholder: "" } }}
 						/>
@@ -194,30 +253,24 @@ const RoomsPage = (): React.JSX.Element => {
 							onChange={handleMaxGuestsSelection}
 						>
 							{GUEST_OPTIONS.map(option => (
-								<MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+								<MenuItem key={option.value} value={option.value}>
+									{option.label}
+								</MenuItem>
 							))}
 						</TextField>
 					</div>
 				</section>
-
-				{suggestedRooms.length > 0 && (
-					<section className={classes.suggestions} aria-labelledby="nearby-heading">
-						<div className={classes.sectionHeading}>
-							<div>
-								<h2 id="nearby-heading">Stay near you</h2>
-								<p>Places to stay around your current location.</p>
-							</div>
-							<span className={classes.sectionIndex}>CURRENT LOCATION</span>
-						</div>
-						<SuggestPost posts={suggestedRooms} handleFavorite={handleFavorite} handleUnFavorite={handleUnFavorite} />
-					</section>
-				)}
+				</div>{/* /stickyHeader */}
 
 				<section className={classes.resultsSection} aria-labelledby="results-heading">
 					<div className={classes.resultsHeader}>
 						<div>
 							<h2 id="results-heading">Places to stay</h2>
-							<p>{resultCount === undefined ? "Finding places for you" : `${resultCount} places in this area`}</p>
+							<p>
+								{resultCount === undefined
+									? "Finding places for you"
+									: `${resultCount} places in this area`}
+							</p>
 						</div>
 						<Button
 							className={classes.mapToggle}
@@ -240,7 +293,11 @@ const RoomsPage = (): React.JSX.Element => {
 										<Skeleton width="48%" />
 									</div>
 								))}
-							{isError && <p className={classes.stateMessage} role="alert">We could not load places to stay. Please try again.</p>}
+							{isError && (
+								<p className={classes.stateMessage} role="alert">
+									We could not load places to stay. Please try again.
+								</p>
+							)}
 							{!isLoading && !isError && rooms.length === 0 && (
 								<div className={classes.emptyState}>
 									<span>No places found</span>
@@ -251,7 +308,9 @@ const RoomsPage = (): React.JSX.Element => {
 								{rooms.map(room => (
 									<div
 										key={room.id}
-										className={room.id === selectedAccommodationId ? classes.roomSelected : undefined}
+										className={
+											room.id === selectedAccommodationId ? classes.roomSelected : undefined
+										}
 										onMouseEnter={() => setSelectedAccommodationId(room.id)}
 										onMouseLeave={() => setSelectedAccommodationId(null)}
 										onFocusCapture={() => setSelectedAccommodationId(room.id)}
@@ -271,20 +330,12 @@ const RoomsPage = (): React.JSX.Element => {
 									</div>
 								))}
 							</div>
-							{hasNextPage && (
-								<LoadingButton
-									className={classes.buttonSeeMore}
-									onClick={() => {
-										void fetchNextPage();
-									}}
-									loading={isFetching}
-									loadingPosition="start"
-									startIcon={<ArrowDropDownCircleOutlinedIcon />}
-									variant="contained"
-									disabled={isLoading || isError}
-								>
-									See more places
-								</LoadingButton>
+							{/* Infinity scroll sentinel — IntersectionObserver watches this */}
+							<div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />
+							{isFetching && (
+								<div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }}>
+									<CircularProgress size={32} />
+								</div>
 							)}
 						</div>
 						<AccommodationMap
@@ -294,7 +345,9 @@ const RoomsPage = (): React.JSX.Element => {
 							onSelect={setSelectedAccommodationId}
 						/>
 					</div>
+					<div ref={bottomSentinelRef} className={classes.bottomSentinel} aria-hidden="true" />
 				</section>
+				</div>{/* /browseContainer */}
 			</div>
 		</main>
 	);
