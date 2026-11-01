@@ -31,6 +31,10 @@ export const getBookingDetail = async (id: number): Promise<BookingDetail> => {
 	return response.data;
 };
 
+export const cancelBooking = async (id: number): Promise<void> => {
+	await axiosInstance.delete(`/bookings/${id}`);
+};
+
 export const payment = async (data: Payment): Promise<string> => {
 	const response = await axiosInstance.post<string>("/payment", data);
 	return response.data;

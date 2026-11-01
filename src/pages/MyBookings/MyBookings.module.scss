@@ -50,6 +50,20 @@
 	}
 }
 
+.exploreButton {
+	min-height: 44px;
+	padding: 9px 22px !important;
+	color: #fff !important;
+	background-color: #245f54 !important;
+	border-radius: 999px !important;
+	font-family: K2D, sans-serif !important;
+	font-weight: 700 !important;
+	text-transform: none !important;
+
+	&:hover { background-color: #172b3a !important; }
+	&:focus-visible { outline: 3px solid #d36b4a; outline-offset: 3px; }
+}
+
 @media (max-width: 600px) {
 	.page {
 		padding-top: 24px;

@@ -69,21 +69,36 @@
 
 .wrapperFavorite {
     position: absolute;
+	display: grid;
     top: 16px;
     right: 16px;
     z-index: 1;
-    color: #ffffff;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border-radius: 50%;
+	color: #172b3a;
+	background: rgb(255 255 255 / 94%);
+	border: 1px solid #dce3dd;
+	box-shadow: 0 2px 8px rgb(23 43 58 / 12%);
     cursor: pointer;
+	transition: background-color 150ms ease, transform 150ms ease;
+
+	&:hover { background: #fff; transform: scale(1.04); }
+	&:focus-visible { outline: 2px solid #d36b4a; outline-offset: 2px; }
 }
+
+.wrapperFavoriteActive { color: #a33d35; }
 
 .favoriteIcon {
     font-size: 22px;
-    color: #ffffff;
+	color: #586970;
 }
 
 .favoritedIcon {
     font-size: 22px;
-    color: #ff5233;
+	color: #a33d35;
 }
 
 .arrowIcon {
@@ -136,10 +151,4 @@
 
 .startIcon {
     color: #FFD233;
-}
-
-button {
-    border: none;
-    background-color: transparent;
-    outline: none;
 }

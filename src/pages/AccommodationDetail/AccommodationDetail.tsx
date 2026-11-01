@@ -59,6 +59,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const returnPath = typeof location.state?.from === "string" ? location.state.from : "/rooms";
+	const isBookingReturn = returnPath.startsWith("/my-bookings/");
 	const { id } = useParams();
 	const { data, isLoading, isError } = useAccommodationDetail(Number(id));
 	const [isBooked, setIsBooked] = useState<boolean>(false);
@@ -131,7 +132,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 		return (
 			<main className={classes.wrapper}>
 				<Button onClick={() => navigate(returnPath)} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
-					{returnPath.startsWith("/manage-posts") ? "Back to my listings" : "Back to places"}
+					{returnPath.startsWith("/manage-posts") ? "Back to my listings" : isBookingReturn ? "Back to booking" : "Back to places"}
 				</Button>
 				<p className={classes.stateMessage} role="alert">We could not load this place. Return to the results and try again.</p>
 			</main>
@@ -142,7 +143,7 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 		<Grid container className={classes.wrapper}>
 			<Grid item xs={12} className={classes.icon}>
 				<Button onClick={() => navigate(returnPath)} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
-					{returnPath.startsWith("/manage-posts") ? "Back to my listings" : "Back to places"}
+					{returnPath.startsWith("/manage-posts") ? "Back to my listings" : isBookingReturn ? "Back to booking" : "Back to places"}
 				</Button>
 			</Grid>
 			<Grid item container xs={12} spacing={2} className={classes.gallery}>

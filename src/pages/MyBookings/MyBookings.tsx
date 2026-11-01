@@ -41,7 +41,7 @@ const MyBookingsPages = (): React.JSX.Element => {
 				<section className={classes.statePanel}>
 					<h2>No bookings yet</h2>
 					<p>When you book a stay, its dates and payment status will appear here.</p>
-					<Button component={Link} to="/rooms" variant="contained">Explore stays</Button>
+					<Button component={Link} to="/rooms" variant="contained" className={classes.exploreButton}>Explore stays</Button>
 				</section>
 			)}
 

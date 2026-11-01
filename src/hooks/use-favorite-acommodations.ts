@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { RoomResponse } from "../types/axios/paging";
 import { GetRoomsParams } from "../types/axios/get-room-params";
 import { InfiniteQueryObserverResult, useInfiniteQuery } from "react-query";
@@ -21,12 +20,13 @@ type ReturnType = {
 	isError: boolean;
 	data: PagingResponse<RoomResponse>[] | undefined;
 	fetchNextPage: () => Promise<InfiniteQueryObserverResult<PagingResponse<RoomResponse>, unknown>>;
+	refetch: () => Promise<unknown>;
 };
 
 const useFavoriteAccommodations = (): ReturnType => {
-	const [params, _setParams] = useState<GetRoomsParams>(initialRequestParams);
+	const params: GetRoomsParams = initialRequestParams;
 
-	const { data, isLoading, isFetching, isError, fetchNextPage } = useInfiniteQuery<
+	const { data, isLoading, isFetching, isError, fetchNextPage, refetch } = useInfiniteQuery<
 		PagingResponse<RoomResponse>,
 		unknown,
 		PagingResponse<RoomResponse>
@@ -45,7 +45,8 @@ const useFavoriteAccommodations = (): ReturnType => {
 		isError,
 		isFetching,
 		data: data?.pages,
-		fetchNextPage
+		fetchNextPage,
+		refetch
 	};
 };
 

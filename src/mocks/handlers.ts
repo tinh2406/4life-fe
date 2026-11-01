@@ -129,6 +129,13 @@ export const handlers = [
 		const booking = bookings.find(item => item.id === Number(params.id));
 		return booking ? HttpResponse.json(booking) : HttpResponse.json({ message: "Not found" }, { status: 404 });
 	}),
+	http.delete(`${API}/bookings/:id`, ({ params }) => {
+		const bookingId = Number(params.id);
+		const bookingExists = bookings.some(item => item.id === bookingId);
+		if (!bookingExists) return HttpResponse.json({ message: "Not found" }, { status: 404 });
+		bookings = bookings.filter(item => item.id !== bookingId);
+		return new HttpResponse(null, { status: 204 });
+	}),
 	http.post(`${API}/payment`, () => HttpResponse.text("https://example.com/mock-payment")),
 	http.get(`${API}/statistics/total-amount`, () => HttpResponse.json({ totalAmount: 864, totalBookings: bookings.length })),
 	http.get(`${API}/statistics/total-sales-life-growth`, ({ request }) => {

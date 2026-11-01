@@ -1,7 +1,7 @@
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { CardActionArea } from "@mui/material";
+import { CardActionArea, IconButton } from "@mui/material";
 import classes from "./Card.module.scss";
 import StarIcon from "@mui/icons-material/Star";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -39,6 +39,7 @@ type CardProps = {
 	onEdit?: (id: number) => void;
 	handleDelete?: () => void;
 	setAnchorEl?: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
+	cardClassName?: string;
 };
 
 const ActionAreaCard = ({
@@ -59,7 +60,8 @@ const ActionAreaCard = ({
 	handleClose,
 	onEdit,
 	handleDelete,
-	setAnchorEl
+	setAnchorEl,
+	cardClassName
 }: CardProps): React.JSX.Element => {
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -100,9 +102,10 @@ const ActionAreaCard = ({
 	return (
 		<>
 			<Card
-					sx={{ margin: "10px", minWidth: 200 }}
-					onPointerDown={handlePointerDown}
-					onPointerMove={handlePointerMove}
+				className={cardClassName}
+				sx={{ margin: "10px", minWidth: 200 }}
+				onPointerDown={handlePointerDown}
+				onPointerMove={handlePointerMove}
 				>
 				<div className={classes.wrapperSwiper}>
 					<Swiper
@@ -118,7 +121,7 @@ const ActionAreaCard = ({
 					>
 						{image.map((imageUrl, index) => (
 							<SwiperSlide key={index}>
-								<img src={imageUrl} alt={`Slide ${index}`} className={classes.imgAccommodations} />
+							<img src={imageUrl} alt={`${title}, photo ${index + 1}`} className={classes.imgAccommodations} />
 							</SwiperSlide>
 						))}
 					</Swiper>
@@ -134,28 +137,30 @@ const ActionAreaCard = ({
 					>
 						<ChevronRightRoundedIcon className={classes.arrowIcon} />
 					</div>
-					{!isFavorite && !isMyPost ? (
-						<div
-							className={classes.wrapperFavorite}
-							onClick={() => handleFavorite && handleFavorite(idAccommodation)}
+					{!isMyPost ? (
+						<IconButton
+							type="button"
+							aria-label={isFavorite ? `Remove ${title} from saved places` : `Save ${title}`}
+							className={`${classes.wrapperFavorite} ${isFavorite ? classes.wrapperFavoriteActive : ""}`}
+							onClick={event => {
+								event.stopPropagation();
+								if (isFavorite) handleUnFavorite?.(idAccommodation);
+								else handleFavorite?.(idAccommodation);
+							}}
+							onPointerDown={event => event.stopPropagation()}
 						>
-							<FavoriteBorderOutlinedIcon className={classes.favoriteIcon} />
-						</div>
-					) : isFavorite && !isMyPost ? (
-						<div
-							className={classes.wrapperFavorite}
-							onClick={() => handleUnFavorite && handleUnFavorite(idAccommodation)}
-						>
-							<FavoriteOutlinedIcon className={classes.favoritedIcon} />
-						</div>
+							{isFavorite ? <FavoriteOutlinedIcon className={classes.favoritedIcon} /> : <FavoriteBorderOutlinedIcon className={classes.favoriteIcon} />}
+						</IconButton>
 					) : (
 						<>
-							<button
+							<IconButton
+								type="button"
+								aria-label={`Actions for ${title}`}
 								className={classes.wrapperFavorite}
 								onClick={e => handleClick && handleClick(e, idAccommodation)}
 							>
 								<MoreVertIcon className={classes.favoriteIcon} />
-							</button>
+							</IconButton>
 							<Menu
 								id="basic-menu"
 								anchorEl={anchorEl}
@@ -203,7 +208,7 @@ const ActionAreaCard = ({
 							>
 								{`$${price}/1 night`}
 							</Typography>
-							<div className={classes.wrapperRating}>
+									<div className={classes.wrapperRating}>
 								<StarIcon className={classes.startIcon} />
 								<Typography
 									variant="body2"
