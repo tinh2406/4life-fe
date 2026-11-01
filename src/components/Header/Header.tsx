@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Logout from "@mui/icons-material/Logout";
 import { logoutUser } from "../../store/acthAction";
@@ -30,6 +31,10 @@ const UserProfileDropdown = () => {
 	};
 	const handleClose = () => {
 		setAnchorEl(null);
+	};
+	const handleNavigate = (path: string) => {
+		handleClose();
+		navigate(path);
 	};
 	const handleLogout = () => {
 		setAnchorEl(null);
@@ -76,6 +81,7 @@ const UserProfileDropdown = () => {
 					onClick={handleClick}
 					aria-expanded={open}
 					aria-haspopup="true"
+					aria-controls={open ? "account-menu" : undefined}
 					aria-label="User menu"
 				>
 					<Avatar
@@ -91,99 +97,45 @@ const UserProfileDropdown = () => {
 				id="account-menu"
 				open={open}
 				onClose={handleClose}
-				onClick={handleClose}
 				PaperProps={{
 					elevation: 0,
-					sx: {
-						overflow: "visible",
-						filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-						mt: 1.5,
-						"& .MuiAvatar-root": {
-							width: 32,
-							height: 32,
-							ml: -0.5,
-							mr: 1
-						},
-						"&:before": {
-							content: '""',
-							display: "block",
-							position: "absolute",
-							top: 0,
-							right: 14,
-							width: 10,
-							height: 10,
-							bgcolor: "background.paper",
-							transform: "translateY(-50%) rotate(45deg)",
-							zIndex: 0
-						}
-					}
+					className: classes.accountMenuPaper
 				}}
 				transformOrigin={{ horizontal: "right", vertical: "top" }}
 				anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
 			>
-				<MenuItem
-					sx={{
-						"&:hover": {
-							backgroundColor: "#f7e1e6"
-						}
-					}}
-					onClick={handleClose}
-				>
+				<div className={classes.accountSummary}>
+					<Avatar
+						alt={user?.name ?? "User Avatar"}
+						src={user?.avatar || defaultAvatar}
+						className={classes.accountAvatar}
+					/>
+					<div className={classes.accountIdentity}>
+						<strong>{user?.name || "Your account"}</strong>
+						{user?.email && <span>{user.email}</span>}
+					</div>
+				</div>
+				<Divider className={classes.accountDivider} />
+				<MenuItem className={classes.accountMenuItem} onClick={() => handleNavigate("/profile")}>
 					<PeopleOutlineIcon className={classes.menuIcon} />
-					<div className={classes.menuItem} onClick={() => navigate("/profile")}>
-						My Profile
-					</div>
+					<span className={classes.menuItem}>My Profile</span>
 				</MenuItem>
-				<MenuItem
-					sx={{
-						"&:hover": {
-							backgroundColor: "#f7e1e6"
-						}
-					}}
-					onClick={handleClose}
-				>
+				<MenuItem className={classes.accountMenuItem} onClick={() => handleNavigate("/manage-posts")}>
 					<EditNoteIcon className={classes.menuIcon} />
-					<div className={classes.menuItem} onClick={() => navigate("/manage-posts")}>
-						Manage Posts
-					</div>
+					<span className={classes.menuItem}>Manage Posts</span>
 				</MenuItem>
-				<MenuItem
-					sx={{
-						"&:hover": {
-							backgroundColor: "#f7e1e6"
-						}
-					}}
-					onClick={handleClose}
-				>
-					<EditNoteIcon className={classes.menuIcon} />
-					<div className={classes.menuItem} onClick={() => navigate("/my-bookings")}>
-						My Bookings
-					</div>
+				<MenuItem className={classes.accountMenuItem} onClick={() => handleNavigate("/my-bookings")}>
+					<CalendarMonthOutlinedIcon className={classes.menuIcon} />
+					<span className={classes.menuItem}>My Bookings</span>
 				</MenuItem>
-				<MenuItem
-					sx={{
-						"&:hover": {
-							backgroundColor: "#f7e1e6"
-						}
-					}}
-					onClick={handleClose}
-				>
+				<MenuItem className={classes.accountMenuItem} onClick={() => handleNavigate("/my-favorites")}>
 					<FavoriteBorderIcon className={classes.menuIcon} />
-					<div className={classes.menuItem} onClick={() => navigate("/my-favorites")}>
-						My Favorite
-					</div>
+					<span className={classes.menuItem}>My Favorite</span>
 				</MenuItem>
-				<Divider />
-				<MenuItem
-					sx={{
-						"&:hover": {
-							backgroundColor: "#f7e1e6"
-						}
-					}}
-					onClick={handleLogout}
-				>
+				<Divider className={classes.accountDivider} />
+				<MenuItem className={`${classes.accountMenuItem} ${classes.logoutMenuItem}`} onClick={handleLogout}>
 					<Logout className={classes.menuIcon} />
-					<div className={classes.menuItem}>Logout</div>
+					<span className={classes.menuItem}>Logout</span>
 				</MenuItem>
 			</Menu>
 		</>
