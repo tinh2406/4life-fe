@@ -1,7 +1,7 @@
 import { Button, Grid, IconButton, Rating, Skeleton, TextField, Typography } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import classes from "./AccomodationDetail.module.scss";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useAccommodationDetail from "../../hooks/use-accomodation-detail";
 import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -57,6 +57,8 @@ interface Ratings {
 
 const AccommodationDetailPage = (): React.JSX.Element => {
 	const navigate = useNavigate();
+	const location = useLocation();
+	const returnPath = typeof location.state?.from === "string" ? location.state.from : "/rooms";
 	const { id } = useParams();
 	const { data, isLoading, isError } = useAccommodationDetail(Number(id));
 	const [isBooked, setIsBooked] = useState<boolean>(false);
@@ -128,8 +130,8 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	if (isError) {
 		return (
 			<main className={classes.wrapper}>
-				<Button onClick={() => navigate("/rooms")} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
-					Back to places
+				<Button onClick={() => navigate(returnPath)} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
+					{returnPath.startsWith("/manage-posts") ? "Back to my listings" : "Back to places"}
 				</Button>
 				<p className={classes.stateMessage} role="alert">We could not load this place. Return to the results and try again.</p>
 			</main>
@@ -139,8 +141,8 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 	return (
 		<Grid container className={classes.wrapper}>
 			<Grid item xs={12} className={classes.icon}>
-				<Button onClick={() => navigate("/rooms")} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
-					Back to places
+				<Button onClick={() => navigate(returnPath)} startIcon={<KeyboardBackspaceIcon />} className={classes.backButton}>
+					{returnPath.startsWith("/manage-posts") ? "Back to my listings" : "Back to places"}
 				</Button>
 			</Grid>
 			<Grid item container xs={12} spacing={2} className={classes.gallery}>

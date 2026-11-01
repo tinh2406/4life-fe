@@ -41,8 +41,10 @@ function a11yProps(index: number) {
 	};
 }
 
-export default function VerticalTabs() {
-	const [value, setValue] = React.useState(0);
+type VerticalTabsProps = { initialTab?: number };
+
+export default function VerticalTabs({ initialTab = 0 }: VerticalTabsProps) {
+	const [value, setValue] = React.useState(initialTab);
 
 	const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
 		setValue(newValue);

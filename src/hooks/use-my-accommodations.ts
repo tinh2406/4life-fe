@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { RoomResponse } from "../types/axios/paging";
 import { GetRoomsParams } from "../types/axios/get-room-params";
 import { InfiniteQueryObserverResult, useInfiniteQuery } from "react-query";
@@ -19,15 +18,17 @@ type ReturnType = {
 	isLoading: boolean;
 	isFetching: boolean;
 	isError: boolean;
+	hasNextPage: boolean;
+	isFetchingNextPage: boolean;
 	data: PagingResponse<RoomResponse>[] | undefined;
 	// handleLocationChange: (value: number) => void;
 	fetchNextPage: () => Promise<InfiniteQueryObserverResult<PagingResponse<RoomResponse>, unknown>>;
 };
 
 const useMyAccommodations = (): ReturnType => {
-	const [params, _setParams] = useState<GetRoomsParams>(initialRequestParams);
+	const params = initialRequestParams;
 
-	const { data, isLoading, isFetching, isError, fetchNextPage } = useInfiniteQuery<
+	const { data, isLoading, isFetching, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery<
 		PagingResponse<RoomResponse>,
 		unknown,
 		PagingResponse<RoomResponse>
@@ -37,7 +38,8 @@ const useMyAccommodations = (): ReturnType => {
 			return await getAccomodationsOfMy({ ...params, PageIndex: pageParam });
 		},
 		{
-			getNextPageParam: lastPage => lastPage.meta.pageIndex + 1
+			getNextPageParam: lastPage =>
+				lastPage.meta.pageIndex < lastPage.meta.totalPages ? lastPage.meta.pageIndex + 1 : undefined
 		}
 	);
 
@@ -53,6 +55,8 @@ const useMyAccommodations = (): ReturnType => {
 		isLoading,
 		isError,
 		isFetching,
+		hasNextPage: Boolean(hasNextPage),
+		isFetchingNextPage,
 		data: data?.pages,
 		// handleLocationChange,
 		fetchNextPage

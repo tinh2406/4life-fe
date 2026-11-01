@@ -13,7 +13,7 @@ import SelectOption from "../SelectOption/SelectOption";
 import useLocations from "../../hooks/use-locations";
 import useAmenities from "../../hooks/use-amenities";
 import { convertFormatTime, transformAmenityOptions, transformLocationOptions } from "../../utils/mapper";
-import { Autocomplete, Checkbox, FormControlLabel, FormGroup, IconButton, TextField } from "@mui/material";
+import { Autocomplete, Checkbox, FormControlLabel, FormGroup, IconButton, TextField, Typography } from "@mui/material";
 import UploadImageAccomodation from "../UploadImageAccommodation/UploadImageAccomodation";
 import { getAvatarURL } from "../../api/auth.api";
 import { schemaAddPostFrom } from "../../utils/get-schema-login-form";
@@ -95,8 +95,11 @@ const AddPostDialog = ({
 		handleSubmit,
 		reset,
 		setValue,
-		getValues
+		getValues,
+		watch
 	} = useForm({ resolver: yupResolver(schemaAddPostFrom) });
+	const previewName = watch("name");
+	const previewAddress = watch("address");
 
 	const typeOptions = useMemo(
 		() => [
@@ -143,6 +146,7 @@ const AddPostDialog = ({
 		const selectedOption = typeOptions.find(option => option.value === value);
 		return selectedOption ? selectedOption.label : null;
 	};
+	const previewType = getTypeOfYourAccomadation(watch("type")) ?? dataAccommodation?.type;
 
 	const getTypeValueFromLabel = useCallback(
 		(label: string): number => {
@@ -316,11 +320,13 @@ const AddPostDialog = ({
 
 	return (
 		<>
-			<Dialog open={open} scroll="paper" fullWidth maxWidth="md">
+			<Dialog open={open} scroll="paper" fullWidth maxWidth={isEdit ? "xl" : "md"}>
 				<DialogTitle className={classes.dialog_title_wrapper}>
 					{isEdit ? "Edit post" : "Add New Post"}
 				</DialogTitle>
-				<DialogContent dividers={true}>
+				<DialogContent dividers={true} className={isEdit ? classes.editDialogContent : undefined}>
+					<div className={isEdit ? classes.editLayout : undefined}>
+					<div className={isEdit ? classes.formColumn : undefined}>
 					<form>
 						<div className={classes.step}>
 							Step 1: Share some necessary information about your accommodation
@@ -361,7 +367,7 @@ const AddPostDialog = ({
 								variant="outlined"
 								className={classes.inputField}
 								placeholder="Description"
-								defaultValue={isEdit ? dataAccommodation?.description : ""}
+								value={optionalForm.description}
 								onChange={e => setOptionalForm({ ...optionalForm, description: e.target.value })}
 							/>
 						</div>
@@ -384,7 +390,7 @@ const AddPostDialog = ({
 								variant="outlined"
 								type="number"
 								className={classes.inputField}
-								defaultValue={isEdit ? dataAccommodation?.price : 0}
+								value={optionalForm.price}
 								inputProps={{ min: 0 }}
 								onChange={e => setOptionalForm({ ...optionalForm, price: +e.target.value })}
 							/>
@@ -396,7 +402,7 @@ const AddPostDialog = ({
 								variant="outlined"
 								type="number"
 								className={classes.inputField}
-								defaultValue={isEdit ? dataAccommodation?.maxGuests : 0}
+								value={optionalForm.maxGuests}
 								inputProps={{ min: 0 }}
 								onChange={e => setOptionalForm({ ...optionalForm, maxGuests: +e.target.value })}
 							/>
@@ -408,7 +414,7 @@ const AddPostDialog = ({
 								variant="outlined"
 								type="number"
 								className={classes.inputField}
-								defaultValue={isEdit ? dataAccommodation?.numberOfBeds : 0}
+								value={optionalForm.numberOfBeds}
 								inputProps={{ min: 0 }}
 								onChange={e => setOptionalForm({ ...optionalForm, numberOfBeds: +e.target.value })}
 							/>
@@ -420,7 +426,7 @@ const AddPostDialog = ({
 								variant="outlined"
 								type="number"
 								className={classes.inputField}
-								defaultValue={isEdit ? dataAccommodation?.numberOfBedrooms : 0}
+								value={optionalForm.numberOfBedrooms}
 								inputProps={{ min: 0 }}
 								onChange={e => setOptionalForm({ ...optionalForm, numberOfBedrooms: +e.target.value })}
 							/>
@@ -432,7 +438,7 @@ const AddPostDialog = ({
 								variant="outlined"
 								type="number"
 								className={classes.inputField}
-								defaultValue={isEdit ? dataAccommodation?.numberOfBathrooms : 0}
+								value={optionalForm.numberOfBathrooms}
 								inputProps={{ min: 0 }}
 								onChange={e => setOptionalForm({ ...optionalForm, numberOfBathrooms: +e.target.value })}
 							/>
@@ -618,8 +624,39 @@ const AddPostDialog = ({
 							</div>
 						</div>
 					</form>
+					</div>
+					{isEdit && (
+						<aside className={classes.previewColumn} aria-label="Live listing preview">
+							<div className={classes.previewHeading}>
+								<Typography component="h2">Listing preview</Typography>
+								<p>Changes appear here as you edit.</p>
+							</div>
+							<div className={classes.previewCard}>
+								{photoURLs[0] ? (
+									<img className={classes.previewImage} src={photoURLs[0]} alt={previewName || dataAccommodation?.name || "Accommodation preview"} />
+								) : (
+									<div className={classes.previewImageEmpty}>Add photos to preview your listing</div>
+								)}
+								<div className={classes.previewDetails}>
+									<div className={classes.previewType}>{previewType || "Accommodation"}</div>
+									<h3>{previewName || "Your place name"}</h3>
+									<p>{previewAddress || "Your place address"}</p>
+									<div className={classes.previewPrice}>
+										<strong>${optionalForm.price || 0}</strong><span> / night</span>
+									</div>
+									<div className={classes.previewFacts}>
+										<span>{optionalForm.maxGuests || 0} guests</span>
+										<span>{optionalForm.numberOfBeds || 0} beds</span>
+										<span>{photoURLs.length} photos</span>
+									</div>
+								</div>
+							</div>
+							{optionalForm.description && <p className={classes.previewDescription}>{optionalForm.description}</p>}
+						</aside>
+					)}
+					</div>
 				</DialogContent>
-				<DialogActions>
+				<DialogActions className={isEdit ? classes.editActions : undefined}>
 					<LoadingButton
 						size="small"
 						className={classes.buttonSave}

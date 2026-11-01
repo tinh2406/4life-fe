@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
 import classes from "./Card.module.scss";
 import StarIcon from "@mui/icons-material/Star";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -36,6 +36,7 @@ type CardProps = {
 	anchorEl?: HTMLElement | null;
 	handleClick?: (event: React.MouseEvent<HTMLButtonElement>, id: number) => void;
 	handleClose?: (id: number) => void;
+	onEdit?: (id: number) => void;
 	handleDelete?: () => void;
 	setAnchorEl?: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };
@@ -56,10 +57,12 @@ const ActionAreaCard = ({
 	anchorEl,
 	handleClick,
 	handleClose,
+	onEdit,
 	handleDelete,
 	setAnchorEl
 }: CardProps): React.JSX.Element => {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const swiperRef = useRef<SwiperType>();
 	const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
 
@@ -82,7 +85,7 @@ const ActionAreaCard = ({
 	};
 
 	const handleNavigate = (): void => {
-		if (!wasDragged.current) navigate(`/rooms/${idAccommodation}`);
+		if (!wasDragged.current) navigate(`/rooms/${idAccommodation}`, { state: { from: `${location.pathname}${location.search}${location.hash}` } });
 	};
 
 	const onCloseConfirmDialog = (): void => {
@@ -162,7 +165,7 @@ const ActionAreaCard = ({
 									"aria-labelledby": "basic-button"
 								}}
 							>
-								<MenuItem onClick={() => handleClose && handleClose(idAccommodation)}>Edit</MenuItem>
+								<MenuItem onClick={() => onEdit ? onEdit(idAccommodation) : handleClose && handleClose(idAccommodation)}>Edit</MenuItem>
 								<MenuItem
 									onClick={() => {
 										setIsConfirmDialogOpen(true);

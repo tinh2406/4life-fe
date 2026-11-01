@@ -15,7 +15,7 @@
 // 
 
 .step {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 500;
     margin: 14px 0;
 }
@@ -25,7 +25,7 @@
 }
 
 .text {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--text-color);
     font-weight: 500;
     margin-bottom: 10px;
@@ -36,8 +36,8 @@
 }
 
 .error {
-    color: #d32f2f;
-    font-size: 13px;
+    color: #b42318;
+    font-size: 15px;
     font-weight: 500;
     margin-left: 14px;
     margin-top: 3px;
@@ -63,7 +63,7 @@
     transition: all 0.3s ease-in-out;
 
     &:hover {
-        background-color: rgb(235, 47, 125);
+        background-color: #245f54;
     }
 
     text-transform: none;
@@ -76,8 +76,8 @@
     border: 1px solid var(--primary-color);
 
     &:hover {
-        background-color: rgba(235, 47, 125, 0.1);
-        border-color: rgb(235, 47, 125);
+        background-color: #e9f0e8;
+        border-color: #2f7668;
     }
 
     text-transform: none;
@@ -111,7 +111,7 @@
     right: 3px;
     color: #fff;
     font-weight: 700;
-    font-size: 12px;
+    font-size: 14px;
 
     &:hover {
         background-color: rgba(255, 255, 255, 0.2);
@@ -127,18 +127,167 @@
 
 @media (max-width: 992px) {
     .title_text {
-        font-size: 1.8rem;
+        font-size: 30px;
     }
 }
 
 @media (max-height: 720px) {
     .title_text {
-        font-size: 1.8rem;
+        font-size: 30px;
     }
 }
 
 @media (max-width: 767px) {
     .title_text {
-        font-size: 1.5rem;
+        font-size: 22px;
     }
+}
+.editDialogContent {
+  background: #f7f8f5;
+}
+
+.editLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  align-items: start;
+  gap: 28px;
+}
+
+.formColumn {
+  min-width: 0;
+  padding-right: 4px;
+}
+
+.previewColumn {
+  position: sticky;
+  top: 0;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #dce3dd;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.previewHeading {
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    color: #172b3a;
+    font: 700 22px/1.35 'K2D', sans-serif;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: #586970;
+    font: 400 15px/1.5 'K2D', sans-serif;
+  }
+}
+
+.previewCard {
+  overflow: hidden;
+  border: 1px solid #dce3dd;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.previewImage,
+.previewImageEmpty {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.previewImageEmpty {
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #e9f0e8;
+  color: #586970;
+  text-align: center;
+  font: 400 15px/1.5 'K2D', sans-serif;
+}
+
+.previewDetails {
+  padding: 18px;
+
+  h3 {
+    margin: 5px 0 4px;
+    color: #172b3a;
+    font: 700 22px/1.35 'K2D', sans-serif;
+    overflow-wrap: anywhere;
+  }
+
+  > p {
+    margin: 0;
+    color: #586970;
+    font: 400 15px/1.55 'K2D', sans-serif;
+    overflow-wrap: anywhere;
+  }
+}
+
+.previewType {
+  color: #2f7668;
+  font: 600 14px/1.4 'K2D', sans-serif;
+}
+
+.previewPrice {
+  margin-top: 16px;
+  color: #586970;
+  font: 400 15px/1.5 'K2D', sans-serif;
+
+  strong {
+    color: #172b3a;
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.previewFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #dce3dd;
+  color: #586970;
+  font: 400 14px/1.5 'K2D', sans-serif;
+}
+
+.previewDescription {
+  margin: 16px 0 0;
+  color: #586970;
+  font: 400 15px/1.65 'K2D', sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.editActions {
+  gap: 10px;
+  padding: 14px 24px;
+
+  .buttonSave {
+    min-height: 42px;
+    border-radius: 999px;
+    background: #2f7668;
+    font-family: 'K2D', sans-serif;
+
+    &:hover { background: #245f54; }
+  }
+
+  .buttonCancel {
+    min-height: 42px;
+    border-radius: 999px;
+    border-color: #dce3dd;
+    color: #245f54;
+    font-family: 'K2D', sans-serif;
+
+    &:hover { border-color: #2f7668; background: #e9f0e8; }
+  }
+}
+
+@media (max-width: 900px) {
+  .editLayout { grid-template-columns: minmax(0, 1fr); }
+  .previewColumn { position: static; }
 }
