@@ -1,4 +1,3 @@
-import { Grid } from "@mui/material";
 import classes from "./About.module.scss";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOutlinedIcon from "@mui/icons-material/ThumbDownOutlined";
@@ -8,18 +7,18 @@ import User3 from "../../assets/images/user3.png";
 
 const AboutPage = (): React.JSX.Element => {
 	return (
-		<Grid container>
-			<div className={classes.imgAbout}>
+		<main className={classes.page}>
+			<section className={classes.imgAbout} aria-labelledby="about-heading">
 				<div className={classes.contentImg}>
-					<p>About us</p>
+					<h1 id="about-heading">About us</h1>
 					<p>
 						The elegant luxury bedrooms in this gallery showcase custom interior designs & decorating ideas.
 						View pictures and find your perfect luxury bedroom design.
 					</p>
 				</div>
-			</div>
+			</section>
 			<div className={classes.wrapReviews}>
-				<div className={classes.title}>What Out Customers Say About 4LIFE?</div>
+				<h2 className={classes.title}>What Our Customers Say About 4LIFE?</h2>
 				<div className={classes.comments}>
 					<div className={classes.commentItem}>
 						<p>
@@ -29,7 +28,7 @@ const AboutPage = (): React.JSX.Element => {
 						<div className={classes.line}></div>
 						<div className={classes.commentFooter}>
 							<div className={classes.wrapUser}>
-								<img src={User1} alt="User3" className={classes.userImg} />
+									<img src={User1} alt="Eric" className={classes.userImg} />
 								<p>Eric</p>
 							</div>
 							<div className={classes.action}>
@@ -46,7 +45,7 @@ const AboutPage = (): React.JSX.Element => {
 						<div className={classes.line}></div>
 						<div className={classes.commentFooter}>
 							<div className={classes.wrapUser}>
-								<img src={User2} alt="User2" className={classes.userImg} />
+									<img src={User2} alt="Hans" className={classes.userImg} />
 								<p>Hans</p>
 							</div>
 							<div className={classes.action}>
@@ -63,7 +62,7 @@ const AboutPage = (): React.JSX.Element => {
 						<div className={classes.line}></div>
 						<div className={classes.commentFooter}>
 							<div className={classes.wrapUser}>
-								<img src={User3} alt="User3" className={classes.userImg} />
+									<img src={User3} alt="John Doe" className={classes.userImg} />
 								<p>John Doe</p>
 							</div>
 							<div className={classes.action}>
@@ -74,7 +73,7 @@ const AboutPage = (): React.JSX.Element => {
 					</div>
 				</div>
 			</div>
-		</Grid>
+		</main>
 	);
 };
 

@@ -1,4 +1,4 @@
-import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
+import { Card, CardActionArea, CardContent, IconButton, Typography } from "@mui/material";
 import classes from "./BookingListCard.module.scss";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -7,8 +7,9 @@ import "swiper/css/pagination";
 import { Pagination, Navigation } from "swiper/modules";
 import { Swiper as SwiperType } from "swiper";
 import { useRef } from "react";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
+import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 type BookingListCardProps = {
 	idBooking: number;
@@ -40,30 +41,40 @@ const BookingListCard = ({
 	const navigate = useNavigate();
 	const swiperRef = useRef<SwiperType>();
 	return (
-		<Card sx={{ margin: "10px", minWidth: 200 }}>
+		<Card className={!isMyPost ? classes.bookingCard : undefined} sx={{ margin: "10px", minWidth: 200 }}>
 			<div className={classes.wrapperSwiper}>
-				<Swiper
-					pagination={{
-						dynamicBullets: true,
-						clickable: true
-					}}
-					modules={[Pagination, Navigation]}
-					onBeforeInit={swiper => {
-						swiperRef.current = swiper;
-					}}
+				<CardActionArea onClick={!isMyPost ? () => navigate(`/my-bookings/${idBooking}`) : undefined}>
+					<Swiper
+						pagination={{
+							dynamicBullets: true,
+							clickable: true
+						}}
+						modules={[Pagination, Navigation]}
+						onBeforeInit={swiper => {
+							swiperRef.current = swiper;
+						}}
+					>
+						{image.map((imageUrl, index) => (
+							<SwiperSlide key={index}>
+								<img src={imageUrl} alt={`Slide ${index + 1}`} className={classes.imgAccommodations} />
+							</SwiperSlide>
+						))}
+					</Swiper>
+				</CardActionArea>
+				<IconButton
+					aria-label="Previous accommodation photo"
+					onClick={event => { event.stopPropagation(); swiperRef.current?.slidePrev(); }}
+					className={classes.navigateBtnLeft}
 				>
-					{image.map((imageUrl, index) => (
-						<SwiperSlide key={index}>
-							<img src={imageUrl} alt={`Slide ${index}`} className={classes.imgAccommodations} />
-						</SwiperSlide>
-					))}
-				</Swiper>
-				<div onClick={() => swiperRef.current?.slidePrev()} className={classes.navigateBtnLeft}>
-					<ArrowLeftIcon className={classes.arrowIcon} />
-				</div>
-				<div onClick={() => swiperRef.current?.slideNext()} className={classes.navigateBtnRight}>
-					<ArrowRightIcon className={classes.arrowIcon} />
-				</div>
+					<ArrowBackIcon className={classes.arrowIcon} />
+				</IconButton>
+				<IconButton
+					aria-label="Next accommodation photo"
+					onClick={event => { event.stopPropagation(); swiperRef.current?.slideNext(); }}
+					className={classes.navigateBtnRight}
+				>
+					<ArrowForwardIcon className={classes.arrowIcon} />
+				</IconButton>
 			</div>
 			<CardActionArea onClick={!isMyPost ? () => navigate(`/my-bookings/${idBooking}`) : undefined}>
 				<CardContent>
@@ -85,6 +96,13 @@ const BookingListCard = ({
 					<Typography variant="body2" color="text.secondary" className={classes.text}>
 						{address}
 					</Typography>
+					<div className={classes.stayDates}>
+						<EventAvailableOutlinedIcon aria-hidden="true" />
+						<div>
+							<span>Stay dates</span>
+							<strong>{checkin} to {checkout}</strong>
+						</div>
+					</div>
 					<div className={classes.line}></div>
 					{isMyPost && (
 						<div className={classes.wrapperUserBook}>
@@ -94,20 +112,9 @@ const BookingListCard = ({
 					)}
 					<div className={classes.wrapperPrice}>
 						<div className={classes.text}>Price per night</div>
-						<div className={classes.text}>{`$${price}`}</div>
+						<strong className={classes.price}>{`$${price}`}</strong>
 					</div>
-					<div className={classes.wrapperCheckTime}>
-						<div className={classes.text}>Check-in </div>
-						<Typography variant="body2" color="text.secondary" className={classes.text}>
-							{checkin}
-						</Typography>
-					</div>
-					<div className={classes.wrapperCheckTime}>
-						<div className={classes.text}>Check-out</div>
-						<Typography variant="body2" color="text.secondary" className={classes.text}>
-							{checkout}
-						</Typography>
-					</div>
+					{!isMyPost && <div className={classes.detailsHint}>View booking details <ArrowForwardIcon aria-hidden="true" /></div>}
 				</CardContent>
 			</CardActionArea>
 		</Card>

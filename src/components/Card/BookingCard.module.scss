@@ -81,3 +81,18 @@
 	font-weight: 700;
 	font-variant-numeric: tabular-nums;
 }
+
+.payButton {
+	width: 100%;
+	min-height: 44px;
+	margin-top: 18px !important;
+	color: #fff !important;
+	background: #2f7668 !important;
+	border-radius: 999px !important;
+	font-family: K2D, sans-serif !important;
+	font-weight: 700 !important;
+	text-transform: none !important;
+
+	&:hover { background: #245f54 !important; }
+	&:focus-visible { outline: 3px solid #d36b4a; outline-offset: 2px; }
+}

@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography } from "@mui/material";
+import { Button, Card, CardContent, Typography } from "@mui/material";
 import classes from "./BookingCard.module.scss";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -17,6 +17,8 @@ type BookingCardProps = {
 	numberOfNights: string;
 	additionalAmount: number;
 	totalPrice: number;
+	isPaid?: boolean;
+	onPay?: () => void;
 };
 
 const BookingCard = ({
@@ -26,7 +28,9 @@ const BookingCard = ({
 	price,
 	numberOfNights,
 	additionalAmount,
-	totalPrice
+	totalPrice,
+	isPaid,
+	onPay
 }: BookingCardProps): React.JSX.Element => {
 	const swiperRef = useRef<SwiperType>();
 	return (
@@ -81,6 +85,7 @@ const BookingCard = ({
 					<div className={`${classes.text} ${classes.total}`}>TOTAL</div>
 					<div className={`${classes.text} ${classes.total}`}>{`$${totalPrice}`}</div>
 				</div>
+				{isPaid === false && <Button variant="contained" onClick={onPay} className={classes.payButton}>Pay now</Button>}
 			</CardContent>
 		</Card>
 	);

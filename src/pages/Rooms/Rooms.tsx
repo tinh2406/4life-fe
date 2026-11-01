@@ -90,6 +90,18 @@ const RoomsPage = (): React.JSX.Element => {
 	// Detect when searchPanel reaches the bottom of the post list (near footer)
 	const [isAtBottom, setIsAtBottom] = useState(false);
 	const bottomSentinelRef = useRef<HTMLDivElement>(null);
+	const stickySentinelRef = useRef<HTMLDivElement>(null);
+	const [isSearchSticky, setIsSearchSticky] = useState(false);
+	useEffect(() => {
+		const el = stickySentinelRef.current;
+		if (!el) return;
+		const observer = new IntersectionObserver(
+			([entry]) => setIsSearchSticky(!entry.isIntersecting),
+			{ threshold: 0 }
+		);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, []);
 	useEffect(() => {
 		const el = bottomSentinelRef.current;
 		if (!el) return;
@@ -195,8 +207,9 @@ const RoomsPage = (): React.JSX.Element => {
 				</header>
 
 				<div className={classes.browseContainer}>
+					<div ref={stickySentinelRef} className={classes.stickySentinel} aria-hidden="true" />
 					<div
-						className={`${classes.stickyHeader} ${isAtBottom ? classes.stickyHeaderStopped : ""}`}
+						className={`${classes.stickyHeader} ${isSearchSticky && !isAtBottom ? classes.stickyHeaderActive : ""} ${isAtBottom ? classes.stickyHeaderStopped : ""}`}
 					>
 						<section className={classes.searchPanel} aria-label="Find accommodation">
 					<div className={classes.searchFieldLocation}>

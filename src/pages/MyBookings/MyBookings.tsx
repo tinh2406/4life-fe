@@ -20,7 +20,7 @@ const MyBookingsPages = (): React.JSX.Element => {
 					{[1, 2, 3, 4].map(item => (
 						<Grid key={item} item xs={12} sm={6} lg={4}>
 							<div className={classes.skeletonCard}>
-								<Skeleton variant="rounded" height={190} />
+							<Skeleton variant="rounded" height={158} />
 								<Skeleton width="65%" />
 								<Skeleton width="90%" />
 							</div>

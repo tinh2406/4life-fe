@@ -12,6 +12,8 @@ import { useNotify } from "../../context/notify";
 import { useState } from "react";
 import { useQueryClient } from "react-query";
 import { useEffect } from "react";
+import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import NightsStayOutlinedIcon from "@mui/icons-material/NightsStayOutlined";
 
 const BookingDetailPage = (): React.JSX.Element => {
 	const { id } = useParams();
@@ -61,13 +63,34 @@ const BookingDetailPage = (): React.JSX.Element => {
 			</Button>
 			<header className={classes.pageHeading}>
 				<div>
-					<h1>Booking details</h1>
-					<p>{data.accommodation.name}</p>
+					<h1>{data.accommodation.name}</h1>
+					<p>{data.accommodation.address}</p>
 				</div>
 				<span className={`${classes.paymentStatus} ${isPaid ? classes.paid : classes.unpaid}`} role="status">
 					{isPaid ? "Paid" : "Payment due"}
 				</span>
 			</header>
+			<section className={classes.staySummary} aria-label="Stay dates">
+				<div className={classes.stayDate}>
+					<CalendarMonthOutlinedIcon aria-hidden="true" />
+					<div>
+						<span>Check-in</span>
+						<strong>{dayjs(data.checkInDate).format("ddd, DD MMM YYYY")}</strong>
+					</div>
+				</div>
+				<div className={classes.stayDivider} aria-hidden="true" />
+				<div className={classes.stayDate}>
+					<CalendarMonthOutlinedIcon aria-hidden="true" />
+					<div>
+						<span>Check-out</span>
+						<strong>{dayjs(data.checkOutDate).format("ddd, DD MMM YYYY")}</strong>
+					</div>
+				</div>
+				<div className={classes.nightsSummary}>
+					<NightsStayOutlinedIcon aria-hidden="true" />
+					<strong>{days} {days === 1 ? "night" : "nights"}</strong>
+				</div>
+			</section>
 
 			<div className={classes.bookingLayout}>
 				<section className={classes.bookingCard} aria-label="Booking cost summary">
@@ -79,31 +102,19 @@ const BookingDetailPage = (): React.JSX.Element => {
 						numberOfNights={days.toString()}
 						additionalAmount={data.totalPrice - data.accommodation.price * days}
 						totalPrice={data.totalPrice}
+						isPaid={isPaid}
+						onPay={handleOpenPayment}
 					/>
 				</section>
 				<section className={classes.tripDetails} aria-labelledby="trip-details-heading">
-					<h2 id="trip-details-heading">Your trip</h2>
-					<p className={classes.tripRange}>
-						{dayjs(data.checkInDate).format("ddd, DD MMM YYYY")} – {dayjs(data.checkOutDate).format("ddd, DD MMM YYYY")}
-					</p>
+					<h2 id="trip-details-heading">Arrival and departure</h2>
 					<div className={classes.dateTimeItem}>
 						<DomainVerificationIcon className={classes.iconCheckDate} />
-						<span>Check-in <strong>{dayjs(data.checkInDate).format("DD MMM YYYY")}</strong>, from {convertTo12HourFormat(data.accommodation.checkInAfter)}</span>
+						<span>Check-in from <strong>{convertTo12HourFormat(data.accommodation.checkInAfter)}</strong></span>
 					</div>
 					<div className={classes.dateTimeItem}>
 						<DomainVerificationIcon className={classes.iconCheckDate} />
-						<span>Check-out <strong>{dayjs(data.checkOutDate).format("DD MMM YYYY")}</strong>, until {convertTo12HourFormat(data.accommodation.checkOutBefore)}</span>
-					</div>
-					<div className={classes.totalPrice}>
-						<div>
-							<span className={classes.totalLabel}>Total price</span>
-							<strong>${data.totalPrice}</strong>
-						</div>
-						{isPaid ? (
-							<span className={classes.paidNotice}>Payment complete</span>
-						) : (
-							<Button variant="contained" className={classes.btnPayment} onClick={handleOpenPayment}>Pay now</Button>
-						)}
+						<span>Check-out by <strong>{convertTo12HourFormat(data.accommodation.checkOutBefore)}</strong></span>
 					</div>
 				</section>
 			</div>

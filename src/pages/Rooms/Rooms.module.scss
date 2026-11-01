@@ -2,14 +2,17 @@
 
 .page {
 	min-height: 70vh;
-	padding: 48px 32px 88px;
+	width: 100%;
+	padding: 48px 0 88px;
 	color: #172b3a;
 	background: #f7f8f5;
 }
 
 .pageInner {
+	box-sizing: border-box;
 	width: min(1440px, 100%);
 	margin: 0 auto;
+	padding: 0 clamp(18px, 4vw, 56px);
 }
 
 /* ─── Suggestions (Stay near you) — first block ─────────── */
@@ -66,15 +69,28 @@
 	position: sticky;
 	top: 0;
 	z-index: 10;
-	padding: 10px 32px;
-	margin-left: -32px;
-	margin-right: -32px;
-	background: rgba(247, 248, 245, 0.94);
+	box-sizing: border-box;
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+	padding: 10px max(clamp(18px, 4vw, 56px), calc((100vw - 1440px) / 2 + 56px));
+	background: transparent;
+	border-bottom: 1px solid transparent;
+	transition: transform 220ms ease, opacity 200ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.stickySentinel {
+	height: 1px;
+	margin-bottom: -1px;
+	visibility: hidden;
+}
+
+.stickyHeaderActive {
+	background: rgba(247, 248, 245, 0.96);
 	backdrop-filter: blur(12px);
 	-webkit-backdrop-filter: blur(12px);
-	border-bottom: 1px solid #dce3dd;
-	box-shadow: 0 4px 16px rgb(23 43 58 / 5%);
-	transition: transform 220ms ease, opacity 200ms ease;
+	border-bottom-color: #dce3dd;
+	box-shadow: 0 4px 16px rgb(23 43 58 / 8%);
 }
 
 .stickyHeaderStopped {
@@ -93,7 +109,7 @@
 	background: #fff;
 	border: 1px solid #dce3dd;
 	border-radius: 14px;
-	box-shadow: 0 4px 16px rgb(23 43 58 / 5%);
+	box-shadow: none;
 
 	:global(.MuiOutlinedInput-root) {
 		height: 48px;
@@ -338,16 +354,9 @@
 /* ─── Responsive ─────────────────────────────────────────── */
 
 @media (max-width: 1100px) {
-	.page {
-		padding-right: 24px;
-		padding-left: 24px;
-	}
-
 	.stickyHeader {
-		margin-left: -24px;
-		margin-right: -24px;
-		padding-left: 24px;
-		padding-right: 24px;
+		padding-left: max(clamp(18px, 4vw, 56px), calc((100vw - 1440px) / 2 + 56px));
+		padding-right: max(clamp(18px, 4vw, 56px), calc((100vw - 1440px) / 2 + 56px));
 	}
 
 	.resultsLayout {
@@ -362,14 +371,13 @@
 
 @media (max-width: 900px) {
 	.page {
-		padding: 34px 20px 64px;
+		padding-top: 34px;
+		padding-bottom: 64px;
 	}
 
 	.stickyHeader {
-		margin-left: -20px;
-		margin-right: -20px;
-		padding-left: 20px;
-		padding-right: 20px;
+		padding-left: max(clamp(18px, 4vw, 56px), calc((100vw - 1440px) / 2 + 56px));
+		padding-right: max(clamp(18px, 4vw, 56px), calc((100vw - 1440px) / 2 + 56px));
 	}
 
 	.searchPanel {
@@ -395,11 +403,13 @@
 
 @media (max-width: 600px) {
 	.page {
-		padding: 26px 14px 48px;
+		padding-top: 26px;
+		padding-bottom: 48px;
 	}
 
 	.stickyHeader {
 		position: static;
+		width: auto;
 		margin-left: 0;
 		margin-right: 0;
 		padding-left: 0;
@@ -409,6 +419,13 @@
 		background: transparent;
 		box-shadow: none;
 		border-bottom: none;
+	}
+
+	.stickyHeaderActive {
+		background: transparent;
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+		box-shadow: none;
 	}
 
 	.suggestions {

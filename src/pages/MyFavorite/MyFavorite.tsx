@@ -38,6 +38,8 @@ const MyFavoritePage = (): React.JSX.Element => {
 	}, [setHasNextPage, countPage, data]);
 
 	return (
+		<main className={classes.page}>
+		<div className={classes.content}>
 		<Grid container spacing={3} className={classes.wrapper}>
 			<Grid container item xs={12} className={classes.wrapperRoooms}>
 				{isFetching &&
@@ -87,6 +89,8 @@ const MyFavoritePage = (): React.JSX.Element => {
 				</Grid>
 			)}
 		</Grid>
+		</div>
+		</main>
 	);
 };
 

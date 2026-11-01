@@ -3,17 +3,17 @@
 	width: min(1440px, 100%);
 	min-height: 70vh;
 	margin: 0 auto;
-	padding: 32px clamp(16px, 4vw, 56px) 88px;
+	padding: 14px clamp(16px, 4vw, 56px) 88px;
 	color: #172b3a;
 }
 
 .icon {
-	margin-bottom: 16px;
+	margin-bottom: 8px;
 }
 
 .backButton {
-	min-height: 42px;
-	padding: 6px 4px;
+	min-height: 36px;
+	padding: 4px;
 	color: #2f7668;
 	font-weight: 700;
 	text-transform: none;
