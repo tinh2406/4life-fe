@@ -1,10 +1,72 @@
-.tab {
-    font-family: 'K2D', 'sans-serif';
-    text-transform: none;
-    font-weight: 600;
-    color: #535353;
+.accountLayout {
+	display: grid !important;
+	grid-template-columns: 248px minmax(0, 1fr);
+	align-items: start;
+	min-height: 500px;
+	width: 100%;
+	background: transparent;
 }
 
-.tabPanel {
-    flex:1
+.tabs {
+	width: 100%;
+	min-height: 500px;
+	border-right: 1px solid #dce3dd;
+	background: transparent;
+	:global(.MuiTabs-indicator) { left: 0; width: 3px; background: #2f7668; }
+	:global(.MuiTabs-flexContainer) { align-items: stretch; padding: 8px 14px 8px 0; gap: 4px; }
+}
+
+.tab {
+	position: relative;
+	min-height: 48px !important;
+	margin: 0 !important;
+	padding: 0 12px !important;
+	justify-content: flex-start !important;
+	border-radius: 10px !important;
+	color: #586970 !important;
+	font: 600 14px K2D, sans-serif !important;
+	text-align: left !important;
+	text-transform: none !important;
+	:global(.MuiTab-iconWrapper) { margin-right: 10px; }
+	&:nth-of-type(3) {
+		margin-top: 24px !important;
+		border-top: 1px solid #dce3dd;
+		border-radius: 0 !important;
+		&::before {
+			position: absolute;
+			top: -20px;
+			left: 12px;
+			color: #586970;
+			content: "HOSTING";
+			font: 600 10px K2D, sans-serif;
+			letter-spacing: 0.08em;
+		}
+	}
+	&:global(.Mui-selected) { color: #245f54 !important; background: #e9f0e8; }
+	&:focus-visible { outline: 2px solid #d36b4a; outline-offset: -2px; }
+}
+
+.tabPanel { min-width: 0; width: 100%; }
+.panelContent { padding: 8px 0 16px 42px; }
+
+@media (max-width: 760px) {
+	.accountLayout { display: block !important; min-height: 0; }
+	.tabs {
+		min-height: 0;
+		border-right: 0;
+		border-bottom: 1px solid #dce3dd;
+		:global(.MuiTabs-indicator) { left: auto; bottom: 0; width: auto; height: 3px; }
+		:global(.MuiTabs-flexContainer) { flex-direction: row; padding: 8px 0 0; gap: 0; }
+		:global(.MuiTabs-scroller) { overflow-x: auto !important; }
+	}
+	.tab { min-height: 46px !important; padding: 0 12px !important; white-space: nowrap; }
+	.tab:nth-of-type(3) { margin-top: 0 !important; border-top: 0; }
+	.tab:nth-of-type(3)::before { content: none; }
+	.tab :global(.MuiTab-iconWrapper) { display: none; }
+	.panelContent { padding: 24px 0; }
+}
+
+@media (max-width: 430px) {
+	.tab { padding: 0 9px !important; font-size: 14px !important; }
+	.panelContent { padding: 20px 0; }
 }

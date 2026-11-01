@@ -1,273 +1,212 @@
-import { Button, Grid, TextField } from "@mui/material";
-import classes from "./ResquestToModForm.module.scss";
-import RegisterMod from "../../../assets/images/registerMod.png";
 import { ChangeEvent, useEffect, useState } from "react";
+import { Button, TextField } from "@mui/material";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Stepper from "@mui/material/Stepper";
 import { LoadingButton } from "@mui/lab";
-import SendIcon from "@mui/icons-material/Send";
-import { getAvatarURL, registerToMod, verifyEmail, verifyOTPConfirmEmail } from "./../../../api/auth.api";
-import { toast } from "react-toastify";
-import UploadImage from "../../UploadImage/UploadImage";
-import Tooltip from "@mui/material/Tooltip";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+// Cropped from the existing registerMod image to remove its decorative magenta frame.
+import RegisterMod from "../../../assets/images/host-intro.webp";
+import { getAvatarURL, registerToMod, verifyEmail, verifyOTPConfirmEmail } from "../../../api/auth.api";
+import { RootState } from "../../../store";
 import { useNotify } from "../../../context/notify";
+import UploadImage from "../../UploadImage/UploadImage";
+import classes from "./ResquestToModForm.module.scss";
+
+type HostRequestStep = "intro" | "otp" | "documents" | "submitted";
 
 const ResquestToModForm = (): React.JSX.Element => {
 	const user = useSelector((state: RootState) => state.auth.login.currentUser);
 	const navigate = useNavigate();
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isVerifyOTP, setIsVerifyOtp] = useState(false);
-	const [OTP, setOTP] = useState("");
-	const [OTPError, setOTPError] = useState("");
-	const [isStartRegisterMod, setIsStartRegisterMod] = useState(false);
-	const [photoURLs, setPhotoURLs] = useState<string[]>([]);
-	const [loadingUpload, setLoadingUpload] = useState<number>(0);
-	const [isModRolePage, setIsModRolePage] = useState<boolean>(false);
 	const notify = useNotify();
+	const [step, setStep] = useState<HostRequestStep>("intro");
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [otp, setOtp] = useState("");
+	const [otpError, setOtpError] = useState("");
+	const [photoURLs, setPhotoURLs] = useState<string[]>(["", ""]);
+	const [loadingUpload, setLoadingUpload] = useState<number | null>(null);
+	const [isHost, setIsHost] = useState(
+		() => user?.statusModRole === "Active" || localStorage.getItem("isMod") === "true"
+	);
 
 	useEffect(() => {
-		if (user?.statusModRole === "Active" || localStorage.getItem("isMod") === "true") {
-			setIsModRolePage(true);
-		}
-		if (notify?.isModRole) {
-			// notify.setIsModRole(true)
-			console.log(notify?.isModRole);
-			setIsModRolePage(true);
+		if (user?.statusModRole === "Active" || notify?.isModRole) {
+			setIsHost(true);
 			localStorage.setItem("isMod", "true");
 		}
-		console.log(notify?.isModRole);
-	}, [user, notify?.isModRole]);
-
-	const handleOTPChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		setOTPError("");
-		setOTP(value);
-		if (!value) {
-			setOTPError("OTP is required");
-		}
-	};
+	}, [user?.statusModRole, notify?.isModRole]);
 
 	const handleSendOTP = async () => {
 		setIsSubmitting(true);
-		setIsSubmitting(true);
-		verifyEmail()
-			.then(() => {
-				setIsStartRegisterMod(true);
-			})
-			.catch(err => {
-				toast.error(err.response.data.message);
-			})
-			.finally(() => {
-				setIsSubmitting(false);
-			});
-	};
-
-	const handleVerifyOTP = () => {
-		setIsSubmitting(true);
-		console.log(OTP);
-		if (OTP === "") {
-			setOTPError("OTP is required");
+		try {
+			await verifyEmail();
+			setStep("otp");
+		} catch {
+			toast.error("We could not send the verification code. Please try again.");
+		} finally {
 			setIsSubmitting(false);
-		} else if (OTPError) {
-			setIsSubmitting(false);
-			console.log(OTPError);
-		} else {
-			const OTPVerify = {
-				otp: OTP
-			};
-			console.log(OTPVerify);
-			verifyOTPConfirmEmail(OTPVerify)
-				.then(() => {
-					setIsVerifyOtp(true);
-				})
-				.catch(err => {
-					setOTPError(err.response.data.message);
-					toast.error("Invalid OTP. Please try again");
-					setIsSubmitting(false);
-				})
-				.finally(() => {
-					setIsSubmitting(false);
-				});
 		}
 	};
 
-	const handleChangeAvatar = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-		const file = event.target?.files?.[0];
+	const handleVerifyOTP = async () => {
+		const value = otp.trim();
+		if (!value) {
+			setOtpError("Enter the code sent to your email.");
+			return;
+		}
+
+		setIsSubmitting(true);
+		setOtpError("");
+		try {
+			await verifyOTPConfirmEmail({ otp: value });
+			setStep("documents");
+		} catch {
+			setOtpError("That code could not be verified. Check it and try again.");
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	const handleChangeDocument = (event: ChangeEvent<HTMLInputElement>, index: number) => {
+		const file = event.target.files?.[0];
+		if (!file) return;
+
 		setLoadingUpload(index);
-		if (file) {
-			// const errorMessage = validateFileImage(file);
-			// if (errorMessage) {
-			// 	toast.error(errorMessage);
-			// 	event.target.value = "";
-			// 	return;
-			// }
-			// setFile(file);
-			const reader = new FileReader();
-			reader.onload = async (e: ProgressEvent<FileReader>) => {
-				console.log(e.target?.result);
-				const formData = new FormData();
-				formData.append("file", file);
-				const res = await getAvatarURL(formData);
-				setPhotoURLs([...photoURLs, res.data.url]);
-				setLoadingUpload(0);
-			};
-			reader.readAsDataURL(file);
-			event.target.value = "";
+		const formData = new FormData();
+		formData.append("file", file);
+		getAvatarURL(formData)
+			.then(response => {
+				setPhotoURLs(current => {
+					const next = [...current];
+					next[index] = response.data.url;
+					return next;
+				});
+			})
+			.catch(() => toast.error("We could not upload that image. Please try again."))
+			.finally(() => setLoadingUpload(null));
+		event.target.value = "";
+	};
+
+	const handleRegister = async () => {
+		if (!photoURLs[0] || !photoURLs[1]) return;
+
+		setIsSubmitting(true);
+		try {
+			await registerToMod({ frontIdentityCard: photoURLs[0], backIdentityCard: photoURLs[1] });
+			setStep("submitted");
+			toast.success("Your host request has been submitted.");
+		} catch {
+			toast.error("We could not submit your request. Please try again.");
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
-	const handleRegisterMod = () => {
-		const data = {
-			frontIdentityCard: photoURLs[0],
-			backIdentityCard: photoURLs[1]
-		};
-		setIsSubmitting(true);
-		registerToMod(data)
-			.then(() => {
-				toast.success("Register to mod successfully");
-			})
-			.catch(err => {
-				console.log(err);
-				toast.error("Register to mod failed");
-			})
-			.finally(() => {
-				setIsSubmitting(false);
-			});
-	};
+	if (isHost) {
+		return (
+			<section className={classes.hostContent} aria-labelledby="host-heading">
+				<div className={classes.hostHeader}>
+					<div className={classes.hostIcon}><CheckCircleOutlineIcon /></div>
+					<div>
+						<h2 id="host-heading">Your host account is active</h2>
+						<p>You can manage your accommodation listings and bookings from your host dashboard.</p>
+					</div>
+				</div>
+				<Button variant="contained" className={classes.primaryButton} onClick={() => navigate("/manage-posts")} endIcon={<ArrowForwardIcon />}>
+					Open host dashboard
+				</Button>
+			</section>
+		);
+	}
 
 	return (
-		<Grid container className={classes.wrapper}>
-			{!isModRolePage ? (
-				<>
-					{!isStartRegisterMod ? (
-						<>
-							<Grid item xs={12} className={classes.title}>
-								Are you ready to rent your home on 4LIFE?
-							</Grid>
-							<Grid item xs={12} className={classes.wrapperContent}>
-								<Grid item xs={6} className={classes.content}>
-									<p>Register as a mod to be able to post your home with 4LIFE</p>
-									<p>Easily rent your house on 4LIFE and earn extra income</p>
-									<LoadingButton
-										size="small"
-										className={classes.buttonSave}
-										onClick={handleSendOTP}
-										loading={isSubmitting}
-										loadingPosition="start"
-										startIcon={<SendIcon />}
-										variant="contained"
-										disabled={isSubmitting}
-									>
-										<span>Get Started</span>
-									</LoadingButton>
-								</Grid>
-								<Grid item xs={6} className={classes.wapperImg}>
-									<img src={RegisterMod} alt="Resgiter to mod" className={classes.img} />
-								</Grid>
-							</Grid>
-						</>
-					) : !isVerifyOTP ? (
-						<>
-							<Grid item xs={12} className={classes.titleRegisterMod}>
-								Register To Mod
-							</Grid>
-							<Grid item xs={12} className={classes.wrapperContent}>
-								Enter the OTP we sent to your account email to confirm the email address
-							</Grid>
-							<>
-								<Grid item xs={12} className={classes.wrapperRowInput}>
-									<div className={classes.text}>OTP</div>
-									<TextField
-										variant="standard"
-										sx={{
-											"& input::placeholder": {
-												fontSize: "14px",
-												fontFamily: "K2D"
-											}
-										}}
-										className={classes.inputField}
-										value={OTP}
-										onChange={handleOTPChange}
-										error={!!OTPError}
-										helperText={OTPError}
-										placeholder="Enter OTP"
-									/>
-								</Grid>
-								<Grid item xs={12} className={classes.wrapperButton}>
-									<LoadingButton
-										size="small"
-										className={classes.buttonSave}
-										onClick={handleVerifyOTP}
-										loading={isSubmitting}
-										loadingPosition="start"
-										startIcon={<SendIcon />}
-										variant="contained"
-										disabled={isSubmitting}
-									>
-										<span>Verify OTP</span>
-									</LoadingButton>
-								</Grid>
-							</>
-						</>
-					) : (
-						<>
-							<Grid item xs={12} className={classes.titleRegisterMod}>
-								Verify Your Information
-							</Grid>
-							<Grid item xs={12} className={classes.text}>
-								Choose your front and back identity card image
-							</Grid>
-							<Grid item xs={12} className={classes.wrapperContent}>
-								<Tooltip title="Click to upload your front identity card image">
-									<UploadImage
-										loadingUpload={loadingUpload == 1 ? true : false}
-										handleChangeImage={image => {
-											handleChangeAvatar(image, 1);
-											console.log(1);
-										}}
-										photoURL={photoURLs[0]}
-									/>
-								</Tooltip>
-								<Tooltip title="Click to upload your front identity card image">
-									<UploadImage
-										loadingUpload={loadingUpload == 2 ? true : false}
-										handleChangeImage={image => {
-											handleChangeAvatar(image, 2);
-											console.log(2);
-										}}
-										photoURL={photoURLs[1]}
-									/>
-								</Tooltip>
-							</Grid>
-							<Grid item xs={12} className={classes.wrapperButton}>
-								<LoadingButton
-									size="small"
-									className={classes.buttonSave}
-									onClick={handleRegisterMod}
-									loading={isSubmitting}
-									loadingPosition="start"
-									startIcon={<SendIcon />}
-									variant="contained"
-									disabled={isSubmitting}
-								>
-									<span>Register To Mod</span>
-								</LoadingButton>
-							</Grid>
-						</>
-					)}
-				</>
-			) : (
-				<>
-					<Button className={classes.buttonSave} onClick={() => navigate("/manage-posts")}>
-						Start Post Accomodation
-					</Button>
-					<Grid item xs={6} className={`${classes.wapperImg} ${classes.spacing}`}>
-						<img src={RegisterMod} alt="Resgiter to mod" className={classes.img} />
-					</Grid>
-				</>
+		<section className={classes.hostContent} aria-labelledby="host-heading">
+			<div className={classes.stepper}>
+				<Stepper activeStep={step === "documents" ? 1 : step === "submitted" ? 3 : 0} alternativeLabel>
+					{["Confirm email", "Verify identity", "Submit request"].map(label => (
+						<Step key={label}><StepLabel>{label}</StepLabel></Step>
+					))}
+				</Stepper>
+			</div>
+			{step === "intro" && (
+				<div className={classes.introLayout}>
+					<div className={classes.introCopy}>
+						<h2 id="host-heading">Share your place with travelers</h2>
+						<p>Start a host request to unlock accommodation listings on 4LIFE. First, confirm your email, then upload both sides of your identity document.</p>
+						<Button variant="contained" className={classes.primaryButton} onClick={handleSendOTP} disabled={isSubmitting} endIcon={<ArrowForwardIcon />}>
+							{isSubmitting ? "Sending code…" : "Start host request"}
+						</Button>
+					</div>
+					<div className={classes.introImage}>
+						<img src={RegisterMod} alt="A bright accommodation interior" />
+					</div>
+				</div>
 			)}
-		</Grid>
+
+			{step === "otp" && (
+				<div className={classes.stepContent}>
+					<h2 id="host-heading">Confirm your email</h2>
+					<p>Enter the verification code sent to <strong>{user?.email || "your account email"}</strong>.</p>
+					<label className={classes.fieldLabel} htmlFor="host-otp">Verification code</label>
+					<TextField
+						id="host-otp"
+						className={classes.otpField}
+						value={otp}
+						onChange={event => { setOtp(event.target.value); setOtpError(""); }}
+						error={Boolean(otpError)}
+						helperText={otpError}
+						autoComplete="one-time-code"
+						inputProps={{ inputMode: "numeric", "aria-label": "Verification code" }}
+						fullWidth
+						size="small"
+					/>
+					<div className={classes.actions}>
+						<Button className={classes.secondaryButton} onClick={() => setStep("intro")}>Back</Button>
+						<LoadingButton loading={isSubmitting} variant="contained" className={classes.primaryButton} onClick={handleVerifyOTP} endIcon={<ArrowForwardIcon />}>Verify email</LoadingButton>
+					</div>
+				</div>
+			)}
+
+			{step === "documents" && (
+				<div className={classes.stepContent}>
+					<h2 id="host-heading">Verify your identity</h2>
+					<p>Upload a clear image of the front and back of your identity document to continue.</p>
+					<div className={classes.documentGrid}>
+						{["Front of document", "Back of document"].map((label, index) => (
+							<div className={classes.documentField} key={label}>
+								<span className={classes.fieldLabel}>{label}</span>
+								<UploadImage
+									inputId={`host-document-${index}`}
+									label={label}
+									loadingUpload={loadingUpload === index}
+									handleChangeImage={event => handleChangeDocument(event, index)}
+									photoURL={photoURLs[index]}
+								/>
+							</div>
+						))}
+					</div>
+					<p className={classes.uploadHint}><CloudUploadOutlinedIcon fontSize="small" /> Select an image for each side. You can replace an image by selecting it again.</p>
+					<div className={classes.actions}>
+						<Button className={classes.secondaryButton} onClick={() => setStep("otp")}>Back</Button>
+						<LoadingButton loading={isSubmitting} variant="contained" className={classes.primaryButton} onClick={handleRegister} disabled={!photoURLs[0] || !photoURLs[1] || loadingUpload !== null} endIcon={<ArrowForwardIcon />}>Submit request</LoadingButton>
+					</div>
+				</div>
+			)}
+
+			{step === "submitted" && (
+				<div className={classes.successState} role="status">
+					<div className={classes.successIcon}><CheckCircleOutlineIcon /></div>
+					<h2 id="host-heading">Request submitted</h2>
+					<p>Your host request was submitted successfully. You can return to your account settings.</p>
+					<Button className={classes.secondaryButton} onClick={() => setStep("intro")}>Back to account settings</Button>
+				</div>
+			)}
+		</section>
 	);
 };
 

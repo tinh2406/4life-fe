@@ -16,7 +16,9 @@ import DefaultAvatar from "../../../assets/images/defaultAvatar.jpg";
 import { RootState } from "../../../store";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { toast } from "react-toastify";
 
 type SelectSmallProps = {
 	handleChangeGender: (event: SelectChangeEvent) => void;
@@ -27,14 +29,16 @@ type SelectSmallProps = {
 const SelectSmall = ({ handleChangeGender, genderOptions, gender }: SelectSmallProps) => {
 	return (
 		<FormControl className={classes.select} size="small">
+			<InputLabel id="profile-gender-label">Gender</InputLabel>
 			<Select
-				labelId="demo-select-small-label"
-				id="demo-select-small"
-				value={gender !== null ? gender.toString() : "None"}
+				labelId="profile-gender-label"
+				id="profile-gender"
+				label="Gender"
+				value={gender === null ? "None" : gender.toString()}
 				onChange={handleChangeGender}
 			>
 				{genderOptions.map(option => (
-					<MenuItem value={option.value?.toString() || ""}>{option.label}</MenuItem>
+					<MenuItem key={option.label} value={option.value === null ? "None" : option.value.toString()}>{option.label}</MenuItem>
 				))}
 			</Select>
 		</FormControl>
@@ -61,12 +65,10 @@ const UserProfileForm = (): React.JSX.Element => {
 	const handleChangeGender = (event: SelectChangeEvent) => {
 		setIsChanging(true);
 		const selectedValue = event.target.value;
-		if (selectedValue !== null) {
-			const selectedOption = genderOptions.find(option => option?.value?.toString() === selectedValue);
-			selectedOption && setGender(selectedOption.value);
-		} else {
-			setGender(null);
-		}
+		const selectedOption = genderOptions.find(option =>
+			(option.value === null ? "None" : option.value.toString()) === selectedValue
+		);
+		if (selectedOption) setGender(selectedOption.value);
 	};
 
 	const [userUpdate, setUserUpdate] = useState<UserUpdate>({
@@ -95,28 +97,28 @@ const UserProfileForm = (): React.JSX.Element => {
 
 	const handleChangeAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target?.files?.[0];
+		if (!file) return;
 		setLoadingUploadAvatar(true);
 		setIsChanging(true);
-		if (file) {
-			// const errorMessage = validateFileImage(file);
-			// if (errorMessage) {
-			// 	toast.error(errorMessage);
-			// 	event.target.value = "";
-			// 	return;
-			// }
-			// setFile(file);
-			const reader = new FileReader();
-			reader.onload = async (e: ProgressEvent<FileReader>) => {
-				console.log(e.target?.result);
+		const reader = new FileReader();
+		reader.onload = async () => {
+			try {
 				const formData = new FormData();
 				formData.append("file", file);
 				const res = await getAvatarURL(formData);
 				setPhotoURL(res.data.url);
+			} catch {
+				toast.error("Could not upload profile photo. Please try again.");
+			} finally {
 				setLoadingUploadAvatar(false);
-			};
-			reader.readAsDataURL(file);
-			event.target.value = "";
-		}
+			}
+		};
+		reader.onerror = () => {
+			setLoadingUploadAvatar(false);
+			toast.error("Could not read this photo. Please choose another file.");
+		};
+		reader.readAsDataURL(file);
+		event.target.value = "";
 	};
 
 	const handleFieldChange = (fieldName: string, value: string) => {
@@ -149,9 +151,9 @@ const UserProfileForm = (): React.JSX.Element => {
 	return (
 		<Grid container className={classes.wrapperUserProfile}>
 			<Grid item xs={12} className={classes.title}>
-				Personal Profile
+				Personal information
 			</Grid>
-			<Grid item xs={10} className={classes.wrapperFormUser}>
+			<Grid item xs={12} className={classes.wrapperFormUser}>
 				<form>
 					<Grid item xs={12} className={classes.wrapperAvatar}>
 						<Avatar
@@ -162,32 +164,22 @@ const UserProfileForm = (): React.JSX.Element => {
 					</Grid>
 					<Grid item xs={12} className={classes.wrapperRowInput}>
 						<Grid item xs={5} className={classes.wrapperInput}>
-							<div className={classes.text}>Name</div>
+							<label className={classes.text} htmlFor="profile-name">Name</label>
 							<TextField
-								id="standard-basic1"
-								variant="standard"
-								sx={{
-									"& input": {
-										fontSize: "16px",
-										fontFamily: "K2D"
-									}
-								}}
+								id="profile-name"
+								variant="outlined"
+								size="small"
 								className={classes.inputField}
 								value={userUpdate?.name ?? ""}
 								onChange={e => handleFieldChange("name", e.target.value)}
 							/>
 						</Grid>
 						<Grid item xs={5} className={classes.wrapperInput}>
-							<div className={classes.text}>Email</div>
+							<label className={classes.text} htmlFor="profile-email">Email</label>
 							<TextField
-								id="standard-basic1"
-								variant="standard"
-								sx={{
-									"& input": {
-										fontSize: "16px",
-										fontFamily: "K2D"
-									}
-								}}
+								id="profile-email"
+								variant="outlined"
+								size="small"
 								className={classes.inputField}
 								value={user?.email ?? ""}
 								disabled={true}
@@ -196,23 +188,17 @@ const UserProfileForm = (): React.JSX.Element => {
 					</Grid>
 					<Grid item xs={12} className={classes.wrapperRowInput}>
 						<Grid item xs={5} className={classes.wrapperInput}>
-							<div className={classes.text}>Phone Number</div>
+							<label className={classes.text} htmlFor="profile-phone">Phone Number</label>
 							<TextField
-								id="standard-basic3"
-								variant="standard"
-								sx={{
-									"& input": {
-										fontSize: "16px",
-										fontFamily: "K2D"
-									}
-								}}
+								id="profile-phone"
+								variant="outlined"
+								size="small"
 								className={classes.inputField}
 								value={userUpdate?.phoneNumber ?? ""}
 								onChange={e => handleFieldChange("phoneNumber", e.target.value)}
 							/>
 						</Grid>
 						<Grid item xs={5} className={classes.wrapperInput}>
-							<div className={classes.text}>Gender</div>
 							<SelectSmall
 								handleChangeGender={handleChangeGender}
 								genderOptions={genderOptions}
@@ -222,34 +208,24 @@ const UserProfileForm = (): React.JSX.Element => {
 					</Grid>
 					<Grid item xs={12} className={classes.wrapperRowInput}>
 						<Grid item xs={5} className={classes.wrapperInput}>
-							<div className={classes.text}>Description</div>
+							<label className={classes.text} htmlFor="profile-description">Description</label>
 							<TextField
-								id="standard-basic5"
-								variant="standard"
-								sx={{
-									"& input": {
-										fontSize: "16px",
-										fontFamily: "K2D"
-									}
-								}}
+								id="profile-description"
+								variant="outlined"
+								size="small"
 								className={classes.inputField}
 								value={userUpdate?.description ?? ""}
 								onChange={e => handleFieldChange("description", e.target.value)}
 							/>
 						</Grid>
 						<Grid item xs={5} className={classes.wrapperInput}>
-							<div className={classes.text}>Date Of Birth</div>
+							<label className={classes.text} htmlFor="profile-date-of-birth">Date Of Birth</label>
 							<DatePicker
 								slotProps={{
 									textField: {
+										id: "profile-date-of-birth",
 										size: "small",
-										variant: "outlined"
-									}
-								}}
-								sx={{
-									"& .MuiOutlinedInput-root": {
-										fontSize: "16px",
-										fontFamily: "K2D"
+										variant: "outlined",
 									}
 								}}
 								format="YYYY-MM-DD"

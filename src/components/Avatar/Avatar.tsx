@@ -14,16 +14,17 @@ const Avatar = ({ loadingUploadAvatar, handleChangeAvatar, photoURL }: AvatarPro
 		<>
 			<label htmlFor="file-input" className={classes.wrapperFileAvatar}>
 				{loadingUploadAvatar ? (
-					<Box className={classes.loading}>
-						<CircularProgress sx={{ color: "#FF385C" }} />
+					<Box className={classes.loading} role="status" aria-label="Uploading profile photo">
+						<CircularProgress size={28} sx={{ color: "#2f7668" }} />
 					</Box>
 				) : (
-					<img className={classes.avatar} src={photoURL ? photoURL : DefaultAvatar} alt="Avatar" />
+					<img className={classes.avatar} src={photoURL ? photoURL : DefaultAvatar} alt="Profile" />
 				)}
 				<input
 					type="file"
 					id="file-input"
 					accept="image/*"
+					aria-label="Change profile photo"
 					onChange={handleChangeAvatar}
 					className={classes.file}
 				/>

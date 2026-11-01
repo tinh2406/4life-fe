@@ -1,7 +1,7 @@
 import classes from "./ChangePasswordForm.module.scss";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Grid, IconButton, InputAdornment, TextField } from "@mui/material";
+import { Button, Grid, IconButton, InputAdornment, TextField } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { LoadingButton } from "@mui/lab";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -136,16 +136,17 @@ const ChangePasswordForm = (): React.JSX.Element => {
 	return (
 		<Grid container className={classes.wrapperChangePasswordForm}>
 			<Grid item xs={12} className={classes.title}>
-				Change Password
+				Password &amp; security
 			</Grid>
-			<Grid item xs={10} className={classes.wrapperForm}>
+			<Grid item xs={12} className={classes.wrapperForm}>
 				<form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
 					{!isForgotPassword ? (
 						<Grid item xs={12} className={classes.wrapperRowInput}>
-							<div className={classes.text}>Current Password</div>
+							<label className={classes.text} htmlFor="current-password">Current Password</label>
 							<TextField
 								id="current-password"
-								variant="standard"
+								variant="outlined"
+								size="small"
 								placeholder="Enter your current password"
 								type={showPassword ? "text" : "password"}
 								sx={{
@@ -180,10 +181,11 @@ const ChangePasswordForm = (): React.JSX.Element => {
 					) : (
 						<>
 							<Grid item xs={12} className={classes.wrapperRowInput}>
-								<div className={classes.text}>Email</div>
+								<label className={classes.text} htmlFor="password-reset-email">Email</label>
 								<TextField
-									id="standard-basic1"
-									variant="standard"
+									id="password-reset-email"
+									variant="outlined"
+									size="small"
 									sx={{
 										"& input": {
 											fontSize: "16px",
@@ -198,9 +200,11 @@ const ChangePasswordForm = (): React.JSX.Element => {
 							{!isVerifyOTP && (
 								<>
 									<Grid item xs={12} className={classes.wrapperRowInput}>
-										<div className={classes.text}>OTP</div>
+									<label className={classes.text} htmlFor="password-reset-otp">OTP</label>
 										<TextField
-											variant="standard"
+										id="password-reset-otp"
+										variant="outlined"
+										size="small"
 											sx={{
 												"& input::placeholder": {
 													fontSize: "14px",
@@ -236,10 +240,11 @@ const ChangePasswordForm = (): React.JSX.Element => {
 					{(isVerifyOTP || !isForgotPassword) && (
 						<>
 							<Grid item xs={12} className={classes.wrapperRowInput}>
-								<div className={classes.text}>New Password</div>
+							<label className={classes.text} htmlFor="new-password">New Password</label>
 								<TextField
-									id="new-passowrd"
-									variant="standard"
+								id="new-password"
+								variant="outlined"
+								size="small"
 									error={!!errors.newPassword}
 									helperText={
 										errors.newPassword && typeof errors.newPassword.message === "string"
@@ -272,10 +277,11 @@ const ChangePasswordForm = (): React.JSX.Element => {
 								/>
 							</Grid>
 							<Grid item xs={12} className={classes.wrapperRowInput}>
-								<div className={classes.text}>Confirm New Password</div>
+							<label className={classes.text} htmlFor="confirm-new-password">Confirm New Password</label>
 								<TextField
-									id="confirm-new-passowrd"
-									variant="standard"
+								id="confirm-new-password"
+								variant="outlined"
+								size="small"
 									error={!!errors.confirmNewPassword}
 									helperText={
 										errors.confirmNewPassword &&
@@ -312,9 +318,9 @@ const ChangePasswordForm = (): React.JSX.Element => {
 					)}
 					{!isForgotPassword ? (
 						<Grid item xs={12} className={classes.wrapperForgotPassword}>
-							<div className={classes.forgotPassword} onClick={handleForgotPassword}>
+			<Button type="button" className={classes.forgotPassword} onClick={handleForgotPassword}>
 								Forgot password?
-							</div>
+			</Button>
 						</Grid>
 					) : (
 						<KeyboardBackspaceIcon onClick={handleForgotPassword} className={classes.backIcon} />

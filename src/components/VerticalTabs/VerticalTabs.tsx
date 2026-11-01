@@ -1,13 +1,15 @@
 import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import classes from "./VerticalTabs.module.scss";
 import UserProfileForm from "../Form/UserProfileForm/UserProfileForm";
 import { Grid } from "@mui/material";
 import ChangePasswordForm from "../Form/ChangePasswordForm/ChangePasswordForm";
 import ResquestToModForm from "../Form/ResquestToModForm/ResquestToModForm";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import HomeWorkOutlinedIcon from "@mui/icons-material/HomeWorkOutlined";
 
 interface TabPanelProps {
 	children?: React.ReactNode;
@@ -19,7 +21,7 @@ function TabPanel(props: TabPanelProps) {
 	const { children, value, index, ...other } = props;
 
 	return (
-		<div
+		<section
 			role="tabpanel"
 			hidden={value !== index}
 			id={`vertical-tabpanel-${index}`}
@@ -27,12 +29,8 @@ function TabPanel(props: TabPanelProps) {
 			{...other}
 			className={classes.tabPanel}
 		>
-			{value === index && (
-				<Box sx={{ p: 2 }}>
-					<Typography>{children}</Typography>
-				</Box>
-			)}
-		</div>
+			{value === index && <Box className={classes.panelContent}>{children}</Box>}
+		</section>
 	);
 }
 
@@ -51,28 +49,17 @@ export default function VerticalTabs() {
 	};
 
 	return (
-		<Grid sx={{ display: "flex", height: "100vh", width: "100vw" }}>
+		<Grid container className={classes.accountLayout}>
 			<Tabs
 				orientation="vertical"
 				value={value}
 				onChange={handleChange}
-				aria-label="Vertical tabs example"
-				sx={{
-					borderRight: 2,
-					borderColor: "divider",
-					"& .MuiTabs-indicator": {
-						backgroundColor: "#FF385C"
-					},
-					"& .MuiTabs-flexContainer": {
-						"& .Mui-selected": {
-							color: "#FF385C"
-						}
-					}
-				}}
+				aria-label="Account settings"
+				className={classes.tabs}
 			>
-				<Tab label="Personal Profile" {...a11yProps(0)} className={classes.tab} />
-				<Tab label="Change Password" {...a11yProps(1)} className={classes.tab} />
-				<Tab label="Resquest To Mod" {...a11yProps(2)} className={classes.tab} />
+				<Tab icon={<PersonOutlineIcon />} iconPosition="start" label="Personal information" {...a11yProps(0)} className={classes.tab} />
+				<Tab icon={<LockOutlinedIcon />} iconPosition="start" label="Password & security" {...a11yProps(1)} className={classes.tab} />
+				<Tab icon={<HomeWorkOutlinedIcon />} iconPosition="start" label="Become a host" {...a11yProps(2)} className={classes.tab} />
 			</Tabs>
 			<TabPanel value={value} index={0}>
 				<UserProfileForm />

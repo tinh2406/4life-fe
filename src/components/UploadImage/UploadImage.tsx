@@ -6,33 +6,38 @@ interface UploadImageProps {
 	loadingUpload: boolean;
 	handleChangeImage: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	photoURL?: string;
+	inputId?: string;
+	label?: string;
 }
 
-const UploadImage = ({ loadingUpload, handleChangeImage, photoURL }: UploadImageProps): React.JSX.Element => {
+const UploadImage = ({ loadingUpload, handleChangeImage, photoURL, inputId = "file-input", label = "Identity document" }: UploadImageProps): React.JSX.Element => {
 	return (
 		<>
-			<label htmlFor="file-input" className={classes.wrapperFileAvatar}>
+			<label htmlFor={inputId} className={classes.wrapperFileAvatar}>
 				{loadingUpload ? (
-					<Box className={classes.loading}>
-						<CircularProgress sx={{ color: "#FF385C" }} />
+					<Box className={classes.loading} role="status" aria-label={`Uploading ${label.toLowerCase()}`}>
+						<CircularProgress size={28} sx={{ color: "#2f7668" }} />
 					</Box>
 				) : (
 					<>
 						{photoURL ? (
-							<img className={classes.avatar} src={photoURL} alt="Image Identity" />
+							<img className={classes.avatar} src={photoURL} alt={`${label} preview`} />
 						) : (
-							<AddOutlinedIcon className={classes.iconAdd} />
+							<div className={classes.uploadPrompt}>
+								<AddOutlinedIcon className={classes.iconAdd} />
+								<span>Choose image</span>
+							</div>
 						)}
 					</>
 				)}
 				<input
 					type="file"
-					id="file-input"
+					id={inputId}
 					accept="image/*"
+					aria-label={`Upload ${label.toLowerCase()}`}
 					onChange={handleChangeImage}
 					className={classes.file}
 				/>
-				{/* <AddCircleIcon className={classes.iconAdd} /> */}
 			</label>
 		</>
 	);
