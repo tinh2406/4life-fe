@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { mockAccommodations, mockAmenities, mockBookings, mockLocations, mockReviews, mockRooms, mockUser } from "./data";
 
-const API = "https://tuna.whitemage.tech/api";
+const API = "http://localhost:3000/api";
 let favoriteIds = new Set(mockRooms.filter(room => room.isFavorite).map(room => room.id));
 let bookings = [...mockBookings];
 let accommodations = [...mockAccommodations];

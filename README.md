@@ -168,7 +168,7 @@ Tạo file `.env` tại thư mục gốc của dự án (nếu chưa có):
 GOOGLE_MAPS_API_KEY="your_google_maps_api_key_here"
 ```
 
-> **Lưu ý**: Endpoint API Backend mặc định được cấu hình tại `src/api/instance.ts` (`https://tuna.whitemage.tech/api`).
+> **Lưu ý**: Endpoint API Backend mặc định được cấu hình tại `src/api/instance.ts` (`http://localhost:3000/api`).
 
 ### 3. Khởi chạy dự án
 

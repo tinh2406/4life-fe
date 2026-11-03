@@ -4,8 +4,7 @@ import { store } from "../store";
 import { createAction } from "@reduxjs/toolkit";
 
 export const axiosInstance: AxiosInstance = axios.create({
-	baseURL: "https://tuna.whitemage.tech/api",
-	// baseURL: "https://tuna-1.whitemage.tech/api",
+	baseURL: "http://localhost:3000/api",
 	headers: {
 		"Content-Type": "application/json"
 	}
@@ -38,8 +37,7 @@ axiosInstance.interceptors.response.use(
 );
 
 export const axiosInstanceFormData: AxiosInstance = axios.create({
-	baseURL: "https://tuna.whitemage.tech/api",
-	// baseURL: "https://tuna-1.whitemage.tech/api",
+	baseURL: "http://localhost:3000/api",
 	headers: {
 		"Content-Type": "multipart/form-data"
 	}

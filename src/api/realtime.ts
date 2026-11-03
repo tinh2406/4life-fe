@@ -47,7 +47,7 @@ export class RealtimeClient {
 		const baseUrl =
 			this.options.url ||
 			import.meta.env.VITE_NOTIFY_SSE_URL ||
-			"https://tuna.whitemage.tech/api/notifications/stream";
+			"http://localhost:3000/api/sse";
 
 		const sseUrl = `${baseUrl}?token=${encodeURIComponent(this.options.token)}`;
 
