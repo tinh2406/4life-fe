@@ -1,18 +1,14 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import { ReactNode, createContext, useContext, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "react-query";
+import { toast } from "react-toastify";
+import { RealtimeClient, SSEEventListener } from "../api/realtime";
+import { RealtimeEventPayload, RealtimeEventType, SSEConnectionStatus } from "../types/model/notification";
 
-// type AnyObject = {
-// 	[key: string]: boolean;
-// } & object;
 type AnyObject = Record<string, boolean>;
 
-type NotificationPayload = {
-	Id?: string;
-	[key: string]: unknown;
-};
-
-type NotifyContextValue = {
-	isModRole: boolean; // Thêm trạng thái isModRole
+export interface NotifyContextValue {
+	// Trạng thái tương thích ngược
+	isModRole: boolean;
 	setIsModRole: React.Dispatch<React.SetStateAction<boolean>>;
 	isPaid: boolean;
 	setIsPaid: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,7 +17,11 @@ type NotifyContextValue = {
 	newNoti: AnyObject;
 	clearNoti?: () => void;
 	removeNoti?: (id: string) => void;
-};
+
+	// Khả năng mở rộng
+	connectionStatus: SSEConnectionStatus;
+	subscribeEvent: (eventType: RealtimeEventType | string, listener: SSEEventListener) => () => void;
+}
 
 const NotifyContext = createContext<NotifyContextValue>({
 	hasNew: false,
@@ -29,10 +29,10 @@ const NotifyContext = createContext<NotifyContextValue>({
 	isModRole: false,
 	isPaid: false,
 	setIsModRole: () => {},
-	setIsPaid: () => {}
+	setIsPaid: () => {},
+	connectionStatus: "closed",
+	subscribeEvent: () => () => {}
 });
-
-let eventSource: EventSource | null = null;
 
 export const useNotify = () => {
 	return useContext(NotifyContext);
@@ -43,115 +43,200 @@ export const NotifyProvider = ({ children }: { children: ReactNode }) => {
 	const [isPaid, setIsPaid] = useState<boolean>(false);
 	const [hasNew, setHasNew] = useState(false);
 	const [newNoti, setNewNoti] = useState<AnyObject>({});
+	const [connectionStatus, setConnectionStatus] = useState<SSEConnectionStatus>("closed");
 
 	const queryClient = useQueryClient();
 	const token = localStorage.getItem("accessToken");
+	const clientRef = useRef<RealtimeClient | null>(null);
+
 	useEffect(() => {
 		const isMockEnabled = import.meta.env.VITE_ENABLE_MOCKS === "true" || import.meta.env.MODE === "mock";
-		if (!token || isMockEnabled) return;
+		if (!token || isMockEnabled) {
+			setConnectionStatus("closed");
+			return;
+		}
 
-		// Endpoint SSE cho thông báo từ biến môi trường (fallback về endpoint mặc định)
-		const sseBaseUrl = import.meta.env.VITE_NOTIFY_SSE_URL || "http://localhost:3000/sse";
-		const sseUrl = `${sseBaseUrl}?token=${encodeURIComponent(token)}`;
-		const es = new EventSource(sseUrl);
-		eventSource = es;
+		const client = new RealtimeClient({
+			token,
+			onStatusChange: status => {
+				setConnectionStatus(status);
+			},
+			onError: err => {
+				console.warn("[Realtime SSE] Connection error/event:", err);
+			}
+		});
 
-		const handleApproveMod = (_data?: unknown) => {
-			console.log("GuestReceiveNotifyApproveModMessage", _data);
+		clientRef.current = client;
+
+		const registerNotificationItem = (payload: RealtimeEventPayload) => {
+			const notiId = (payload?.id || payload?.Id) as string | undefined;
+			if (notiId) {
+				setNewNoti(last => ({ ...last, [notiId]: true }));
+			}
+			setHasNew(true);
 			queryClient.invalidateQueries("all-notifys");
+		};
+
+		// -------------------------------------------------------------
+		// 1. CÁC SỰ KIỆN CHO KHÁCH HÀNG (GUEST EVENTS)
+		// -------------------------------------------------------------
+
+		// Phê duyệt yêu cầu làm Host/Mod
+		const unApproveMod = client.on("GuestReceiveNotifyApproveModMessage", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("user-profile");
 			setIsModRole(true);
-			setHasNew(true);
-		};
+			toast.success(payload.message || "Yêu cầu trở thành Chủ nhà của bạn đã được phê duyệt!");
+		});
 
-		const handlePaymentSuccess = (rawMessage?: string) => {
-			try {
-				if (rawMessage) {
-					const data = JSON.parse(rawMessage) as NotificationPayload;
-					if (data?.Id) {
-						setNewNoti(last => ({ ...last, [data.Id as string]: true }));
-					}
-				}
-			} catch (e) {
-				console.error("Error parsing payment success message:", e);
-			}
-			queryClient.invalidateQueries("all-notifys");
+		// Khách tạo đơn đặt phòng thành công
+		const unBookingSuccess = client.on("GuestReceiveNotifyBookingSuccess", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("my-bookings");
+		});
+
+		// Khách thanh toán đặt phòng thành công
+		const unPaymentSuccess = client.on("GuestReceiveNotifyBookingPaymentSuccess", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("my-bookings");
+			queryClient.invalidateQueries("booking-detail");
 			setIsPaid(true);
-			setHasNew(true);
-		};
-
-		const handleBookingSuccess = (rawMessage?: string) => {
-			console.log("GuestReceiveNotifyBookingSuccess", rawMessage);
-			try {
-				if (rawMessage) {
-					const data = JSON.parse(rawMessage) as NotificationPayload;
-					if (data?.Id) {
-						setNewNoti(last => ({ ...last, [data.Id as string]: true }));
-					}
-				}
-			} catch (e) {
-				console.error("Error parsing booking success message:", e);
-			}
-			queryClient.invalidateQueries("all-notifys");
-			setHasNew(true);
-		};
-
-		// 1. Lắng nghe Custom SSE Events (VD: Backend gửi `event: GuestReceiveNotifyBookingSuccess\ndata: ...\n\n`)
-		es.addEventListener("GuestReceiveNotifyApproveModMessage", (event: MessageEvent) => {
-			handleApproveMod(event.data);
+			toast.success(payload.message || "Thanh toán đặt phòng thành công!");
 		});
 
-		es.addEventListener("GuestReceiveNotifyBookingPaymentSuccess", (event: MessageEvent) => {
-			handlePaymentSuccess(event.data);
+		// Thanh toán đặt phòng thất bại hoặc hết hạn
+		const unPaymentFailed = client.on("GuestReceiveNotifyBookingPaymentFailed", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("booking-detail");
+			toast.error(payload.message || "Thanh toán không thành công hoặc phiên giao dịch đã hết hạn.");
 		});
 
-		es.addEventListener("GuestReceiveNotifyBookingSuccess", (event: MessageEvent) => {
-			handleBookingSuccess(event.data);
+		// Khách bị hủy đơn hoặc xác nhận hủy thành công
+		const unBookingCancelled = client.on("GuestReceiveNotifyBookingCancelled", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("my-bookings");
+			queryClient.invalidateQueries("booking-detail");
+			toast.info(payload.message || "Đơn đặt phòng đã được hủy.");
 		});
 
-		// 2. Lắng nghe Generic Message Event (VD: Backend gửi qua event message mặc định kèm payload JSON)
-		es.onmessage = (event: MessageEvent) => {
-			try {
-				const parsed = JSON.parse(event.data);
-				const eventType = parsed?.type || parsed?.event;
-				const messageData =
-					typeof parsed?.data === "string" ? parsed.data : JSON.stringify(parsed?.data || parsed);
+		// Nhắc nhở lịch nhận phòng sắp tới
+		const unBookingReminder = client.on("GuestReceiveNotifyBookingReminder", payload => {
+			registerNotificationItem(payload);
+			toast.info(payload.message || "Bạn có lịch nhận phòng sắp tới. Hãy chuẩn bị hành lý nhé!");
+		});
 
-				if (eventType === "GuestReceiveNotifyApproveModMessage") {
-					handleApproveMod(messageData);
-				} else if (eventType === "GuestReceiveNotifyBookingPaymentSuccess") {
-					handlePaymentSuccess(messageData);
-				} else if (eventType === "GuestReceiveNotifyBookingSuccess") {
-					handleBookingSuccess(messageData);
-				}
-			} catch {
-				// message không phải JSON hợp lệ thì bỏ qua
-			}
-		};
+		// -------------------------------------------------------------
+		// 2. CÁC SỰ KIỆN CHO CHỦ NHÀ (HOST EVENTS)
+		// -------------------------------------------------------------
 
-		es.onopen = () => {
-			console.log("SSE Connected to Notification stream!");
-		};
+		// Có khách đặt phòng mới
+		const unHostNewBooking = client.on("HostReceiveNewBooking", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("booking-of-my-accommodations");
+			toast.info(payload.message || "Bạn vừa có một đơn đặt phòng mới!");
+		});
 
-		es.onerror = err => {
-			console.error("SSE connection error:", err);
-		};
+		// Khách thanh toán cho đơn của host
+		const unHostBookingPaid = client.on("HostReceiveBookingPaymentSuccess", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("booking-of-my-accommodations");
+			toast.success(payload.message || "Khách hàng đã thanh toán cho đơn đặt phòng!");
+		});
+
+		// Khách hủy đơn đặt phòng của host
+		const unHostBookingCancelled = client.on("HostReceiveBookingCancelled", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("booking-of-my-accommodations");
+			toast.warn(payload.message || "Khách đã hủy một đơn đặt phòng.");
+		});
+
+		// Bài đăng phòng được phê duyệt
+		const unAccommodationApproved = client.on("HostReceiveAccommodationApproved", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("my-accommodations");
+			toast.success(payload.message || "Chỗ ở của bạn đã được duyệt và bắt đầu hiển thị công khai!");
+		});
+
+		// Bài đăng phòng bị từ chối duyệt
+		const unAccommodationRejected = client.on("HostReceiveAccommodationRejected", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("my-accommodations");
+			toast.error(payload.message || "Bài đăng chỗ ở của bạn chưa được duyệt.");
+		});
+
+		// Có đánh giá mới cho chỗ ở của Host
+		const unNewReview = client.on("HostReceiveNewReview", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("reviews");
+			queryClient.invalidateQueries("accommodation-detail");
+			toast.info(payload.message || "Chỗ ở của bạn vừa nhận được đánh giá mới!");
+		});
+
+		// -------------------------------------------------------------
+		// 3. SỰ KIỆN CHUNG & HỆ THỐNG (SYSTEM / SHARED EVENTS)
+		// -------------------------------------------------------------
+
+		// Thông báo tổng quát
+		const unNewNotification = client.on("NewNotificationReceived", payload => {
+			registerNotificationItem(payload);
+		});
+
+		// Trạng thái đặt phòng thay đổi nói chung
+		const unBookingStatusChanged = client.on("BookingStatusChanged", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("my-bookings");
+			queryClient.invalidateQueries("booking-detail");
+			queryClient.invalidateQueries("booking-of-my-accommodations");
+		});
+
+		// Trạng thái bài đăng chỗ ở thay đổi nói chung
+		const unAccommodationStatusChanged = client.on("AccommodationStatusChanged", payload => {
+			registerNotificationItem(payload);
+			queryClient.invalidateQueries("my-accommodations");
+			queryClient.invalidateQueries("accommodations");
+		});
+
+		// Khởi động kết nối
+		client.connect();
 
 		return () => {
-			if (es) {
-				es.close();
-				if (eventSource === es) {
-					eventSource = null;
-				}
-			}
+			unApproveMod();
+			unBookingSuccess();
+			unPaymentSuccess();
+			unPaymentFailed();
+			unBookingCancelled();
+			unBookingReminder();
+			unHostNewBooking();
+			unHostBookingPaid();
+			unHostBookingCancelled();
+			unAccommodationApproved();
+			unAccommodationRejected();
+			unNewReview();
+			unNewNotification();
+			unBookingStatusChanged();
+			unAccommodationStatusChanged();
+			client.disconnect();
+			clientRef.current = null;
 		};
 	}, [token, queryClient]);
 
 	const clearNoti = () => setNewNoti({});
 	const removeNoti = (id: string) => {
-		delete newNoti[id];
+		setNewNoti(last => {
+			const updated = { ...last };
+			delete updated[id];
+			return updated;
+		});
 	};
 
-	const value = {
+	const subscribeEvent = (eventType: RealtimeEventType | string, listener: SSEEventListener): (() => void) => {
+		if (clientRef.current) {
+			return clientRef.current.on(eventType, listener);
+		}
+		return () => {};
+	};
+
+	const value: NotifyContextValue = {
 		isModRole,
 		setIsModRole,
 		isPaid,
@@ -160,7 +245,10 @@ export const NotifyProvider = ({ children }: { children: ReactNode }) => {
 		setHasNew,
 		newNoti,
 		clearNoti,
-		removeNoti
+		removeNoti,
+		connectionStatus,
+		subscribeEvent
 	};
+
 	return <NotifyContext.Provider value={value}>{children}</NotifyContext.Provider>;
 };
