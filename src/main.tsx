@@ -12,6 +12,7 @@ import { clientID } from "./utils/get-client-id.ts";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "leaflet/dist/leaflet.css";
 import { NotifyProvider } from "./context/notify.tsx";
 import { ThemeProvider } from "@mui/material";
 import theme from "./assets/theme";

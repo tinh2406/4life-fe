@@ -11,7 +11,7 @@ import LinearProgress, { linearProgressClasses } from "@mui/material/LinearProgr
 import { useEffect, useState } from "react";
 import BookingDialog from "../../components/Dialog/BookingDialog";
 import Comment from "../../components/Comment/Comment";
-import GoogleMapReact from "google-map-react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import SendIcon from "@mui/icons-material/Send";
 import useReviews from "../../hooks/use-reviews";
 import { PostReview } from "../../types/model/postReview";
@@ -20,20 +20,7 @@ import { formatDate } from "../../utils/get-date-month";
 import { LoadingButton } from "@mui/lab";
 import ArrowDropDownCircleOutlinedIcon from "@mui/icons-material/ArrowDropDownCircleOutlined";
 import { canReview } from "../../api/review.api";
-
-const mapApiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
-
-type AccommodationMarkerProps = {
-	lat: number;
-	lng: number;
-	name: string;
-};
-
-const AccommodationMarker = ({ name }: AccommodationMarkerProps): React.JSX.Element => (
-	<div className={classes.mapMarker} role="img" aria-label={`Map location for ${name}`}>
-		<LocationOnIcon />
-	</div>
-);
+import { createLocationPinIcon, DEFAULT_TILE_ATTRIBUTION, DEFAULT_TILE_URL } from "../../utils/leaflet";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 	height: 6,
@@ -417,16 +404,34 @@ const AccommodationDetailPage = (): React.JSX.Element => {
 					Map
 				</Grid>
 				<Grid item xs={12} className={classes.wrapperMap}>
-					{mapApiKey && data ? (
+					{data && Number.isFinite(data.latitude) && Number.isFinite(data.longitude) ? (
 						<div className={classes.mapCanvas}>
-							<GoogleMapReact
-								bootstrapURLKeys={{ key: mapApiKey }}
-								center={{ lat: data.latitude, lng: data.longitude }}
-								defaultZoom={14}
-								options={{ fullscreenControl: false, mapTypeControl: false, streetViewControl: false }}
+							<MapContainer
+								center={[data.latitude, data.longitude]}
+								zoom={14}
+								scrollWheelZoom={false}
+								style={{ width: "100%", height: "100%" }}
 							>
-								<AccommodationMarker lat={data.latitude} lng={data.longitude} name={data.name} />
-							</GoogleMapReact>
+								<TileLayer
+									attribution={DEFAULT_TILE_ATTRIBUTION}
+									url={DEFAULT_TILE_URL}
+								/>
+								<Marker
+									position={[data.latitude, data.longitude]}
+									icon={createLocationPinIcon()}
+								>
+									<Popup>
+										<div style={{ minWidth: "120px" }}>
+											<strong style={{ display: "block", fontSize: "13px", color: "#172b3a", marginBottom: "4px" }}>
+												{data.name}
+											</strong>
+											<span style={{ color: "#2f7668", fontWeight: 700, fontSize: "14px" }}>
+												${data.price} / night
+											</span>
+										</div>
+									</Popup>
+								</Marker>
+							</MapContainer>
 						</div>
 					) : (
 						<div className={classes.mapUnavailable} role="status">

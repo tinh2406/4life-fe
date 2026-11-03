@@ -16,17 +16,14 @@
 	padding: 4px 4px 13px;
 	color: #172b3a;
 
-	strong,
-	span {
-		display: block;
-	}
-
 	strong {
+		display: block;
 		font-size: 14px;
 		font-weight: 700;
 	}
 
 	div > span {
+		display: block;
 		margin-top: 3px;
 		color: #586970;
 		font-size: 12px;
@@ -34,13 +31,21 @@
 }
 
 .mapIcon {
-	display: grid;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 34px;
 	height: 34px;
-	place-items: center;
+	flex-shrink: 0;
 	color: #2f7668;
 	background: #fff;
 	border-radius: 50%;
+	box-shadow: 0 1px 3px rgba(23, 43, 58, 0.08);
+
+	svg {
+		display: block;
+		font-size: 20px;
+	}
 }
 
 .mapCanvas {
@@ -63,15 +68,25 @@
 }
 
 .marker {
-	padding: 7px 10px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6px 10px;
 	color: #172b3a;
 	background: #fff;
 	border: 1px solid #cad7d0;
 	border-radius: 7px 7px 7px 2px;
-	box-shadow: 0 2px 8px rgb(23 43 58 / 18%);
+	box-shadow: 0 2px 8px rgb(23 43 58 / 22%);
 	font: 700 12px/1.1 'K2D', sans-serif;
 	white-space: nowrap;
 	cursor: pointer;
+	pointer-events: auto;
+	transition: transform 0.15s ease, background-color 0.15s ease;
+
+	&:hover {
+		background: #f7f8f5;
+		transform: scale(1.05);
+	}
 
 	&:focus-visible {
 		outline: 3px solid #d36b4a;
@@ -79,11 +94,19 @@
 	}
 }
 
+:global(.leaflet-price-badge) {
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	overflow: visible !important;
+}
+
 .markerSelected {
-	color: #fff;
-	background: #2f7668;
-	border-color: #2f7668;
-	transform: scale(1.08);
+	color: #fff !important;
+	background: #2f7668 !important;
+	border-color: #2f7668 !important;
+	transform: scale(1.1) !important;
+	box-shadow: 0 4px 12px rgba(47, 118, 104, 0.4) !important;
 }
 
 .mapFootnote {
