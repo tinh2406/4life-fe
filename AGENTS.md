@@ -20,7 +20,7 @@ This repository (`PBL6_FE_User`) is the client-facing web application for the **
 - **State Management**:
   - Global client state: Redux Toolkit (`@reduxjs/toolkit`) + `redux-persist` (persists auth tokens and user data in `localStorage`).
   - Server state caching & mutation: React Query (`react-query` v3).
-  - Real-time events: `@microsoft/signalr` managed inside `NotifyProvider` (`src/context/notify.tsx`).
+  - Real-time events: Server-Sent Events (SSE) managed inside `NotifyProvider` (`src/context/notify.tsx`).
 - **UI Components & Styling**:
   - Material UI 5 (`@mui/material`, `@mui/icons-material`, `@mui/x-date-pickers`, Emotion).
   - Page & component-level scoped styling: **SCSS Modules** (`*.module.scss`).
@@ -98,7 +98,7 @@ All routes are defined in [`src/App.tsx`](./src/App.tsx):
 ### 4.2 State Separation
 - **Authentication & User Session**: Managed through Redux Toolkit (`src/store/authSlice.ts`).
 - **Server Data**: Always use custom hooks in `src/hooks/` wrapping `react-query` queries and mutations. Do not duplicate server data in Redux unless explicitly required.
-- **Real-time Notifications**: Subscribed via SignalR in `NotifyProvider` (`src/context/notify.tsx`).
+- **Real-time Notifications**: Subscribed via Server-Sent Events (SSE) in `NotifyProvider` (`src/context/notify.tsx`).
 
 ### 4.3 Mock Service Worker (MSW)
 - Support offline development and isolated feature testing using `npm run dev:mock`.
